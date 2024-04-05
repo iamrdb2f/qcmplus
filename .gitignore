@@ -25,11 +25,13 @@ replay_pid*
 
 ####git###
 .idea/
+.src/target/
 
 
 ####web###
 # Ignore node_modules and build folders for qcmplusweb
 qcmplusweb/node/
+qcmplusweb/node_modules/
 
 # dependencies
 qcmplusweb/.pnp
