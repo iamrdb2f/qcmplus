@@ -22,3 +22,29 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+
+####web###
+# Ignore node_modules and build folders for qcmplusweb
+qcmplusweb/node/
+
+# dependencies
+qcmplusweb/.pnp
+qcmplusweb/.pnp.js
+
+# testing
+qcmplusweb/coverage
+
+# production
+qcmplusweb/build
+
+# misc
+qcmplusweb/.DS_Store
+qcmplusweb/.env.local
+qcmplusweb/.env.development.local
+qcmplusweb/.env.test.local
+qcmplusweb/.env.production.local
+
+qcmplusweb/npm-debug.log*
+qcmplusweb/yarn-debug.log*
+qcmplusweb/yarn-error.log*
