@@ -36,18 +36,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-			<version>3.2.4</version>
 		</dependency>
 	</dependencies>
 
@@ -68,11 +58,11 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.11.3</version>
+				<version>1.11.3</version> <!-- use latest version -->
 				<configuration>
-					<nodeVersion>v14.15.0</nodeVersion> <!-- Utilisez la version de Node.js que vous préférez -->
-					<npmVersion>6.14.8</npmVersion> <!-- Utilisez la version de npm que vous préférez -->
-					<workingDirectory>${project.basedir}</workingDirectory> <!-- Répertoire racine du projet Spring Boot -->
+					<nodeVersion>v16.14.0</nodeVersion>
+					<npmVersion>8.3.1</npmVersion>
+					<workingDirectory>qcmplusweb</workingDirectory>
 				</configuration>
 				<executions>
 					<execution>
@@ -86,9 +76,6 @@
 						<goals>
 							<goal>npm</goal>
 						</goals>
-						<configuration>
-							<arguments>install</arguments>
-						</configuration>
 					</execution>
 					<execution>
 						<id>npm run build</id>
@@ -101,7 +88,26 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-react-build-to-static</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/classes/static</outputDirectory>
+							<resources>
+								<resource>
+									<directory>qcmplusweb/build</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
