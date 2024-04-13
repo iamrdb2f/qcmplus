@@ -1,17 +1,22 @@
-import PropTypes from 'prop-types'
+import React from 'react';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import PropTypes from "prop-types";
 
-const Header =({title}) =>{
+const Header = ({ title }) => {
     return (
-        <header className="container-lg d-flex flex-column justify-content-center">
-            <h1>{title}</h1>
-            <p>C'est une nouvelle plate forme de gestion & d'évaluation des compétences</p>
-            <button className="btn btn-primary btn-lg ">
-                <a className="text-light" href="https://www.ecole-pmn.fr/">La PMN</a>
-            </button>
-        </header>
-    )
-}
-
+        <Container className="d-flex flex-column justify-content-center" fluid="lg">
+            <Row className="justify-content-center">
+                <Col>
+                    <h1>{title}</h1>
+                    <p>C'est une nouvelle plate forme de gestion & d'évaluation des compétences</p>
+                    <Button variant="primary" size="lg" href="https://www.ecole-pmn.fr/" target="_target" className="text-light">
+                        La PMN
+                    </Button>
+                </Col>
+            </Row>
+        </Container>
+    );
+};
 Header.defaultProps = {
     title:'QCM Plus',
 }
