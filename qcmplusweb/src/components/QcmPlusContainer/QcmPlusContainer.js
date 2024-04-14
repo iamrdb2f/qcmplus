@@ -1,8 +1,9 @@
 import Header from "../Header/Header";
+import './QcmPlusContainer.css';
 
 const  QcmPlusContainer = () =>{
     return (
-        <div className="container">
+        <div className="QcmPlusContainer">
             <Header/>
         </div>
     );
