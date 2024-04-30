@@ -1,21 +1,25 @@
-import './App.css';
-import './variables.css';
-import React from 'react';
-import {Container} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import NavigationMenu from "./components/NavigationMenu/NavigationMenu";
-import QcmPlusContainer from "./components/QcmPlusContainer/QcmPlusContainer";
+import React from 'react'
+import './App.css'
+
+
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/home/Home";
+import Signin from './pages/authentication/signin/Signin';
+import Signup from './pages/authentication/signup/Signup';
+import Forgetpassword from './pages/authentication/forgetpassword/Forgetpassword';
 
 
 const App = () => {
-    return (
-        <div className="App">
-            <Container fluid className="text-center">
-                <NavigationMenu/>
-                <QcmPlusContainer/>
-            </Container>
-        </div>
-    );
-};
+  return (
+    <div className="App">
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/signin" element={<Signin />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/forgetpassword" element={<Forgetpassword />} />
+    </Routes>
+  </div>
+  )
+}
 
-export default App;
+export default App
