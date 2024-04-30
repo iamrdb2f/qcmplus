@@ -1,55 +1,63 @@
-# Compiled class file
+# Compiled Java classes, JAR, and WAR files
+/target/
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Maven files
+/mvnw
+/mvnw.cmd
+/.mvn/
+
+# IDE configuration
+/.idea/
+/.vscode/
+
+# Logs and temporary files
+/logs/
+*.log
+*.log.*
 hs_err_pid*
 replay_pid*
 
-####git###
-.idea/
-.src/target/
+# Python bytecode files
+*.pyc
 
+# Environment files and secret keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.DS_Store
 
-####web###
-# Ignore node_modules and build folders for qcmplusweb
-qcmplusweb/node/
-qcmplusweb/node_modules/
+# Node modules and React build output
+/qcmplusweb/node_modules/
+/qcmplusweb/build/
 
-# dependencies
-qcmplusweb/.pnp
-qcmplusweb/.pnp.js
+# Dependency directories (if any)
+/qcmplusweb/.pnp
+/qcmplusweb/.pnp.js
 
-# testing
-qcmplusweb/coverage
+# Coverage directory
+/qcmplusweb/coverage/
 
-# production
-qcmplusweb/build
+# Logs and temporary files specific to Node.js
+/qcmplusweb/npm-debug.log*
+/qcmplusweb/yarn-debug.log*
+/qcmplusweb/yarn-error.log*
 
-# misc
-qcmplusweb/.DS_Store
-qcmplusweb/.env.local
-qcmplusweb/.env.development.local
-qcmplusweb/.env.test.local
-qcmplusweb/.env.production.local
+# Miscellaneous files
+*.iml
+*.tmproj
+*.tmtags
+.venv/
+*.war
+*.zip
+*.sql
+*.sqlite
+*.sqlite3
+*.orig
 
-qcmplusweb/npm-debug.log*
-qcmplusweb/yarn-debug.log*
-qcmplusweb/yarn-error.log*
+# Virtual machine crash logs
+hs_err_pid*
