@@ -1,4 +1,4 @@
-package com.qcmplus.qcmplus.WebConfig;
+package com.qcmplus.qcmplus.webConfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
