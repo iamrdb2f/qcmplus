@@ -21,5 +21,5 @@ public class Response {
 
     private Boolean isCorrect;
 
-    // getters and setters...
+   
 }

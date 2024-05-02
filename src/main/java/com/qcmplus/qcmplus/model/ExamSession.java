@@ -27,5 +27,5 @@ public class ExamSession {
 
     private Time timeSpent;
 
-    // getters and setters...
+   
 }

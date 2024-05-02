@@ -3,6 +3,7 @@ package com.qcmplus.qcmplus.controller;
 import com.qcmplus.qcmplus.model.User;
 import com.qcmplus.qcmplus.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +19,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.saveUser(user);
-        return ResponseEntity.ok(savedUser);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -30,26 +32,27 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
-        Optional<User> existingUser = userService.getUserById(id);
-        if (userExist(existingUser)) {
-            user.setUserId(id);  // Ensure the ID is set correctly
+    @PostMapping("/user/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User user) {
+        try {
+            user.setUserId(id); // Ensure the ID is set correctly
             User updatedUser = userService.updateUser(user);
             return ResponseEntity.ok(updatedUser);
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Error: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         Optional<User> existingUser = userService.getUserById(id);
         if (userExist(existingUser)) {

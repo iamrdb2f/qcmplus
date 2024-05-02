@@ -29,9 +29,13 @@ public class UserService {
     public Optional<User> getUserById(Integer id) {
         return userRepository.findById(id);
     }
-
-    public User updateUser(User user) {
-        return userRepository.save(user);  // save acts as update if the user already exists
+    // In UserService.java
+    public User updateUser(User user) throws Exception {
+        Optional<User> existingUser = userRepository.findByEmailAndUserIdNot(user.getEmail(), user.getUserId());
+        if (existingUser.isPresent()) {
+            throw new Exception("Email already in use by another user.");
+        }
+        return userRepository.save(user);
     }
 
     public void deleteUser(Integer id) {

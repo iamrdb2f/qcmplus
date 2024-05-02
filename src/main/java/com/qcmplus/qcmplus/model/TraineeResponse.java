@@ -27,5 +27,5 @@ public class TraineeResponse {
     @JoinColumn(name = "response_id", insertable = false, updatable = false)
     private Response response;
 
-    // getters and setters...
+   
 }

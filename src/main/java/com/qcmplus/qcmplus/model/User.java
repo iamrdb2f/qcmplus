@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
     @Column(name = "last_name")
@@ -22,7 +22,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "user_name")  // Ensure this matches your database column name
+    @Column(name = "username")  // Ensure this matches your database column name
     private String userName;
 
     @Column(name = "password")
@@ -30,6 +30,4 @@ public class User {
 
     @Column(name = "type")
     private String type;
-
-    // Getters and setters...
 }

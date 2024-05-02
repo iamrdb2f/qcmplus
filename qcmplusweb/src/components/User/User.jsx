@@ -1,7 +1,19 @@
 import {useEffect, useState} from "react";
 
 
-const  User = () => {
+const UserRow = ({ user }) => (
+    <tr key={user.id}>
+        <td>{user.userId}</td>
+        <td>{user.firstName}</td>
+        <td>{user.lastName}</td>
+        <td>{user.userName}</td>
+        <td>{user.email}</td>
+        <td>{user.password}</td>
+        <td>{user.type}</td>
+    </tr>
+);
+
+const User = () => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -13,14 +25,23 @@ const  User = () => {
 
     return (
         <div className="container mt-5">
-            <h1 className="mb-3">Registered Items</h1>
-            <ul className="list-group">
-                {users.map(user => (
-                    <li key={user.id} className="list-group-item">
-                        {user.name} - {user.email}
-                    </li>
-                ))}
-            </ul>
+            <h1 className="mb-3">Registered Users</h1>
+            <table className="table table-striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                {users.map(user => <UserRow key={user.userId} user={user} />)}
+                </tbody>
+            </table>
         </div>
     );
 }
