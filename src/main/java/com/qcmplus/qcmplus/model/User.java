@@ -1,37 +1,33 @@
 package com.qcmplus.qcmplus.model;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "users")
 public class User {
-    private Long id;
-    private String name;
-    private String  email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
 
-    public User(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
+    @Column(name = "last_name")
+    private String lastName;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "first_name")
+    private String firstName;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "email")
+    private String email;
 
-    public String getName() {
-        return name;
-    }
+    @Column(name = "username")  // Ensure this matches your database column name
+    private String userName;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Column(name = "password")
+    private String password;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    @Column(name = "type")
+    private String type;
 }
