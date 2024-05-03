@@ -1,0 +1,135 @@
+.content_dashboard {
+    width: 100%;
+    max-height: 100vh;
+    display: flex;
+}
+
+/* ========================= Aside =================== */
+.content_dashboard .content_aside {
+    width: 20%;
+    min-height: 100vh;
+    background: #F3F8FF;
+}
+
+.content_aside .content_top {
+    height: 20vh;
+    border-bottom: 1px solid #BDBDBD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    background: #152259;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    width: 80%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+button:hover {
+    padding: 10px 15px;
+    background: #509CDB;
+}
+
+.content_aside .aside_bottom {
+    height: 70vh;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.aside_bottom .space_btn {
+    width: 100%;
+    margin-top: 65px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+
+/* ========================= Main =================== */
+.content_dashboard .content_main {
+    width: 80%;
+    max-height: 100vh;
+    background: #fff;
+}
+
+.content_main .main_top {
+    height: 10vh;
+    width: 100%;
+    background: #FCFAFA;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.main_top .text_description {
+    width: 85%;
+    padding-left: 60px;
+}
+
+.main_top .text_description p {
+    padding: 0;
+    margin: 0;
+}
+
+.main_top .btn_disconnect {
+    width: 15%;
+
+}
+
+.content_main .text_welcome {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 120px;
+}
+
+.content_main .container_items {
+    display: flex;
+}
+
+.content_main .content_items {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 148px;
+    height: 50vh;
+    /* border: 1px solid #152259; */
+    width: 60%;
+}
+
+
+.btn_support button{
+    margin-left: 48px;
+    margin-top: 266px;
+    border-radius: 30px;
+}
+
+.content_items .add_adim {
+    height: 15vh;
+    /* border: 1px solid #152259; */
+    width: 100%;
+    display: flex;
+}
+
+.content_items .add_class {
+    height: 15vh;
+    /* border: 1px solid #152259; */
+    width: 100%;
+    display: flex;
+}
+
+.content_items .manage_student {
+    height: 15vh;
+    /* border: 1px solid #152259; */
+    width: 100%;
+    display: flex;
+}
