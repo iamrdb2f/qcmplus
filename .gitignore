@@ -1,17 +1,31 @@
-# Compiled Java classes, JAR, and WAR files
+# Ignore specific node-related executables in the project directory
+/qcmplusweb/node/node.exe
+/qcmplusweb/node/npm
+/qcmplusweb/node/npm.cmd
+
+# Node modules and build directories
+/qcmplusweb/node_modules/
+/qcmplusweb/build/
+
+# React environment files
+/qcmplusweb/.env*
+/qcmplusweb/*.log*
+
+# IntelliJ IDEA & VSCode
+.idea/
+.vscode/
+*.iml
+
+# Java/Spring Boot
 /target/
 *.class
 *.jar
 *.war
 
-# Maven files
+# Maven wrapper files
 /mvnw
 /mvnw.cmd
 /.mvn/
-
-# IDE configuration
-/.idea/
-/.vscode/
 
 # Logs and temporary files
 /logs/
@@ -20,44 +34,15 @@
 hs_err_pid*
 replay_pid*
 
-# Python bytecode files
-*.pyc
-
-# Environment files and secret keys
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.DS_Store
-
-# Node modules and React build output
-/qcmplusweb/node_modules/
-/qcmplusweb/build/
-
-# Dependency directories (if any)
-/qcmplusweb/.pnp
-/qcmplusweb/.pnp.js
-
-# Coverage directory
-/qcmplusweb/coverage/
-
-# Logs and temporary files specific to Node.js
-/qcmplusweb/npm-debug.log*
-/qcmplusweb/yarn-debug.log*
-/qcmplusweb/yarn-error.log*
-
 # Miscellaneous files
-*.iml
 *.tmproj
 *.tmtags
 .venv/
-*.war
 *.zip
 *.sql
 *.sqlite
 *.sqlite3
 *.orig
 
-# Virtual machine crash logs
-hs_err_pid*
+# Ignoring documentation directory
+/src/main/resources/doc/
