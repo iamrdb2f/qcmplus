@@ -9,7 +9,7 @@
 /qcmplusweb/node/  # Ignore entire node directory under qcmplusweb
 
 # React environment files
-/qcmplusweb/.env*
+/.env
 /qcmplusweb/*.log*
 
 # IntelliJ IDEA & VSCode
