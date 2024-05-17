@@ -1,29 +1,29 @@
-# Ignore specific node-related executables in the project directory
+# Node modules and Node.js binaries
+/node/
+/node_modules/
+/qcmplusweb/node/
 /qcmplusweb/node/node.exe
 /qcmplusweb/node/npm
 /qcmplusweb/node/npm.cmd
-
-# Node modules and build directories
 /qcmplusweb/node_modules/
-/qcmplusweb/build/
-/qcmplusweb/node/  # Ignore entire node directory under qcmplusweb
 
-# React environment files
-/.env
-/qcmplusweb/*.log*
-
-# IntelliJ IDEA & VSCode
-.idea/
-.vscode/
-*.iml
-
-# Java/Spring Boot
+# Build outputs
 /target/
+/qcmplusweb/build/
 *.class
 *.jar
 *.war
 
-# Maven wrapper files
+# Environment configurations
+.env
+/qcmplusweb/*.log*
+
+# IDE specific files
+.idea/
+.vscode/
+*.iml
+
+# Maven specific files
 /mvnw
 /mvnw.cmd
 /.mvn/
@@ -45,7 +45,7 @@ replay_pid*
 *.sqlite3
 *.orig
 
-# Ignoring documentation directory
+# Documentation directory
 /src/main/resources/doc/
 
 # Qodana integration files
