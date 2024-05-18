@@ -1,9 +1,8 @@
-import {useEffect, useState} from "react";
-
+import { useEffect, useState } from "react";
 
 const UserRow = ({ user }) => (
-    <tr key={user.id}>
-        <td>{user.userId}</td>
+    <tr>
+        <td>{user.index + 1}</td>
         <td>{user.firstName}</td>
         <td>{user.lastName}</td>
         <td>{user.userName}</td>
@@ -29,17 +28,19 @@ const User = () => {
             <table className="table table-striped">
                 <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>N°</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Email</th>
                     <th>Username</th>
+                    <th>Email</th>
                     <th>Password</th>
                     <th>Type</th>
                 </tr>
                 </thead>
                 <tbody>
-                {users.map(user => <UserRow key={user.userId} user={user} />)}
+                {users.map((user, index) => (
+                    <UserRow key={index} user={{ ...user, index }} />
+                ))}
                 </tbody>
             </table>
         </div>
