@@ -6,27 +6,30 @@ import ImgLogo from "../ImgLogo/ImgLogo";
 import './NavigationMenu.css'
 
 
+import {Link, NavLink} from 'react-router-dom';
+
 const NavigationMenu = () => {
     return (
         <Navbar bg="light" expand="lg" className="justify-content-between navBarMenu">
             <Container>
-                <Navbar.Brand href="#home">
+                <Navbar.Brand as={Link} to="/">
                     <ImgLogo/>
                 </Navbar.Brand>
                 <Nav className="align-items-start">
-                    <Nav.Link href="#about" className="mx-2">À propos</Nav.Link>
-                    <Nav.Link href="#interns" className="mx-2">Stagiaires</Nav.Link>
-                    <Nav.Link href="#qcm" className="mx-2">QCM</Nav.Link>
+                    <Nav.Link as={NavLink} to="/about" className="mx-2">À propos</Nav.Link>
+                    <Nav.Link as={NavLink} to="/students" className="mx-2">Stagiaires</Nav.Link>
+                    <Nav.Link as={NavLink} to="/qcm" className="mx-2">QCM</Nav.Link>
+                    <Nav.Link as={NavLink} to="/dashboard" className="mx-2">Dashboard</Nav.Link>
                 </Nav>
                 <Nav>
-                    <Nav.Link className={"nav-link-update"} href="#new">
+                    <Nav.Link as={NavLink} className={"nav-link-update"} to="/new">
                         <small className={"me-1 px-3 new-badge  rounded-pill"}>NEW</small>
                         <small className={" p-1"}>Passer Vos QCMs En Ligne Et En Toute Securité!</small>
                     </Nav.Link>
                 </Nav>
                 <Nav>
-                    <Button variant="light" className="btn-sing-in mx-3 fw-bold">Se connecter</Button>
-                    <Button variant="light" className="btn-sing-out mx-1">Inscription</Button>
+                    <Button as={NavLink} variant="light" className="btn-sing-in mx-3 fw-bold" to="/signin">Se connecter</Button>
+                    <Button as={NavLink} variant="light" className="btn-sing-out mx-1" to="/signup">Inscription</Button>
                 </Nav>
             </Container>
         </Navbar>
