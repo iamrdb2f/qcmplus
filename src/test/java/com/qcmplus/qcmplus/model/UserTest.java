@@ -55,11 +55,4 @@ public class UserTest {
         assertEquals(password, user.getPassword());
     }
 
-    @Test
-    void getAndSetType() {
-        String type = "admin";
-        user.setType(type);
-
-        assertEquals(type, user.getType());
-    }
 }

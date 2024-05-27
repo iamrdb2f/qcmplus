@@ -15,10 +15,9 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")  // Allow frontend URL
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Optionally specify the allowed methods
-                        .allowedHeaders("*")  // Optionally specify the allowed headers
-                        .allowCredentials(true);  // Optionally specify if cookies should be allowed
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*").allowCredentials(true);
             }
         };
     }
