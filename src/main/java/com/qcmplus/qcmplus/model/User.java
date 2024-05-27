@@ -23,12 +23,8 @@ public class User {
     private String firstName;
 
     @JsonProperty("email")
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
-
-    @JsonProperty("userName")
-    @Column(name = "username")
-    private String userName;
 
     @JsonProperty("password")
     @Column(name = "password")
