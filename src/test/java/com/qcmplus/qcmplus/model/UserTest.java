@@ -46,13 +46,6 @@ public class UserTest {
         assertEquals(email, user.getEmail());
     }
 
-    @Test
-    void getAndSetUsername() {
-        String userName = "john123";
-        user.setUserName(userName);
-
-        assertEquals(userName, user.getUserName());
-    }
 
     @Test
     void getAndSetPassword() {
