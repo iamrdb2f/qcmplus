@@ -8,7 +8,6 @@ const UserRow = ({ user }) => (
         <td>{user.userName}</td>
         <td>{user.email}</td>
         <td>{user.password}</td>
-        <td>{user.type}</td>
     </tr>
 );
 
@@ -24,17 +23,15 @@ const User = () => {
 
     return (
         <div className="container mt-5">
-            <h1 className="mb-3">Registered Users</h1>
+            <h1 className="mb-3">Registered Trainee</h1>
             <table className="table table-striped">
                 <thead>
                 <tr>
                     <th>N°</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Username</th>
                     <th>Email</th>
                     <th>Password</th>
-                    <th>Type</th>
                 </tr>
                 </thead>
                 <tbody>

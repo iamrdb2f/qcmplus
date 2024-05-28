@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_role", discriminatorType = DiscriminatorType.STRING)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,5 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @JsonProperty("role")
-    @Column(name = "type")
-    private String type;
+    // other fields, getters, setters, etc.
 }
