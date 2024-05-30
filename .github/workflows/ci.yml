@@ -1,0 +1,78 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker Compose
+        run: sudo apt-get update && sudo apt-get install docker-compose -y
+
+      - name: Build and run services
+        env:
+          DATABASE_NAME: qcmplus_db
+          DATABASE_USER: root
+          DATABASE_PASSWORD: 2018
+        run: docker-compose -f docker-compose.yml up --build -d
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until docker exec $(docker ps -q --filter "name=mysql_db") mysqladmin ping -h "127.0.0.1" --silent; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
+
+      - name: Run backend tests
+        run: docker-compose exec backend mvn test
+
+      - name: Run integration tests
+        run: docker-compose exec backend mvn verify
+
+      - name: Build frontend
+        run: docker-compose exec frontend npm run build
+
+      - name: Archive Maven artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: maven-artifacts
+          path: backend/target/*.war
+
+      - name: Archive frontend build
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: qcmplusweb/build
