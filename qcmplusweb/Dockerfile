@@ -1,13 +1,20 @@
-# Build stage
-FROM node:14 AS build
+# Étape de construction
+FROM node:18-alpine AS build
+
 WORKDIR /app
-COPY package*.json ./
+
+# Copier les fichiers de dépendances et installer les dépendances
+COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-RUN npm run build && npm cache clean --force
 
-# Production stage
-FROM nginx:stable-alpine
+# Construire l'application
+RUN npm run build
+
+# Étape de production
+FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
+
+# Commande pour démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
