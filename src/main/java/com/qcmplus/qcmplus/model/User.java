@@ -11,7 +11,8 @@ import lombok.Setter;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_role", discriminatorType = DiscriminatorType.STRING)
-public class User {
+public abstract class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
@@ -32,5 +33,15 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    // other fields, getters, setters, etc.
+    @JsonProperty("company")
+    @Column(name = "company")
+    private String company;
+
+    @JsonProperty("phoneNumber")
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @JsonProperty("userRole")
+    @Column(name = "user_role", insertable = false, updatable = false)
+    private String userRole;
 }

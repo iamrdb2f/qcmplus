@@ -10,15 +10,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@DiscriminatorValue("TRAINEE")
-public class Trainee extends User {
+@DiscriminatorValue("TRAINER")
+public class Trainer extends User {
 
     @JsonProperty("gender")
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @JsonProperty("jobTitle")
     @Column(name = "job_title")
     private String jobTitle;
 }
-
