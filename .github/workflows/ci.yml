@@ -44,9 +44,9 @@ jobs:
 
       - name: Build and run services
         env:
-          DATABASE_NAME: qcmplus_db
-          DATABASE_USER: root
-          DATABASE_PASSWORD: 2018
+          DATABASE_USER: ${{ secrets.DATABASE_NAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_USER }}
+          DATABASE_NAME: ${{ secrets.DATABASE_PASSWORD }}
         run: docker-compose -f docker-compose.yml up --build -d
 
       - name: Wait for MySQL to be ready
