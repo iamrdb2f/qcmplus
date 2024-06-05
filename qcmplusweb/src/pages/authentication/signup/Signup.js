@@ -2,14 +2,16 @@ import React from 'react'
 import '../style.css'
 import l from '../../../assets/logo/qcmplus_logo.png'
 import p1 from '../../../assets/pictures/picture1.png'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const Signup = () => {
     return (
         <div className='content_signup'>
             <div className='content_left'>
-                <img src={l} alt="" className='logo' />
-                <img src={p1} alt="" className='picture1' />
+                <NavLink to="/">
+                    <img src={l} alt="" className='logo' />
+                    <img src={p1} alt="" className='picture1' />
+                </NavLink>
             </div>
             <div className='content_right'>
                 <div className="form-container">
@@ -35,7 +37,7 @@ const Signup = () => {
 
                     <p className="signup-link">
                         Don't have an account?
-                        <Link to={""} className="signup-link link"> Sign in now</Link>
+                        <NavLink to="/signin" className="signup-link link"> Sign in now</NavLink>
                     </p>
                 </div>
             </div>

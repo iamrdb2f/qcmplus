@@ -1,29 +1,34 @@
 import React from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import PropTypes from "prop-types";
+import { Container } from 'react-bootstrap'
+import o from '../../assets/morepictures/officer.jpeg'
+import { Link } from 'react-router-dom';
 
-const Header = ({ title }) => {
+const Header = () => {
     return (
-        <Container className="d-flex flex-column justify-content-center" fluid="lg">
-            <Row className="justify-content-center">
-                <Col>
-                    <h1>{title}</h1>
-                    <p>C'est une nouvelle plate forme de gestion & d'évaluation des compétences</p>
-                    <Button variant="primary" size="lg" href="https://www.ecole-pmn.fr/" target="_target" className="text-light">
-                        La PMN
-                    </Button>
-                </Col>
-            </Row>
-        </Container>
+        <div className="container-fluid mt-5 pt-5 pb-5" style={{ backgroundColor: "#EDF4FC" }}>
+            <Container>
+                <div className="row">
+                    <div className="col-lg-6 col-md-12">
+                        <h1>Brillantes <br /> Décisions pour <br /> Votre apprentissage</h1>
+                        <p className="lead">
+                            Découvrez notre platforme, votre guide incontournable
+                            pour optimiser vos méthodes d'étude et exceller académiquement. Basé sur l'education,
+                            cette platforme offre des stratégies pour améliorer la motivation, la gestion du temps et les techniques d'apprentissage,
+                            aidant étudiants et professionnels à maximiser leur potentiel.
+                        </p>
+                        <div style={{ backgroundColor: "#EDF4FC", width: "50%", borderRadius: "23px" }}>
+                            <Link to="/signin">
+                                <button className="" style={{ borderRadius: "23px" }}>Commencer maintenant</button>
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="col-lg-6 col-md-12 d-flex justify-content-center">
+                        <img src={o} alt="Phone" className="img-fluid" />
+                    </div>
+                </div>
+            </Container>
+        </div>
     );
 };
-Header.defaultProps = {
-    title:'QCM Plus',
-}
-
-
-Header.propTypes = {
-    title: PropTypes.string.isRequired,
-}
 
 export default Header
