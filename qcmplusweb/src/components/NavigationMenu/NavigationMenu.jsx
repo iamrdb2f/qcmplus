@@ -1,17 +1,17 @@
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import {Container } from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import ImgLogo from "../ImgLogo/ImgLogo";
 import './NavigationMenu.css'
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 const NavigationMenu = () => {
     return (
         <Navbar className="justify-content-between navBarMenu container-fluid fixed-top" style={{backgroundColor:"#f3f8fe"}}>
             <Container>
                 <Navbar.Brand href="/">
-                    <ImgLogo />
+                    <ImgLogo link={"/"}/>
                 </Navbar.Brand>
                 <Nav className="align-items-start">
                     <Nav.Link href="#about" className="mx-2">À propos</Nav.Link>
