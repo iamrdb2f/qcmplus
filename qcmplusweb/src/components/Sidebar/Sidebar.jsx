@@ -1,40 +1,68 @@
 import React from 'react';
-import {FaBook, FaChalkboardTeacher, FaHome, FaRegStar, FaUserGraduate} from 'react-icons/fa';
+import {
+    FaBook,
+    FaChalkboardTeacher,
+    FaCommentAlt,
+    FaFileAlt,
+    FaHome,
+    FaQuestionCircle,
+    FaRegStar,
+    FaUserGraduate
+} from 'react-icons/fa';
 import './Sidebar.css';
 import ImgLogo from "../ImgLogo/ImgLogo";
+import {Container, ListGroup, Row} from "react-bootstrap";
+
+function onItemClick(trainee) {
+    return undefined;
+}
 
 const Sidebar = () => {
     return (
-        <div className="sidebar">
-            <div className="sidebar-header mb-5 pb-5">
+        <Container fluid>
+            <Row className={"mt-2 mb-5 text-center"}>
                 <ImgLogo/>
-            </div>
-            <ul className="sidebar-menu">
-                <li className="sidebar-item">
+            </Row>
+            <ListGroup>
+                <ListGroup.Item className="sidebar-item">
                     <FaHome className="sidebar-icon"/>
                     <span>Dashboard</span>
-                </li>
-                <li className="sidebar-item active">
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item active">
                     <FaChalkboardTeacher className="sidebar-icon"/>
                     <span>Trainer</span>
-                </li>
-                <li className="sidebar-item">
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item" onClick={() => onItemClick('trainee')}>
                     <FaUserGraduate className="sidebar-icon"/>
                     <span>Trainee</span>
-                </li>
-                <li className="sidebar-item">
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item">
+                    <FaUserGraduate className="sidebar-icon"/>
+                    <span>Trainee</span>
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item">
                     <FaBook className="sidebar-icon"/>
                     <span>Exams</span>
-                </li>
-            </ul>
-            <ul className="sidebar-menu mt-5 py-5">
-                <li className="sidebar-item new-feature">
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item">
+                    <FaFileAlt  className="sidebar-icon"/>
+                    <span>Quizzes</span>
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item">
+                    <FaQuestionCircle className="sidebar-icon"/>
+                    <span>Questions</span>
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item">
+                    <FaCommentAlt className="sidebar-icon"/>
+                    <span>Answers</span>
+                </ListGroup.Item>
+                <ListGroup.Item className="sidebar-item new-feature mt-5">
                     <FaRegStar className="sidebar-icon"/>
                     <span>Features</span>
                     <span className="new-badge">NEW</span>
-                </li>
-            </ul>
-        </div>
+                </ListGroup.Item>
+            </ListGroup>
+        </Container>
     );
 };
 

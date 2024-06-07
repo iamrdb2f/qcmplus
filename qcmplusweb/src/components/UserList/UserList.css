@@ -1,0 +1,29 @@
+.search-bar {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.search-icon {
+    position: relative;
+    left: 20px;
+    color: #aaa;
+}
+
+.custom-pagination .page-item .page-link:hover {
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
+}
+
+.custom-pagination .page-item.active .page-link {
+    background-color: var(--bg-default-dark-color);
+    color: white;
+}
+
+.custom-pagination .page-item .page-link:focus {
+    outline: none;
+}
+
+

@@ -1,29 +1,12 @@
-.sidebar {
-    width: 200px;
-    background-color: #f8f9fa;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.sidebar-header {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.sidebar-header h2 {
-    margin: 0;
-    font-size: 24px;
-    color: #007bff;
-}
-
 .sidebar-menu {
+    width: 100%;
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
 .sidebar-item {
+    width: 100%;
     display: flex;
     color: white;
     background-color: var(--bg-dark-primary-color);
@@ -47,6 +30,7 @@
 
 .new-feature {
     position: relative;
+    margin-top: 30px;
 }
 
 .new-badge {

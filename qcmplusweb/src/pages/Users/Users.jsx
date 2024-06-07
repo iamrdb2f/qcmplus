@@ -1,12 +1,24 @@
-import React from 'react';
-import "./Users.css";
+import React, {useState} from 'react';
+import {Button, Col, Container, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import UpdateForm from "../../components/UpdateForm/UpdateForm";
+import UserList from "../../components/UserList/UserList";
+import "./Users.css";
 
 const Users = () => {
-
+    const [showUserList, setShowUserList] = useState(true);
     const initialTeachers = [
-        { firstName: 'John', lastName: 'Doe', email: 'john@example.com', class: 'Math', gender: 'Male', password: '1234', phone: '1234567890', subject: 'Mathematics', designation: 'Professor' }
+        {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            class: 'Math',
+            gender: 'Male',
+            password: '1234',
+            phone: '1234567890',
+            subject: 'Mathematics',
+            designation: 'Professor'
+        }
     ];
 
     const handleSubmit = (teachers) => {
@@ -14,7 +26,7 @@ const Users = () => {
     };
 
     const labels = {
-        title: 'Register Teachers',
+        title: 'Register Trainee',
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email Address',
@@ -28,28 +40,31 @@ const Users = () => {
         addTeacher: 'Register Teacher'
     };
 
-
-
-
-
-
     return (
-        <div className="usersContainer">
-            <Sidebar/>
-            <div className="main-content">
-                <div className="header">
-                    <button className="export-csv">Export CSV</button>
-                    <button className="add-teachers">Add Teachers</button>
-                </div>
-                <div>
-                    <UpdateForm
-                        initialTeachers={initialTeachers}
-                        onSubmit={handleSubmit}
-                        labels={labels}
-                    />
-                </div>
-            </div>
-        </div>
+        <Container fluid className="usersContainer ">
+            <Row>
+                <Col xs={12} md={2} className="sidebar">
+                    <Sidebar/>
+                </Col>
+                <Col xs={12} md={10} className="main-content">
+                    <div className="header d-flex justify-content-end m-3">
+                        <Button className="ExportUserBtn me-2">Export CSV</Button>
+                        <Button className="ToggleUserBtn" onClick={() => setShowUserList(!showUserList)}>
+                            {showUserList ? 'Add Trainer' : 'List Trainers'}
+                        </Button>
+                    </div>
+                    {showUserList ? (
+                        <UserList/>
+                    ) : (
+                        <UpdateForm
+                            initialTeachers={initialTeachers}
+                            onSubmit={handleSubmit}
+                            labels={labels}
+                        />
+                    )}
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
