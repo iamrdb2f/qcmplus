@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Col, Container, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
-import UpdateForm from "../../components/UpdateForm/UpdateForm";
+import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Users.css";
 
@@ -56,7 +56,7 @@ const Users = () => {
                     {showUserList ? (
                         <UserList/>
                     ) : (
-                        <UpdateForm
+                        <AddUser
                             initialTeachers={initialTeachers}
                             onSubmit={handleSubmit}
                             labels={labels}

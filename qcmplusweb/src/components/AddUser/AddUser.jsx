@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import "./UpdateForm.css"
+import "./AddUser.css"
 import {Button, Col, Container, Form, Row} from 'react-bootstrap';
 
-const UpdateForm = ({ initialUsers, onSubmit, labels }) => {
+const AddUser = ({ initialUsers, onSubmit, labels }) => {
     const [users, setUsers] = useState(initialUsers || [{ firstName: '', lastName: '', email: '', password: '', userRole: '', gender: '', company: '', jobTitle: '', phoneNumber: '' }]);
 
     const handleChange = (index, e) => {
@@ -117,4 +117,4 @@ const UpdateForm = ({ initialUsers, onSubmit, labels }) => {
     );
 };
 
-export default UpdateForm;
+export default AddUser;
