@@ -1,25 +1,45 @@
 import React from 'react';
-import {Button, Modal} from 'react-bootstrap';
+import {Badge, Button, ListGroup, Modal} from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import {FaMars, FaUser, FaVenus} from 'react-icons/fa';
+import './UserProfile.css';
 
-const UserProfile = ({ user, show, handleClose }) => {
+const UserProfile = ({ show, handleClose, user }) => {
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>
-                <Modal.Title>User Profile</Modal.Title>
+                <Modal.Title className="w-100 text-center">User Profile</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p><strong>First Name:</strong> {user.firstName}</p>
-                <p><strong>Last Name:</strong> {user.lastName}</p>
-                <p><strong>Gender:</strong> {user.gender}</p>
-                <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
-                <p><strong>Role:</strong> {user.userRole}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Job Title:</strong> {user.jobTitle}</p>
-                <p><strong>Company:</strong> {user.company}</p>
+                {user ? (
+                    <div className="user-profile text-center">
+                        <div className="text-center mb-4">
+                            <div className="position-relative d-inline-block">
+                                <FaUser className="user-icon" size={150} />
+                                <span className="gender-icon position-absolute top-0 start-100 translate-middle">
+                                    <i className={`fas ${user.gender === 'M' ? FaMars : FaVenus} fa-2x`}></i>
+                                </span>
+                            </div>
+                        </div>
+                        <ListGroup variant="flush">
+                            <ListGroup.Item className="center-text"><strong>First Name:</strong> {user.firstName}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Last Name:</strong> {user.lastName}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Email:</strong> {user.email}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Phone Number:</strong> {user.phoneNumber}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Job Title:</strong> {user.jobTitle}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Company:</strong> {user.company}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Role:</strong>
+                                <Badge bg={user.userRole === 'Admin' ? 'primary' : 'secondary'} className="ms-2">{user.userRole}</Badge>
+                            </ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Gender:</strong> {user.gender}</ListGroup.Item>
+                        </ListGroup>
+                    </div>
+                ) : (
+                    <p className="text-center">No user selected</p>
+                )}
             </Modal.Body>
-            <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Modal.Footer className="justify-content-center">
+                <Button className={"QcmPlusBtn"} onClick={handleClose}>
                     Close
                 </Button>
             </Modal.Footer>
@@ -28,9 +48,9 @@ const UserProfile = ({ user, show, handleClose }) => {
 };
 
 UserProfile.propTypes = {
-    user: PropTypes.object.isRequired,
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    user: PropTypes.object,
 };
 
 export default UserProfile;

@@ -1,0 +1,32 @@
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-title {
+    text-align: center;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+
+
+.QcmPlusBtn{
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+    font-weight: bold;
+    padding: 10px 70px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.QcmPlusBtn:hover {
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
+}

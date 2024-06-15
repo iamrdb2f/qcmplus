@@ -9,15 +9,15 @@ const Users = () => {
     const [showUserList, setShowUserList] = useState(true);
     const initialTeachers = [
         {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
-            class: 'Math',
-            gender: 'Male',
-            password: '1234',
-            phone: '1234567890',
-            subject: 'Mathematics',
-            designation: 'Professor'
+            firstName: '',
+            lastName: '',
+            email: '',
+            class: '',
+            gender: '',
+            password: '',
+            phone: '',
+            subject: '',
+            designation: ''
         }
     ];
 
@@ -37,7 +37,8 @@ const Users = () => {
         subject: 'Subject',
         designation: 'Designation',
         addAnother: 'Add another teacher',
-        addTeacher: 'Register Teacher'
+        addTeacher: 'Register teacher',
+        addBtn: 'Register User'
     };
 
     return (

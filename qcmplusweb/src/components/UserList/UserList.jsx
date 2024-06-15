@@ -1,36 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Container, Form, Modal, Pagination, Row, Table} from 'react-bootstrap';
+import {Alert, Col, Container, Form, Pagination, Row, Table} from 'react-bootstrap';
 import PropTypes from "prop-types";
+import UserProfile from '../UserProfile/UserProfile';
+import UserForm from '../UserForm/UserForm';
+import UserRow from '../UserRow/UserRow';
 import './UserList.css';
-import UserProfile from "../UserProfile/UserProfile";
-import UserForm from "../UserForm/UserForm";
+import DeleteConfirmation from "../Modals/DeleteConfirmation";
 
-const UserRow = ({ user, onView, onUpdate, onDelete }) => (
-    <tr>
-        <td>{user.index + 1}</td>
-        <td>{user.firstName}</td>
-        <td>{user.lastName}</td>
-        <td>{user.gender}</td>
-        <td>{user.phoneNumber}</td>
-        <td className="d-none d-md-table-cell">{user.email}</td>
-        <td>{user.jobTitle}</td>
-        <td>{user.company}</td>
-        <td>
-            <Button variant="success" size="sm" onClick={() => onView(user)}>View</Button>
-            <Button variant="warning" size="sm" onClick={() => onUpdate(user)} className="ms-2">Update</Button>
-            <Button variant="danger" size="sm" onClick={() => onDelete(user)} className="ms-2">Delete</Button>
-        </td>
-    </tr>
-);
-
-UserRow.propTypes = {
-    user: PropTypes.object.isRequired,
-    onView: PropTypes.func.isRequired,
-    onUpdate: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-};
-
-const UserList = ({ title }) => {
+const UserList = ({ title = "Registered Trainee" }) => {
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12);
@@ -39,12 +16,27 @@ const UserList = ({ title }) => {
     const [showProfile, setShowProfile] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const fetchUsers = () => {
+        fetch('http://localhost:8080/trainees')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => setUsers(data))
+            .catch(error => {
+                console.error('There was an error fetching trainees!', error);
+                setErrorMessage('There was an error fetching trainees. Please try again later.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
 
     useEffect(() => {
-        fetch('http://localhost:8080/trainees')
-            .then(response => response.json())
-            .then(data => setUsers(data))
-            .catch(error => console.error('There was an error!', error));
+        fetchUsers();
     }, []);
 
     const handleView = (user) => {
@@ -62,22 +54,6 @@ const UserList = ({ title }) => {
         setShowDeleteConfirm(true);
     };
 
-    const confirmDelete = () => {
-        fetch(`http://localhost:8080/trainees/${selectedUser.id}`, {
-            method: 'DELETE',
-        })
-            .then(response => {
-                if (response.ok) {
-                    setUsers(users.filter(user => user.id !== selectedUser.id));
-                    setShowDeleteConfirm(false);
-                    setSelectedUser(null);
-                } else {
-                    console.error('Failed to delete user');
-                }
-            })
-            .catch(error => console.error('There was an error!', error));
-    };
-
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
@@ -87,27 +63,50 @@ const UserList = ({ title }) => {
         setSelectedUser(null);
     };
 
-    const handleSaveUser = (user) => {
+    const handleUpdateUser = (user) => {
         const requestOptions = {
-            method: user.id ? 'PUT' : 'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user)
         };
 
-        const url = user.id ? `http://localhost:8080/trainees/${user.id}` : 'http://localhost:8080/trainees';
+        console.log(user);
+
+        const url = `http://localhost:8080/trainee/${user.userId}`;
 
         fetch(url, requestOptions)
             .then(response => response.json())
             .then(savedUser => {
-                if (user.id) {
-                    setUsers(users.map(u => (u.id === savedUser.id ? savedUser : u)));
-                } else {
-                    setUsers([...users, savedUser]);
-                }
+                setUsers(users.map(u => (u.userId === savedUser.userId ? savedUser : u)));
                 setShowForm(false);
                 setSelectedUser(null);
+                setSuccessMessage('User updated successfully.');
+                setTimeout(() => setSuccessMessage(''), 3000);
             })
-            .catch(error => console.error('There was an error!', error));
+            .catch(error => {
+                console.error('There was an error saving the user!', error);
+                setErrorMessage('There was an error saving the user. Please try again later.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
+    };
+
+    const handleConfirmDelete = (userId) => {
+        fetch(`http://localhost:8080/trainee/${userId}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                setUsers(users.filter(user => user.userId !== userId));
+                setShowDeleteConfirm(false);
+                setSelectedUser(null);
+                setSuccessMessage('User deleted successfully.');
+                setTimeout(() => setSuccessMessage(''), 3000);
+            })
+            .catch(error => {
+                console.error('There was an error deleting the user!', error);
+                setErrorMessage('There was an error deleting the user. Please try again later.');
+                setTimeout(() => setErrorMessage(''), 3000);
+            });
     };
 
     const handleCloseForm = () => {
@@ -121,9 +120,9 @@ const UserList = ({ title }) => {
     };
 
     const filteredUsers = users.filter(user =>
-        user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const indexOfLastUser = currentPage * itemsPerPage;
@@ -152,6 +151,8 @@ const UserList = ({ title }) => {
                     </div>
                 </Col>
             </Row>
+            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
             <Table striped bordered hover>
                 <thead>
                 <tr>
@@ -169,7 +170,7 @@ const UserList = ({ title }) => {
                 <tbody>
                 {currentUsers.map((user, index) => (
                     <UserRow
-                        key={user.id}
+                        key={user.userId || index} // Use user.userId if available, otherwise use index
                         user={{ ...user, index: indexOfFirstUser + index }}
                         onView={handleView}
                         onUpdate={handleUpdate}
@@ -200,36 +201,20 @@ const UserList = ({ title }) => {
                 user={selectedUser}
                 show={showForm}
                 handleClose={handleCloseForm}
-                handleSave={handleSaveUser}
+                handleSave={handleUpdateUser}
             />
-            <Modal show={showDeleteConfirm} onHide={handleCloseDeleteConfirm}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Are you sure you want to delete
-                    {selectedUser && selectedUser.firstName}
-                    {selectedUser && selectedUser.lastName}?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseDeleteConfirm}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={confirmDelete}>
-                        Delete
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <DeleteConfirmation
+                show={showDeleteConfirm}
+                handleClose={handleCloseDeleteConfirm}
+                handleConfirm={() => handleConfirmDelete(selectedUser.userId)}
+                user={selectedUser}
+            />
         </Container>
     );
 };
 
-UserList.defaultProps = {
-    title: "Registered Trainee",
-}
-
 UserList.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
 }
 
 export default UserList;

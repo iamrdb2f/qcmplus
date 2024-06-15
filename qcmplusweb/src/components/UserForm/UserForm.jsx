@@ -1,122 +1,199 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Form, Modal} from 'react-bootstrap';
+import {Button, Col, Form, Modal, Row} from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import './UserForm.css';
 
-const UserForm = ({ user, show, handleClose, handleSave }) => {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        gender: '',
-        phoneNumber: '',
-        email: '',
-        jobTitle: '',
-        company: ''
-    });
+const UserForm = ({ show, handleClose, handleSave, user }) => {
+    const [formData, setFormData] = useState(user || {});
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
-        if (user) {
-            setFormData(user);
-        }
+        setFormData(user || {});
     }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.firstName) newErrors.firstName = 'First name is required';
+        if (!formData.lastName) newErrors.lastName = 'Last name is required';
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+        if (!formData.userRole) newErrors.userRole = 'Role is required';
+        if (!formData.gender) newErrors.gender = 'Gender is required';
+        return newErrors;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleSave(formData);
+        const newErrors = validateForm();
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            setErrors({});
+            handleSave(formData);
+        }
     };
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} centered size="lg">
             <Modal.Header closeButton>
                 <Modal.Title>{user ? 'Update User' : 'Add User'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formFirstName">
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formLastName" className="mt-3">
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formGender" className="mt-3">
-                        <Form.Label>Gender</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formPhoneNumber" className="mt-3">
-                        <Form.Label>Phone Number</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formEmail" className="mt-3">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formPassword" className="mt-3">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group> <Form.Group controlId="formJobTitle" className="mt-3">
-                    <Form.Label>Job Title</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="jobTitle"
-                        value={formData.jobTitle}
-                        onChange={handleChange}
-                        required
-                    />
-                </Form.Group>
-                    <Form.Group controlId="formCompany" className="mt-3">
-                        <Form.Label>Company</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="company"
-                            value={formData.company}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Button variant="primary" type="submit" className="mt-3">
-                        Save
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formGender">
+                                <Form.Label>Gender</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    name="gender"
+                                    value={formData.gender || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.gender}
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="F">Female</option>
+                                    <option value="M">Male</option>
+                                </Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.gender}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formUserRole">
+                                <Form.Label>Role</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    name="userRole"
+                                    value={formData.userRole || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.userRole}
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Trainee">Trainee</option>
+                                </Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.userRole}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formFirstName">
+                                <Form.Label>First Name</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="firstName"
+                                    value={formData.firstName || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.firstName}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.firstName}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formLastName">
+                                <Form.Label>Last Name</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="lastName"
+                                    value={formData.lastName || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.lastName}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.lastName}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    name="email"
+                                    value={formData.email || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.email}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.email}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formPassword">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    name="password"
+                                    value={formData.password || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.password}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.password}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formPhoneNumber">
+                                <Form.Label>Phone Number</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.phoneNumber}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.phoneNumber}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formJobTitle">
+                                <Form.Label>Job Title</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="jobTitle"
+                                    value={formData.jobTitle || ''}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formCompany">
+                                <Form.Label>Company</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="company"
+                                    value={formData.company || ''}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                        </Col>
+
+                    </Row>
+
+                    <Button type="submit" className="QcmPlusBtn w-100 mt-3">
+                        {user ? 'Update' : 'Add'}
                     </Button>
                 </Form>
             </Modal.Body>
@@ -125,10 +202,10 @@ const UserForm = ({ user, show, handleClose, handleSave }) => {
 };
 
 UserForm.propTypes = {
-    user: PropTypes.object,
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     handleSave: PropTypes.func.isRequired,
+    user: PropTypes.object,
 };
 
 export default UserForm;
