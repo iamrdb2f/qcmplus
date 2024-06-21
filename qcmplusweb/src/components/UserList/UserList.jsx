@@ -6,6 +6,7 @@ import UserForm from '../UserForm/UserForm';
 import UserRow from '../UserRow/UserRow';
 import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
+import {deleteApiUser, getApiUser, postApiUser} from '../../utils/apiUtils';
 
 const UserList = ({ title = "Registered Trainee" }) => {
     const [users, setUsers] = useState([]);
@@ -19,20 +20,18 @@ const UserList = ({ title = "Registered Trainee" }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const fetchUsers = () => {
-        fetch('http://localhost:8080/trainees')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => setUsers(data))
-            .catch(error => {
-                console.error('There was an error fetching trainees!', error);
-                setErrorMessage('There was an error fetching trainees. Please try again later.');
-                setTimeout(() => setErrorMessage(''), 3000);
-            });
+    const handleMessage = (setMessage, message, timeout = 3000) => {
+        setMessage(message);
+        setTimeout(() => setMessage(''), timeout);
+    };
+
+    const fetchUsers = async () => {
+        const response = await getApiUser('trainees');
+        if (response.error) {
+            handleMessage(setErrorMessage, 'Failed to load users.');
+        } else {
+            setUsers(response);
+        }
     };
 
     useEffect(() => {
@@ -63,50 +62,28 @@ const UserList = ({ title = "Registered Trainee" }) => {
         setSelectedUser(null);
     };
 
-    const handleUpdateUser = (user) => {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user)
-        };
-
-        console.log(user);
-
-        const url = `http://localhost:8080/trainee/${user.userId}`;
-
-        fetch(url, requestOptions)
-            .then(response => response.json())
-            .then(savedUser => {
-                setUsers(users.map(u => (u.userId === savedUser.userId ? savedUser : u)));
-                setShowForm(false);
-                setSelectedUser(null);
-                setSuccessMessage('User updated successfully.');
-                setTimeout(() => setSuccessMessage(''), 3000);
-            })
-            .catch(error => {
-                console.error('There was an error saving the user!', error);
-                setErrorMessage('There was an error saving the user. Please try again later.');
-                setTimeout(() => setErrorMessage(''), 3000);
-            });
+    const handleSaveUser = async (user) => {
+        const response = await postApiUser(`trainee/${user["userId"]}`, user);
+        if (response.error) {
+            handleMessage(setErrorMessage, 'Failed to save user.');
+        } else {
+            setUsers(users.map(u => (u["userId"] === response["userId"] ? response : u)));
+            setShowForm(false);
+            setSelectedUser(null);
+            handleMessage(setSuccessMessage, 'User updated successfully.');
+        }
     };
 
-    const handleConfirmDelete = (userId) => {
-        fetch(`http://localhost:8080/trainee/${userId}`, { method: 'DELETE' })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                setUsers(users.filter(user => user.userId !== userId));
-                setShowDeleteConfirm(false);
-                setSelectedUser(null);
-                setSuccessMessage('User deleted successfully.');
-                setTimeout(() => setSuccessMessage(''), 3000);
-            })
-            .catch(error => {
-                console.error('There was an error deleting the user!', error);
-                setErrorMessage('There was an error deleting the user. Please try again later.');
-                setTimeout(() => setErrorMessage(''), 3000);
-            });
+    const handleConfirmDelete = async (userId) => {
+        const response = await deleteApiUser(`trainee/${userId}`);
+        if (response.error) {
+            handleMessage(setErrorMessage, 'Failed to delete user.');
+        } else {
+            setUsers(users.filter((user) => user["userId"] !== userId));
+            setShowDeleteConfirm(false);
+            setSelectedUser(null);
+            handleMessage(setSuccessMessage, 'User deleted successfully.');
+        }
     };
 
     const handleCloseForm = () => {
@@ -128,7 +105,6 @@ const UserList = ({ title = "Registered Trainee" }) => {
     const indexOfLastUser = currentPage * itemsPerPage;
     const indexOfFirstUser = indexOfLastUser - itemsPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -170,7 +146,7 @@ const UserList = ({ title = "Registered Trainee" }) => {
                 <tbody>
                 {currentUsers.map((user, index) => (
                     <UserRow
-                        key={user.userId || index} // Use user.userId if available, otherwise use index
+                        key={user["userId"] || index}
                         user={{ ...user, index: indexOfFirstUser + index }}
                         onView={handleView}
                         onUpdate={handleUpdate}
@@ -179,17 +155,21 @@ const UserList = ({ title = "Registered Trainee" }) => {
                 ))}
                 </tbody>
             </Table>
-            <Pagination className="custom-pagination">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <Pagination.Item
-                        key={index}
-                        active={index + 1 === currentPage}
-                        onClick={() => handlePageChange(index + 1)}
-                    >
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-            </Pagination>
+            {totalPages > 0 ? (
+                <Pagination className="custom-pagination">
+                    {Array.from({ length: totalPages }, (_, index) => (
+                        <Pagination.Item
+                            key={index}
+                            active={index + 1 === currentPage}
+                            onClick={() => handlePageChange(index + 1)}
+                        >
+                            {index + 1}
+                        </Pagination.Item>
+                    ))}
+                </Pagination>
+            ) : (
+                <p>No users to display</p>
+            )}
             {selectedUser && (
                 <UserProfile
                     user={selectedUser}
@@ -201,12 +181,12 @@ const UserList = ({ title = "Registered Trainee" }) => {
                 user={selectedUser}
                 show={showForm}
                 handleClose={handleCloseForm}
-                handleSave={handleUpdateUser}
+                handleSave={handleSaveUser}
             />
             <DeleteConfirmation
                 show={showDeleteConfirm}
                 handleClose={handleCloseDeleteConfirm}
-                handleConfirm={() => handleConfirmDelete(selectedUser.userId)}
+                handleConfirm={() => handleConfirmDelete(selectedUser["userId"])}
                 user={selectedUser}
             />
         </Container>
@@ -215,6 +195,6 @@ const UserList = ({ title = "Registered Trainee" }) => {
 
 UserList.propTypes = {
     title: PropTypes.string,
-}
+};
 
 export default UserList;
