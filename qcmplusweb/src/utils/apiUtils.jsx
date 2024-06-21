@@ -18,14 +18,18 @@ const postApiUser = async (endpoint, body) => {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body),
         });
-        if (!response.ok) throw new Error(response.statusText);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || response.statusText);
+        }
         const text = await response.text();
         return text ? JSON.parse(text) : {};
     } catch (error) {
         console.log('postApiUser: There was an issue with your request.', error);
-        return {error: true, message: 'There was an issue with your request.'};
+        return {error: true, message: error.message};
     }
 };
+
 
 const deleteApiUser = async (endpoint) => {
     try {
