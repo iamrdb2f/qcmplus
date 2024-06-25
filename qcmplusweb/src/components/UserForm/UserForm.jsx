@@ -22,7 +22,6 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
         if (!formData.lastName) newErrors.lastName = 'Last name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
-        if (!formData.userRole) newErrors.userRole = 'Role is required';
         if (!formData.gender) newErrors.gender = 'Gender is required';
         return newErrors;
     };
@@ -66,27 +65,6 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                             </Form.Group>
                         </Col>
                         <Col>
-                            <Form.Group controlId="formUserRole">
-                                <Form.Label>Role</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="userRole"
-                                    value={formData.userRole || ''}
-                                    onChange={handleChange}
-                                    isInvalid={!!errors.userRole}
-                                >
-                                    <option value="">Select Role</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Trainee">Trainee</option>
-                                </Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.userRole}
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
                             <Form.Group controlId="formFirstName">
                                 <Form.Label>First Name</Form.Label>
                                 <Form.Control
@@ -101,6 +79,8 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
+                    </Row>
+                    <Row>
                         <Col>
                             <Form.Group controlId="formLastName">
                                 <Form.Label>Last Name</Form.Label>
@@ -116,8 +96,6 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
-                    </Row>
-                    <Row>
                         <Col>
                             <Form.Group controlId="formEmail">
                                 <Form.Label>Email</Form.Label>
@@ -133,6 +111,8 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
+                    </Row>
+                    <Row>
                         <Col>
                             <Form.Group controlId="formPassword">
                                 <Form.Label>Password</Form.Label>
@@ -148,8 +128,6 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
-                    </Row>
-                    <Row>
                         <Col>
                             <Form.Group controlId="formPhoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
@@ -165,6 +143,8 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
+                    </Row>
+                    <Row>
                         <Col>
                             <Form.Group controlId="formJobTitle">
                                 <Form.Label>Job Title</Form.Label>
@@ -176,8 +156,6 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 />
                             </Form.Group>
                         </Col>
-                    </Row>
-                    <Row>
                         <Col>
                             <Form.Group controlId="formCompany">
                                 <Form.Label>Company</Form.Label>
@@ -193,7 +171,7 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                     </Row>
 
                     <Button type="submit" className="QcmPlusBtn w-100 mt-3">
-                        {user ? 'Update' : 'Add'}
+                        {user ? 'Update User' : 'Add User'}
                     </Button>
                 </Form>
             </Modal.Body>

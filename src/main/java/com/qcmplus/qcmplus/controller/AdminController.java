@@ -2,13 +2,17 @@ package com.qcmplus.qcmplus.controller;
 
 import com.qcmplus.qcmplus.model.Admin;
 import com.qcmplus.qcmplus.service.AdminService;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AdminController {
@@ -20,7 +24,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @GetMapping("/admins")
+    @GetMapping("/admin")
     public List<Admin> getAllAdmins() {
         return adminService.getAllAdmins();
     }

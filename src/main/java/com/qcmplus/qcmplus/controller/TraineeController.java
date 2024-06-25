@@ -22,7 +22,7 @@ public class TraineeController {
         this.traineeService = traineeService;
     }
 
-    @GetMapping("/trainees")
+    @GetMapping("/trainee")
     public ResponseEntity<List<Trainee>> getAllTrainees() {
         return ResponseEntity.ok(traineeService.getAllTrainees());
     }

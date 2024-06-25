@@ -8,7 +8,8 @@ import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
 import {deleteApiUser, getApiUser, postApiUser} from '../../utils/apiUtils';
 
-const UserList = ({ title = "Registered Trainee" }) => {
+const UserList = ({ title , pageEndpoint }) => {
+    console.log(pageEndpoint)
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12);
@@ -20,23 +21,29 @@ const UserList = ({ title = "Registered Trainee" }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    const API_ERROR_MESSAGE = 'There was an issue with your request.';
+
     const handleMessage = (setMessage, message, timeout = 3000) => {
         setMessage(message);
         setTimeout(() => setMessage(''), timeout);
     };
 
     const fetchUsers = async () => {
-        const response = await getApiUser('trainees');
-        if (response.error) {
-            handleMessage(setErrorMessage, 'Failed to load users.');
-        } else {
+        try {
+            const response = await getApiUser(pageEndpoint);
+            if (response.error) {
+                handleMessage(setErrorMessage, API_ERROR_MESSAGE);
+                return;
+            }
             setUsers(response);
+        } catch (error) {
+            console.error('Error while fetching users:', error);
         }
     };
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [pageEndpoint]);
 
     const handleView = (user) => {
         setSelectedUser(user);
@@ -63,7 +70,7 @@ const UserList = ({ title = "Registered Trainee" }) => {
     };
 
     const handleSaveUser = async (user) => {
-        const response = await postApiUser(`trainee/${user["userId"]}`, user);
+        const response = await postApiUser(`${pageEndpoint}/${user["userId"]}`, user);
         if (response.error) {
             handleMessage(setErrorMessage, 'Failed to save user.');
         } else {
@@ -75,7 +82,7 @@ const UserList = ({ title = "Registered Trainee" }) => {
     };
 
     const handleConfirmDelete = async (userId) => {
-        const response = await deleteApiUser(`trainee/${userId}`);
+        const response = await deleteApiUser(`${pageEndpoint}/${userId}`);
         if (response.error) {
             handleMessage(setErrorMessage, 'Failed to delete user.');
         } else {
