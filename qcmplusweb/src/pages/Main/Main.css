@@ -1,0 +1,30 @@
+.usersContainer {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white-color);
+}
+
+.ExportUserBtn{
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+}
+.ToggleUserBtn{
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+}
+.ExportUserBtn:hover,
+.ToggleUserBtn:hover{
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
+}
+
+.sidebar {
+    background-color: var(--bg-primary-color);
+    padding: 20px;
+}
+
+.main-content {
+    overflow-y: hidden;
+}

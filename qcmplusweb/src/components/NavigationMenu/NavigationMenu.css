@@ -1,41 +1,23 @@
 /* Custom styles for the navigation bar */
-.navBarMenu{
-    background-color: var(--bg-default-color);
-}
+
 .nav-link-update{
-    padding: 10px;
     border-radius: 25px;
     box-shadow: var(--bg-default-light-color) 1px 1px 3px, var(--bg-default-light-color) 1px 1px 2px;
 }
 
-.new-badge {
-    font-weight: bold;
-    padding:5px 10px;
-    text-align: center;
-    font-size: 0.8em;
-    background-color: var(--bg-warning-color); /* Assuming you have a CSS variable for primary color */
-    color: var(--bg-light-color); /* Assuming you have a CSS variable for primary color */
-}
 
 .btn-sing-in{
-    color: var(--text-default-color);
-    background-color: transparent;
+    border-radius: 23px;
     border-bottom: 5px solid var(--text-blue-color);
 }
 .btn-sing-in:hover{
     font-weight: bold;
-    background-color: var(--text-default-color);
-    color: var( --text-white-color);
     border-bottom:none;
 }
 .btn-sing-out{
-    color: var(--text-blue-color);
-    background-color: var(--bg-default-blue-light-color);
-    border-radius: 8px;
+    border-radius: 23px;
 }
 
 .btn-sing-out:hover{
     font-weight: bold;
-    color: var(--bg-default-blue-light-color);
-    background-color: var(--text-blue-color);
 }

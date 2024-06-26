@@ -1,0 +1,17 @@
+.formContainer {
+    background-color: var(--white-color);
+}
+
+.submitBtn{
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+    font-weight: bold;
+    padding: 10px 70px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.submitBtn:hover {
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
+}

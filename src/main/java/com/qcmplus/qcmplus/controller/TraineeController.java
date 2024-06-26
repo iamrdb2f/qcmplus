@@ -2,12 +2,16 @@ package com.qcmplus.qcmplus.controller;
 
 import com.qcmplus.qcmplus.model.Trainee;
 import com.qcmplus.qcmplus.service.TraineeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TraineeController {
@@ -18,7 +22,7 @@ public class TraineeController {
         this.traineeService = traineeService;
     }
 
-    @GetMapping("/trainees")
+    @GetMapping("/trainee")
     public ResponseEntity<List<Trainee>> getAllTrainees() {
         return ResponseEntity.ok(traineeService.getAllTrainees());
     }
@@ -34,9 +38,41 @@ public class TraineeController {
     }
 
     @PostMapping("/trainee/{id}")
-    public ResponseEntity<Trainee> updateTrainee(@PathVariable Long id, @RequestBody Trainee traineeDetails) throws Exception {
-        return ResponseEntity.ok(traineeService.updateTrainee(id, traineeDetails));
+    public ResponseEntity<Trainee> updateTrainee(@PathVariable Long id, @RequestBody Trainee updatedTrainee) {
+        Optional<Trainee> optionalTrainee = traineeService.findById(id);
+        if (optionalTrainee.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Trainee existingTrainee = optionalTrainee.get();
+
+        if (updatedTrainee.getFirstName() != null) {
+            existingTrainee.setFirstName(updatedTrainee.getFirstName());
+        }
+        if (updatedTrainee.getLastName() != null) {
+            existingTrainee.setLastName(updatedTrainee.getLastName());
+        }
+        if (updatedTrainee.getEmail() != null) {
+            existingTrainee.setEmail(updatedTrainee.getEmail());
+        }
+        if (updatedTrainee.getPassword() != null) {
+            existingTrainee.setPassword(updatedTrainee.getPassword());
+        }
+        if (updatedTrainee.getGender() != null) {
+            existingTrainee.setGender(updatedTrainee.getGender());
+        }
+        if (updatedTrainee.getCompany() != null) {
+            existingTrainee.setCompany(updatedTrainee.getCompany());
+        }
+        if (updatedTrainee.getJobTitle() != null) {
+            existingTrainee.setJobTitle(updatedTrainee.getJobTitle());
+        }
+
+        // Add other fields as necessary
+
+        Trainee savedTrainee = traineeService.save(existingTrainee);
+        return ResponseEntity.ok(savedTrainee);
     }
+
 
     @DeleteMapping("/trainee/{id}")
     public ResponseEntity<String> deleteTrainee(@PathVariable Long id) {
