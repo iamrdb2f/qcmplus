@@ -6,10 +6,9 @@ import UserForm from '../UserForm/UserForm';
 import UserRow from '../UserRow/UserRow';
 import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
-import {deleteApiUser, getApiUser, postApiUser} from '../../utils/apiUtils';
+import {deleteApiUser, getApiUser, postApiUser} from '../../services/UserService';
 
 const UserList = ({ title , pageEndpoint }) => {
-    console.log(pageEndpoint)
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12);
@@ -21,8 +20,6 @@ const UserList = ({ title , pageEndpoint }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const API_ERROR_MESSAGE = 'There was an issue with your request.';
-
     const handleMessage = (setMessage, message, timeout = 3000) => {
         setMessage(message);
         setTimeout(() => setMessage(''), timeout);
@@ -32,18 +29,21 @@ const UserList = ({ title , pageEndpoint }) => {
         try {
             const response = await getApiUser(pageEndpoint);
             if (response.error) {
-                handleMessage(setErrorMessage, API_ERROR_MESSAGE);
+                handleMessage(setErrorMessage,
+                    'We encountered a problem while loading your data. Please try again later.');
                 return;
             }
             setUsers(response);
         } catch (error) {
-            console.error('Error while fetching users:', error);
+            handleMessage(setErrorMessage,
+                'Something unexpected happened. Could you try again later? If the issue persists, please contact supports.');
         }
     };
-
-    useEffect(() => {
-        fetchUsers();
-    }, [pageEndpoint]);
+    const handleSuccess = (msg) => {
+        setShowForm(false);
+        setSelectedUser(null);
+        handleMessage(setSuccessMessage, msg);
+    };
 
     const handleView = (user) => {
         setSelectedUser(user);
@@ -69,27 +69,16 @@ const UserList = ({ title , pageEndpoint }) => {
         setSelectedUser(null);
     };
 
-    const handleSaveUser = async (user) => {
-        const response = await postApiUser(`${pageEndpoint}/${user["userId"]}`, user);
-        if (response.error) {
-            handleMessage(setErrorMessage, 'Failed to save user.');
-        } else {
-            setUsers(users.map(u => (u["userId"] === response["userId"] ? response : u)));
-            setShowForm(false);
-            setSelectedUser(null);
-            handleMessage(setSuccessMessage, 'User updated successfully.');
-        }
-    };
 
     const handleConfirmDelete = async (userId) => {
         const response = await deleteApiUser(`${pageEndpoint}/${userId}`);
         if (response.error) {
-            handleMessage(setErrorMessage, 'Failed to delete user.');
+            setErrorMessage(response.message);
         } else {
             setUsers(users.filter((user) => user["userId"] !== userId));
             setShowDeleteConfirm(false);
             setSelectedUser(null);
-            handleMessage(setSuccessMessage, 'User deleted successfully.');
+            setSuccessMessage(response.message);
         }
     };
 
@@ -116,6 +105,11 @@ const UserList = ({ title , pageEndpoint }) => {
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
+
+    useEffect(() => {
+        fetchUsers();
+    }, [pageEndpoint, handleSuccess]);
+
 
     return (
         <Container fluid className="mb-5">
@@ -185,10 +179,11 @@ const UserList = ({ title , pageEndpoint }) => {
                 />
             )}
             <UserForm
+                pageEndpoint={pageEndpoint}
                 user={selectedUser}
                 show={showForm}
                 handleClose={handleCloseForm}
-                handleSave={handleSaveUser}
+                onSuccess={handleSuccess}
             />
             <DeleteConfirmation
                 show={showDeleteConfirm}

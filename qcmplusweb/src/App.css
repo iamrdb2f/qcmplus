@@ -8,7 +8,9 @@
   --bg-light-color: #fdfeff;
   --bg-warning-color: #fe5500;
   --bg-success-color: #5cb85c;
-  --bg-error-color: #d9534f;
+  --bg-danger-color: #d9534f;
+  --bg-danger-default-color: #e88987;
+  --bg-danger-active-color: #ba2622;
 
 
   --text-default-color: #434d66;

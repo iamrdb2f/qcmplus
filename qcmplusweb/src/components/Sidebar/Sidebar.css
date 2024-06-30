@@ -24,6 +24,20 @@
     color: white;
 }
 
+.sidebar-item:last-child {
+    background-color:  var(--bg-danger-default-color);
+}
+
+.sidebar-item:last-child:hover {
+    background-color:  var(--bg-danger-color);
+    color: white;
+}
+.sidebar-item:last-child:active {
+    background-color:  var(--bg-danger-active-color);
+    color: white;
+}
+
+
 .sidebar-icon {
     margin-right: 10px;
 }
