@@ -1,15 +1,10 @@
 package com.qcmplus.qcmplus.controller;
 
-
+import com.qcmplus.qcmplus.exception.TraineeEmailAlreadyInUseException;
+import com.qcmplus.qcmplus.exception.TraineeNotFoundException;
 import com.qcmplus.qcmplus.model.Trainee;
 import com.qcmplus.qcmplus.service.TraineeService;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,94 +12,134 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-class TraineeControllerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+public class TraineeControllerTest {
 
     @InjectMocks
-    TraineeController traineeController;
+    private TraineeController traineeController;
 
     @Mock
-    TraineeService traineeService;
+    private TraineeService traineeService;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-
-    private Trainee createTraineeObject() {
-        return new Trainee();
-    }
-
     @Test
-    void getAllTrainees() {
-        Trainee trainee = createTraineeObject();
-        when(traineeService.getAllTrainees()).thenReturn(Collections.singletonList(trainee));
+    public void testGetAllTrainees() {
+        List<Trainee> trainees = Arrays.asList(new Trainee(), new Trainee());
+        when(traineeService.getAllTrainees()).thenReturn(trainees);
+
         ResponseEntity<List<Trainee>> response = traineeController.getAllTrainees();
-        assertEquals(1, response.getBody().size());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).size());
         verify(traineeService, times(1)).getAllTrainees();
     }
 
     @Test
-    void createTrainee() {
-        Trainee trainee = createTraineeObject();
-        when(traineeService.saveTrainee(any(Trainee.class))).thenReturn(trainee);
-        ResponseEntity<Trainee> response = traineeController.createTrainee(trainee);
+    public void testGetTraineeById() {
+        Trainee trainee = new Trainee();
+        when(traineeService.getTraineeById(1L)).thenReturn(Optional.of(trainee));
+
+        ResponseEntity<Trainee> response = traineeController.getTraineeById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(trainee, response.getBody());
+        verify(traineeService, times(1)).getTraineeById(1L);
     }
 
     @Test
-    void getTraineeById() {
-        Trainee trainee = createTraineeObject();
-        Long id = 1L;
-        when(traineeService.getTraineeById(id)).thenReturn(Optional.of(trainee));
-        ResponseEntity<Optional<Trainee>> response = traineeController.getTraineeById(id);
-        assertEquals(trainee, response.getBody().get());
+    public void testGetTraineeById_NotFound() {
+        when(traineeService.getTraineeById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Trainee> response = traineeController.getTraineeById(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(traineeService, times(1)).getTraineeById(1L);
     }
 
     @Test
-    @DisplayName("Tests updating of a trainee")
-    void updateTraineeTest() {
-        // Introducing constants for readability
-        final Long TRAINEE_ID = 1L;
-        final String NEW_FIRST_NAME = "New Name";
+    public void testCreateTrainee() {
+        Trainee trainee = new Trainee();
+        when(traineeService.saveTrainee(any(Trainee.class))).thenReturn(trainee);
 
-        Trainee updatedTrainee = createTraineeObject();
-        updatedTrainee.setFirstName(NEW_FIRST_NAME);
+        ResponseEntity<Trainee> response = traineeController.createTrainee(trainee);
 
-        Trainee existingTrainee = new Trainee();
-        existingTrainee.setFirstName("Old Name");
-
-        given(traineeService.findById(anyLong())).willReturn(Optional.of(existingTrainee));
-        given(traineeService.save(existingTrainee)).willReturn(updatedTrainee);
-
-        ResponseEntity<Trainee> response = traineeController.updateTrainee(TRAINEE_ID, updatedTrainee);
-
-        Assertions.assertAll(
-                () -> Assertions.assertNotNull(response.getBody(), "Response body should not be null"),
-                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK"),
-                () -> assertEquals(updatedTrainee.getFirstName(), Objects.requireNonNull(response.getBody()).getFirstName(), "First names should match"),
-                () -> assertEquals(existingTrainee.getLastName(), Objects.requireNonNull(response.getBody()).getLastName(), "Last names should match"),
-                () -> assertEquals(existingTrainee.getEmail(), Objects.requireNonNull(response.getBody()).getEmail(), "Email addresses should match")
-                // Add more checks here as needed
-        );
-
-        verify(traineeService, times(1)).save(any(Trainee.class));
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(trainee, response.getBody());
+        verify(traineeService, times(1)).saveTrainee(trainee);
     }
 
     @Test
-    void deleteTrainee() {
-        Long id = 1L;
-        doNothing().when(traineeService).deleteTrainee(anyLong());
-        ResponseEntity<String> response = traineeController.deleteTrainee(id);
-        assertEquals("Trainee with id " + id + " deleted successfully", response.getBody());
+    public void testCreateTrainee_EmailAlreadyInUse() {
+        Trainee trainee = new Trainee();
+        doThrow(new TraineeEmailAlreadyInUseException("Email already in use")).when(traineeService).saveTrainee(any(Trainee.class));
+
+        ResponseEntity<Trainee> response = traineeController.createTrainee(trainee);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(traineeService, times(1)).saveTrainee(trainee);
+    }
+
+    @Test
+    public void testUpdateTrainee() {
+        Trainee trainee = new Trainee();
+        when(traineeService.updateTrainee(anyLong(), any(Trainee.class))).thenReturn(trainee);
+
+        ResponseEntity<?> response = traineeController.updateTrainee(1L, trainee);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(trainee, response.getBody());
+        verify(traineeService, times(1)).updateTrainee(1L, trainee);
+    }
+
+    @Test
+    public void testUpdateTrainee_EmailAlreadyInUse() {
+        Trainee trainee = new Trainee();
+        doThrow(new TraineeEmailAlreadyInUseException("Email already in use")).when(traineeService).updateTrainee(anyLong(), any(Trainee.class));
+
+        ResponseEntity<?> response = traineeController.updateTrainee(1L, trainee);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Email already in use", response.getBody());
+        verify(traineeService, times(1)).updateTrainee(1L, trainee);
+    }
+
+    @Test
+    public void testDeleteTrainee() {
+        when(traineeService.existsById(1L)).thenReturn(true);
+        doNothing().when(traineeService).deleteTrainee(1L);
+
+        ResponseEntity<String> response = traineeController.deleteTrainee(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(Objects.requireNonNull(response.getBody()).contains("Trainee with ID 1 deleted successfully"));
+        verify(traineeService, times(1)).existsById(1L);
+        verify(traineeService, times(1)).deleteTrainee(1L);
+    }
+
+    @Test
+    public void testDeleteTrainee_NotFound() {
+        when(traineeService.existsById(1L)).thenReturn(false);
+
+        try {
+            traineeController.deleteTrainee(1L);
+        } catch (TraineeNotFoundException e) {
+            assertEquals("Trainee with ID 1 not found.", e.getMessage());
+        }
+
+        verify(traineeService, times(1)).existsById(1L);
+        verify(traineeService, times(0)).deleteTrainee(1L);
     }
 }

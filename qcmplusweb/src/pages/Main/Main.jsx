@@ -4,6 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Main.css";
+import {AiFillWarning} from "react-icons/ai";
 
 const Main = () => {
     const [showUserList, setShowUserList] = useState(true);
@@ -25,17 +26,19 @@ const Main = () => {
             case 'Admin':
                 return <UserList title="Registered Trainer" pageEndpoint={selectedItem.toLowerCase()} />;
             case 'Exam':
-                return <h1>Exam</h1>;
+                return <h1><AiFillWarning />Exam</h1>;
             case 'Quizzes':
-                return <h1>Quizzes</h1>;
+                return <h1><AiFillWarning />Quizzes</h1>;
             case 'Questions':
-                return <h1>Questions</h1>;
+                return <h1><AiFillWarning />Questions</h1>;
             case 'Answers':
-                return <h1>Dashboard</h1>;
+                return <h1><AiFillWarning />Dashboard</h1>;
             case 'Features':
-                return <h1>Features</h1>;
+                return <h1><AiFillWarning />Features</h1>;
+            case 'Logout':
+                return <h1><AiFillWarning />Logout</h1>;
             default:
-                return <h1>Dashboard</h1>;
+                return <h1><AiFillWarning />Dashboard</h1>;
         }
     };
 

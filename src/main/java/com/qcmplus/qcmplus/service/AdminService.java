@@ -1,5 +1,7 @@
 package com.qcmplus.qcmplus.service;
 
+import com.qcmplus.qcmplus.exception.AdminEmailAlreadyInUseException;
+import com.qcmplus.qcmplus.exception.AdminNotFoundException;
 import com.qcmplus.qcmplus.model.Admin;
 import com.qcmplus.qcmplus.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,11 @@ public class AdminService {
         return adminRepository.findById(id);
     }
 
-    public Admin saveAdmin(Admin admin) throws Exception {
+    public boolean existsById(Long id) {
+        return adminRepository.existsById(id);
+    }
+
+    public Admin saveAdmin(Admin admin) {
         verifyEmail(admin);
         return adminRepository.save(admin);
     }
@@ -34,25 +40,26 @@ public class AdminService {
         adminRepository.deleteById(id);
     }
 
-    public Admin updateAdmin(Long id, Admin adminDetails) throws Exception {
-        Optional<Admin> optionalAdmin = adminRepository.findById(id);
-        if (optionalAdmin.isPresent()) {
-            Admin admin = optionalAdmin.get();
-            verifyEmail(admin);
-            admin.setLastName(adminDetails.getLastName());
-            admin.setFirstName(adminDetails.getFirstName());
-            admin.setEmail(adminDetails.getEmail());
-            admin.setPassword(adminDetails.getPassword());
-            return adminRepository.save(admin);
-        } else {
-            throw new Exception("Admin not found with id " + id);
-        }
+    public Admin updateAdmin(Long id, Admin adminDetails) {
+        // Verify if email is already in use by another admin
+        verifyEmail(adminDetails);
+
+        Admin admin = adminRepository.findById(id).orElseThrow(() -> new AdminNotFoundException(Math.toIntExact(id)));
+        admin.setFirstName(adminDetails.getFirstName());
+        admin.setLastName(adminDetails.getLastName());
+        admin.setEmail(adminDetails.getEmail());
+        admin.setUserRole(adminDetails.getUserRole());
+        admin.setGender(adminDetails.getGender());
+        admin.setCompany(adminDetails.getCompany());
+        admin.setJobTitle(adminDetails.getJobTitle());
+        admin.setPhoneNumber(adminDetails.getPhoneNumber());
+        return adminRepository.save(admin);
     }
 
-    void verifyEmail(Admin admin) throws Exception {
+    void verifyEmail(Admin admin) {
         Optional<Admin> existingAdmin = adminRepository.findByEmailAndUserIdNot(admin.getEmail(), admin.getUserId());
         if (existingAdmin.isPresent()) {
-            throw new Exception("Email " + admin.getEmail() + " is already in use by another user.");
+            throw new AdminEmailAlreadyInUseException(admin.getEmail());
         }
     }
 }

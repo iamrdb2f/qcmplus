@@ -1,11 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Col, Form, Modal, Row} from 'react-bootstrap';
+import {Alert, Button, Col, Form, Modal, Row} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import './UserForm.css';
+import {postApiUser} from "../../services/UserService";
 
-const UserForm = ({ show, handleClose, handleSave, user }) => {
+const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
     const [formData, setFormData] = useState(user || {});
     const [errors, setErrors] = useState({});
+    const [apiCallErrorMessage, setApiCallErrorMessage] = useState('');
+
+    const handleMessage = (setMessage, message, timeout = 3000) => {
+        setMessage(message);
+        setTimeout(() => setMessage(''), timeout);
+    };
 
     useEffect(() => {
         setFormData(user || {});
@@ -26,24 +33,38 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = validateForm();
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
         } else {
             setErrors({});
-            handleSave(formData);
+
+            try {
+                const response = await postApiUser(`${pageEndpoint}/${formData["userId"]}`, formData);
+                if (response.error) {
+                    handleMessage(setApiCallErrorMessage, response.message);
+
+                } else {
+                    onSuccess(pageEndpoint+' updated successfully.');
+                }
+            } catch (error) {
+                handleMessage(setApiCallErrorMessage, 'Something unexpected happened. Could you try again later? If the issue persists, please contact supports.');
+            }
         }
     };
 
     return (
         <Modal show={show} onHide={handleClose} centered size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>{user ? 'Update User' : 'Add User'}</Modal.Title>
+                <Modal.Title>{user ? 'Modify existing  '+pageEndpoint +' information' : 'Update User'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {apiCallErrorMessage && <Alert variant="danger" className={"mx-5 "}>{apiCallErrorMessage}</Alert>}
                 <Form onSubmit={handleSubmit}>
+                    <Form.Control type="hidden" name="userRole" value={user?.userRole }/>
                     <Row>
                         <Col>
                             <Form.Group controlId="formGender">
@@ -167,11 +188,9 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
                                 />
                             </Form.Group>
                         </Col>
-
                     </Row>
-
                     <Button type="submit" className="QcmPlusBtn w-100 mt-3">
-                        {user ? 'Update User' : 'Add User'}
+                        {user ? 'Update ' +user?.userRole.toLowerCase() : 'Update User'}
                     </Button>
                 </Form>
             </Modal.Body>
@@ -180,10 +199,11 @@ const UserForm = ({ show, handleClose, handleSave, user }) => {
 };
 
 UserForm.propTypes = {
+    pageEndpoint: PropTypes.string.isRequired,
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    handleSave: PropTypes.func.isRequired,
     user: PropTypes.object,
+    onSuccess: PropTypes.func.isRequired,
 };
 
 export default UserForm;

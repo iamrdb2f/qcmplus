@@ -1,20 +1,21 @@
 package com.qcmplus.qcmplus.controller;
 
+import com.qcmplus.qcmplus.exception.TraineeEmailAlreadyInUseException;
+import com.qcmplus.qcmplus.exception.TraineeNotFoundException;
 import com.qcmplus.qcmplus.model.Trainee;
 import com.qcmplus.qcmplus.service.TraineeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/trainee") // New request mapping at the controller level.
 public class TraineeController {
+
     private final TraineeService traineeService;
 
     @Autowired
@@ -22,61 +23,46 @@ public class TraineeController {
         this.traineeService = traineeService;
     }
 
-    @GetMapping("/trainee")
+    @GetMapping
     public ResponseEntity<List<Trainee>> getAllTrainees() {
-        return ResponseEntity.ok(traineeService.getAllTrainees());
+        return new ResponseEntity<>(traineeService.getAllTrainees(), HttpStatus.OK);
     }
 
-    @PostMapping("/trainee")
+    @GetMapping("/{id}")
+    public ResponseEntity<Trainee> getTraineeById(@PathVariable Long id) {
+        Optional<Trainee> trainee = traineeService.getTraineeById(id);
+        return trainee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
     public ResponseEntity<Trainee> createTrainee(@RequestBody Trainee trainee) {
-        return ResponseEntity.ok(traineeService.saveTrainee(trainee));
+        try {
+            Trainee savedTrainee = traineeService.saveTrainee(trainee);
+            return new ResponseEntity<>(savedTrainee, HttpStatus.CREATED);
+        } catch (TraineeEmailAlreadyInUseException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @GetMapping("/trainee/{id}")
-    public ResponseEntity<Optional<Trainee>> getTraineeById(@PathVariable Long id) {
-        return ResponseEntity.ok(traineeService.getTraineeById(id));
+    @PostMapping("/{id}")
+    public ResponseEntity<?> updateTrainee(@PathVariable Long id, @RequestBody Trainee traineeDetails) {
+        try {
+            Trainee updatedTrainee = traineeService.updateTrainee(id, traineeDetails);
+            return ResponseEntity.ok(updatedTrainee);
+        } catch (TraineeEmailAlreadyInUseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
     }
 
-    @PostMapping("/trainee/{id}")
-    public ResponseEntity<Trainee> updateTrainee(@PathVariable Long id, @RequestBody Trainee updatedTrainee) {
-        Optional<Trainee> optionalTrainee = traineeService.findById(id);
-        if (optionalTrainee.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        Trainee existingTrainee = optionalTrainee.get();
-
-        if (updatedTrainee.getFirstName() != null) {
-            existingTrainee.setFirstName(updatedTrainee.getFirstName());
-        }
-        if (updatedTrainee.getLastName() != null) {
-            existingTrainee.setLastName(updatedTrainee.getLastName());
-        }
-        if (updatedTrainee.getEmail() != null) {
-            existingTrainee.setEmail(updatedTrainee.getEmail());
-        }
-        if (updatedTrainee.getPassword() != null) {
-            existingTrainee.setPassword(updatedTrainee.getPassword());
-        }
-        if (updatedTrainee.getGender() != null) {
-            existingTrainee.setGender(updatedTrainee.getGender());
-        }
-        if (updatedTrainee.getCompany() != null) {
-            existingTrainee.setCompany(updatedTrainee.getCompany());
-        }
-        if (updatedTrainee.getJobTitle() != null) {
-            existingTrainee.setJobTitle(updatedTrainee.getJobTitle());
-        }
-
-        // Add other fields as necessary
-
-        Trainee savedTrainee = traineeService.save(existingTrainee);
-        return ResponseEntity.ok(savedTrainee);
-    }
-
-
-    @DeleteMapping("/trainee/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTrainee(@PathVariable Long id) {
-        traineeService.deleteTrainee(id);
-        return ResponseEntity.ok("Trainee with id " + id + " deleted successfully");
+        if(traineeService.existsById(id)) {
+            traineeService.deleteTrainee(id);
+            return new ResponseEntity<>("Trainee with ID " + id + " deleted successfully", HttpStatus.OK);
+        } else {
+            throw new TraineeNotFoundException(Math.toIntExact(id));
+        }
     }
 }
