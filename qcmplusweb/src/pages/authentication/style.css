@@ -7,11 +7,6 @@
 /* =========== Sign In ================== */
 
 
-
-
-
-
-
 /* =========== Sign Up ================== */
 
 .content_signup {
@@ -37,7 +32,7 @@
 .content_left .picture1 {
     display: flex;
     margin: auto;
-     width: 50%;
+    width: 50%;
     padding-top: 20px;
 }
 
@@ -114,25 +109,18 @@
 }
 
 .form-container .form-submit-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: inherit;
-    color: #04A8FF;
-    background-color: #DEF4FE;
-    border: none;
-    width: 100%;
-    padding: 12px 16px;
-    font-size: inherit;
-    gap: 8px;
-    margin: 12px 0;
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+    font-weight: bold;
+    padding: 10px 70px;
+    border-radius: 5px;
     cursor: pointer;
-    border-radius: 6px;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
 }
 
 .form-container .form-submit-btn:hover {
-    background-color: #313131;
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
 }
 
 .form-container .link {
@@ -157,8 +145,6 @@
 
 
 /* =========== Forget Password ================== */
-
-
 
 
 /* =========== Forget Password ================== */
