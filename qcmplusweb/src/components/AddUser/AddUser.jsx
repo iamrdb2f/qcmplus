@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddUser.css';
-import {Alert, Button, Col, Container, Form, Row} from 'react-bootstrap';
+import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { postApiUser } from "../../services/UserService";
 
-const AddUser = ({pageEndpoint}) => {
-    console.log(`http://localhost:8080/${pageEndpoint}`)
+const AddUser = ({ pageEndpoint }) => {
     const initialUserState = {
         firstName: '',
         lastName: '',
@@ -17,7 +17,7 @@ const AddUser = ({pageEndpoint}) => {
     };
 
     const labels = {
-        title: 'Register User',
+        title: 'Register ' + pageEndpoint,
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email Address',
@@ -32,6 +32,16 @@ const AddUser = ({pageEndpoint}) => {
     const [users, setUsers] = useState([initialUserState]);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const getUserRole = pageEndpoint === "admin" ? "ADMIN" : "TRAINEE";
+
+
+    useEffect(() => {
+        setUsers(prevUsers => {
+            const updatedUsers = [...prevUsers];
+            updatedUsers[0].userRole = getUserRole;
+            return updatedUsers;
+        });
+    }, [pageEndpoint]);
 
     const handleChange = (index, e) => {
         const { name, value } = e.target;
@@ -45,7 +55,7 @@ const AddUser = ({pageEndpoint}) => {
     const validateForm = () => {
         for (const user of users) {
             for (const key in user) {
-                if (user[key] === '') {
+                if (user[key] === '' || user[key] === null || user[key] === undefined) {
                     return false;
                 }
             }
@@ -60,43 +70,27 @@ const AddUser = ({pageEndpoint}) => {
             setSuccessMessage('');
             return;
         }
-        try {
-            const response = await fetch(`http://localhost:8080/${pageEndpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(users[0]),
-            });
 
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('Network response was not ok', response.status, response.statusText, text);
-                setErrorMessage(`Error: ${response.status} ${response.statusText}`);
-                setSuccessMessage('');
-                return;
-            }
-
-            const newUser = await response.json();
-            console.log('Trainee added successfully:', newUser);
+        const response = await postApiUser(pageEndpoint, users[0]);
+        if (response.error) {
+            setErrorMessage(`Error: ${response.message}`);
+            setSuccessMessage('');
+        } else {
             setUsers([initialUserState]);
             setErrorMessage('');
-            setSuccessMessage('User added successfully!');
-
-        } catch (error) {
-            console.error('There was an error adding the trainee:', error);
-            setErrorMessage('There was an error adding the trainee. Please try again later.');
-            setSuccessMessage('');
+            setSuccessMessage(`${pageEndpoint} added successfully!`);
         }
     };
 
     const renderUserForm = (user, index) => (
         <div key={index} className="mb-4">
+            <input type="hidden" name="userRole" value={getUserRole}/>
             <Row>
                 <Col>
                     <Form.Group controlId={`gender-${index}`}>
                         <Form.Label>{labels.gender}</Form.Label>
-                        <Form.Control as="select" name="gender" value={user.gender} onChange={(e) => handleChange(index, e)}>
+                        <Form.Control as="select" name="gender" value={user.gender}
+                                      onChange={(e) => handleChange(index, e)}>
                             <option value="">Select Gender</option>
                             <option value="F">Female</option>
                             <option value="M">Male</option>
@@ -106,13 +100,15 @@ const AddUser = ({pageEndpoint}) => {
                 <Col>
                     <Form.Group controlId={`firstName-${index}`}>
                         <Form.Label>{labels.firstName}</Form.Label>
-                        <Form.Control type="text" name="firstName" value={user.firstName} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="text" name="firstName" value={user.firstName}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
                 <Col>
                     <Form.Group controlId={`lastName-${index}`}>
                         <Form.Label>{labels.lastName}</Form.Label>
-                        <Form.Control type="text" name="lastName" value={user.lastName} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="text" name="lastName" value={user.lastName}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
             </Row>
@@ -120,13 +116,15 @@ const AddUser = ({pageEndpoint}) => {
                 <Col>
                     <Form.Group controlId={`email-${index}`}>
                         <Form.Label>{labels.email}</Form.Label>
-                        <Form.Control type="email" name="email" value={user.email} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="email" name="email" value={user.email}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
                 <Col>
                     <Form.Group controlId={`password-${index}`}>
                         <Form.Label>{labels.password}</Form.Label>
-                        <Form.Control type="password" name="password" value={user.password} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="password" name="password" value={user.password}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
             </Row>
@@ -134,19 +132,22 @@ const AddUser = ({pageEndpoint}) => {
                 <Col>
                     <Form.Group controlId={`phoneNumber-${index}`}>
                         <Form.Label>{labels.phoneNumber}</Form.Label>
-                        <Form.Control type="text" name="phoneNumber" value={user.phoneNumber} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="text" name="phoneNumber" value={user.phoneNumber}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
                 <Col>
                     <Form.Group controlId={`jobTitle-${index}`}>
                         <Form.Label>{labels.jobTitle}</Form.Label>
-                        <Form.Control type="text" name="jobTitle" value={user.jobTitle} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="text" name="jobTitle" value={user.jobTitle}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
                 <Col>
                     <Form.Group controlId={`company-${index}`}>
                         <Form.Label>{labels.company}</Form.Label>
-                        <Form.Control type="text" name="company" value={user.company} onChange={(e) => handleChange(index, e)} />
+                        <Form.Control type="text" name="company" value={user.company}
+                                      onChange={(e) => handleChange(index, e)}/>
                     </Form.Group>
                 </Col>
             </Row>

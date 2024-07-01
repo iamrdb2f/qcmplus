@@ -12,6 +12,7 @@ import {
 import './Sidebar.css';
 import ImgLogo from "../ImgLogo/ImgLogo";
 import {Container, ListGroup, Row} from "react-bootstrap";
+import {IoMdLogOut} from "react-icons/io";
 
 const Sidebar = ({ onItemClick, selectedItem }) => {
     return (
@@ -76,6 +77,13 @@ const Sidebar = ({ onItemClick, selectedItem }) => {
                     <FaRegStar className="sidebar-icon" />
                     <span>Features</span>
                     <span className="new-badge">NEW</span>
+                </ListGroup.Item>
+                <ListGroup.Item
+                    className={`sidebar-item logout-btn mt-5 ${selectedItem === 'Logout'}`}
+                    onClick={() => onItemClick('Logout')}
+                >
+                    <IoMdLogOut className="sidebar-icon" />
+                    <span>Log Out</span>
                 </ListGroup.Item>
             </ListGroup>
         </Container>

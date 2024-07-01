@@ -44,4 +44,6 @@ public abstract class User {
     @JsonProperty("userRole")
     @Column(name = "user_role", insertable = false, updatable = false)
     private String userRole;
+
+
 }
