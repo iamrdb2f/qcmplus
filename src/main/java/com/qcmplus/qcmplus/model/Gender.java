@@ -1,5 +1,16 @@
 package com.qcmplus.qcmplus.model;
 
 public enum Gender {
-    M, F
+    MALE("Male"),
+    FEMALE("Female");
+
+    private final String value;
+
+    Gender(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
 }
