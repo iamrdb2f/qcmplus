@@ -7,6 +7,7 @@ import com.qcmplus.qcmplus.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,9 @@ public class UserService {
     public User saveUser(User user) {
         if (user.getId() != null) {
             verifyEmail(user);
+            if (!user.isActive()) {
+                user.setActive(true);
+            }
         }
         return userRepository.save(user);
     }
@@ -43,10 +47,9 @@ public class UserService {
     }
 
     public User updateUser(Integer id, User userDetails) {
-        // Verify if email is already in use by another user
-        verifyEmail(userDetails);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
 
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(Math.toIntExact(id)));
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
         user.setEmail(userDetails.getEmail());
@@ -55,15 +58,19 @@ public class UserService {
         user.setCompany(userDetails.getCompany());
         user.setJobTitle(userDetails.getJobTitle());
         user.setPhoneNumber(userDetails.getPhoneNumber());
+        user.setActive(userDetails.isActive());
+        user.setCreatedDate(userDetails.getCreatedDate() != null ? userDetails.getCreatedDate() : new Timestamp(System.currentTimeMillis()));
+
+        verifyEmail(user);
+
         return userRepository.save(user);
     }
 
-    void verifyEmail(User user) {
-        if (user.getEmail() != null) {
-            Optional<User> existingUser = userRepository.findByEmailAndIdNot(user.getEmail(), user.getId());
-            if (existingUser.isPresent()) {
-                throw new UserEmailAlreadyInUseException(user.getEmail());
-            }
+    private void verifyEmail(User user) {
+        Optional<User> existingUser = userRepository.findByEmailAndIdNot(user.getEmail(), user.getId());
+        if (existingUser.isPresent()) {
+            throw new UserEmailAlreadyInUseException("Email already in use: " + user.getEmail());
         }
     }
+
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Alert, Col, Container, Form, Pagination, Row, Table} from 'react-bootstrap';
 import PropTypes from "prop-types";
 import UserProfile from '../UserProfile/UserProfile';
@@ -6,48 +6,72 @@ import UserForm from '../UserForm/UserForm';
 import UserRow from '../UserRow/UserRow';
 import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
-import {deleteApiUser, getApiUser, postApiUser} from '../../services/UserService';
+import {handleApiError, removeUser, retrieveUser} from '../../services/UserService';
 
-const UserList = ({ title , pageEndpoint }) => {
+function displayErrorMessage(setAlertMessage, messageText) {
+    setAlertMessage(messageText);
+    setTimeout(() => setAlertMessage(''), 3000); // Clear the alert message after 3 seconds
+}
+
+function useUserState(userRole) {
     const [users, setUsers] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12);
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
+
+    const fetchAndGetUsers = useCallback(async () => {
+        try {
+            const response = await retrieveUser();
+            if (response.error) {
+                displayErrorMessage(setAlertMessage, handleApiError().message);
+                return;
+            }
+            const filteredUsers = response.filter(user => user.role === userRole);
+            setUsers(filteredUsers);
+        } catch (error) {
+            displayErrorMessage(setAlertMessage, handleApiError().message);
+        }
+    }, [userRole]);
+
+    const handleDeleteUser = async (userId) => {
+        const response = await removeUser(userId);
+        if (response.error) {
+            return response.message;
+        }
+        setUsers(users.filter((user) => user.id !== userId));
+        return response.message;
+    };
+
+    useEffect(() => {
+        fetchAndGetUsers();
+    }, [fetchAndGetUsers]); // Call fetchAndGetUsers only when userRole changes
+
+    return { users, selectedUser, setSelectedUser, fetchAndGetUsers, handleDeleteUser, alertMessage, setAlertMessage };
+}
+
+const UserList = ({ title, userRole }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
     const [showProfile, setShowProfile] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const {
+        users,
+        selectedUser,
+        setSelectedUser,
+        fetchAndGetUsers,
+        handleDeleteUser,
+        alertMessage,
+        setAlertMessage
+    } = useUserState(userRole);
 
-    const handleMessage = (setMessage, message, timeout = 3000) => {
-        setMessage(message);
-        setTimeout(() => setMessage(''), timeout);
-    };
 
-    const fetchUsers = async () => {
-        try {
-            const response = await getApiUser(pageEndpoint);
-            if (response.error) {
-                handleMessage(setErrorMessage,
-                    'We encountered a problem while loading your data. Please try again later.');
-                return;
-            }
-            setUsers(response);
-        } catch (error) {
-            handleMessage(setErrorMessage,
-                'Something unexpected happened. Could you try again later? If the issue persists, please contact supports.');
-        }
-    };
-    const handleSuccess = (msg) => {
+    const onSuccessMessage = (msg) => {
+        fetchAndGetUsers();
         setShowForm(false);
         setSelectedUser(null);
-        handleMessage(setSuccessMessage, msg);
-    };
-
-    const handleView = (user) => {
-        setSelectedUser(user);
-        setShowProfile(true);
+        setSuccessMessage(msg);
+        setTimeout(() => setSuccessMessage(''), 3000);
     };
 
     const handleUpdate = (user) => {
@@ -65,21 +89,14 @@ const UserList = ({ title , pageEndpoint }) => {
     };
 
     const handleCloseProfile = () => {
-        setShowProfile(false);
+        setAlertMessage('');
         setSelectedUser(null);
+        setShowProfile(false);
     };
 
-
-    const handleConfirmDelete = async (userId) => {
-        const response = await deleteApiUser(`${pageEndpoint}/${userId}`);
-        if (response.error) {
-            setErrorMessage(response.message);
-        } else {
-            setUsers(users.filter((user) => user["userId"] !== userId));
-            setShowDeleteConfirm(false);
-            setSelectedUser(null);
-            setSuccessMessage(response.message);
-        }
+    const handleView = (user) => {
+        setSelectedUser(user);
+        setShowProfile(true);
     };
 
     const handleCloseForm = () => {
@@ -92,24 +109,30 @@ const UserList = ({ title , pageEndpoint }) => {
         setSelectedUser(null);
     };
 
+    const handleConfirmDelete = async (userId) => {
+        const message = await handleDeleteUser(userId);
+        setSuccessMessage(message);
+        setShowDeleteConfirm(false);
+    };
+
+    // filter users based on search term and paginate the results
     const filteredUsers = users.filter(user =>
         (user.firstName && user.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (user.lastName && user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-
-    const indexOfLastUser = currentPage * itemsPerPage;
-    const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+    const indexOfLastUser = currentPage * 12;
+    const indexOfFirstUser = indexOfLastUser - 12;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredUsers.length / 12);
+
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
     useEffect(() => {
-        fetchUsers();
-    }, [pageEndpoint, handleSuccess]);
-
+        setCurrentPage(1);
+    }, [userRole]);
 
     return (
         <Container fluid className="mb-5">
@@ -128,8 +151,10 @@ const UserList = ({ title , pageEndpoint }) => {
                     </div>
                 </Col>
             </Row>
-            {successMessage && <Alert variant="success">{successMessage}</Alert>}
-            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
+            {alertMessage && <Alert variant="danger" className={"text-center"}>{alertMessage}</Alert>}
+            {successMessage && <Alert variant="success" className={"text-center"}>{successMessage}</Alert>}
+
             <Table striped bordered hover>
                 <thead>
                 <tr>
@@ -138,16 +163,17 @@ const UserList = ({ title , pageEndpoint }) => {
                     <th>Last Name</th>
                     <th>Gender</th>
                     <th>Phone Number</th>
-                    <th className="d-none d-md-table-cell">Email</th>
+                    <th>Email</th>
                     <th>Job Title</th>
-                    <th>Company</th>
+                    <th className="d-none d-md-table-cell">Company</th>
+                    <th>Active</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {currentUsers.map((user, index) => (
                     <UserRow
-                        key={user["userId"] || index}
+                        key={user.id || index}
                         user={{ ...user, index: indexOfFirstUser + index }}
                         onView={handleView}
                         onUpdate={handleUpdate}
@@ -169,7 +195,7 @@ const UserList = ({ title , pageEndpoint }) => {
                     ))}
                 </Pagination>
             ) : (
-                <p>No users to display</p>
+                <p className={"text-center"}>No users to display</p>
             )}
             {selectedUser && (
                 <UserProfile
@@ -179,16 +205,17 @@ const UserList = ({ title , pageEndpoint }) => {
                 />
             )}
             <UserForm
-                pageEndpoint={pageEndpoint}
                 user={selectedUser}
                 show={showForm}
                 handleClose={handleCloseForm}
-                onSuccess={handleSuccess}
+                onSuccess={onSuccessMessage}
+                pageEndpoint="user"
             />
+
             <DeleteConfirmation
                 show={showDeleteConfirm}
                 handleClose={handleCloseDeleteConfirm}
-                handleConfirm={() => handleConfirmDelete(selectedUser["userId"])}
+                handleConfirm={() => handleConfirmDelete(selectedUser.id)}
                 user={selectedUser}
             />
         </Container>
@@ -197,6 +224,7 @@ const UserList = ({ title , pageEndpoint }) => {
 
 UserList.propTypes = {
     title: PropTypes.string,
+    userRole: PropTypes.string.isRequired,
 };
 
 export default UserList;

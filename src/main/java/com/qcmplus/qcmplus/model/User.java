@@ -67,9 +67,11 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @JsonProperty("isActive")
     @Column(name = "is_active")
     private boolean isActive;
 
+    @JsonProperty("createdDate")
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -77,5 +79,14 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdDate = new Timestamp(System.currentTimeMillis());
+        isActive = true;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 }

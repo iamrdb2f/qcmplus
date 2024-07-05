@@ -1,11 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Button, Col, Form, Modal, Row} from 'react-bootstrap';
+import {Alert, Badge, Button, Col, Form, Modal, Row} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import './UserForm.css';
-import {postApiUser} from "../../services/UserService";
+import {addOrUpdateUser, GENDER, ROLE} from "../../services/UserService";
+import {USERFORM_TEXTS} from "./UserFormText";
+import {validateForm} from '../../utils/FormValidation';
 
-const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
-    const [formData, setFormData] = useState(user || {});
+
+const UserForm = ({show, handleClose, user, onSuccess}) => {
+    const initialFormData = {
+        ...user,
+        isActive: user?.isActive ?? true,
+        createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
     const [apiCallErrorMessage, setApiCallErrorMessage] = useState('');
 
@@ -15,27 +24,26 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
     };
 
     useEffect(() => {
-        setFormData(user || {});
-    }, [user]);
+        if (!show) {
+            setFormData(initialFormData);  // Reset form data to initial state
+            setErrors({});  // Clear validation errors
+        } else {
+            setFormData({
+                ...user,
+                isActive: user?.isActive ?? true,
+                createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+            });
+        }
+    }, [show, user]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.firstName) newErrors.firstName = 'First name is required';
-        if (!formData.lastName) newErrors.lastName = 'Last name is required';
-        if (!formData.email) newErrors.email = 'Email is required';
-        if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
-        if (!formData.gender) newErrors.gender = 'Gender is required';
-        return newErrors;
+        const {name, value, type, checked} = e.target;
+        setFormData(prevState => ({...prevState, [name]: type === 'checkbox' ? checked : value}));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = validateForm();
+        const newErrors = validateForm(formData);
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -43,15 +51,14 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
             setErrors({});
 
             try {
-                const response = await postApiUser(`${pageEndpoint}/${formData["userId"]}`, formData);
+                const response = await addOrUpdateUser(user.id, formData);
                 if (response.error) {
                     handleMessage(setApiCallErrorMessage, response.message);
-
                 } else {
-                    onSuccess(pageEndpoint+' updated successfully.');
+                    onSuccess(USERFORM_TEXTS.updateUserSuccess);
                 }
             } catch (error) {
-                handleMessage(setApiCallErrorMessage, 'Something unexpected happened. Could you try again later? If the issue persists, please contact supports.');
+                handleMessage(setApiCallErrorMessage, USERFORM_TEXTS.unexpectedError);
             }
         }
     };
@@ -59,12 +66,66 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
     return (
         <Modal show={show} onHide={handleClose} centered size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>{user ? 'Modify existing  '+pageEndpoint +' information' : 'Update User'}</Modal.Title>
+                <Modal.Title>{'Modify existing User information'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {apiCallErrorMessage && <Alert variant="danger" className={"mx-5 "}>{apiCallErrorMessage}</Alert>}
+                {apiCallErrorMessage && <Alert variant="danger" className="mx-5 ">{apiCallErrorMessage}</Alert>}
                 <Form onSubmit={handleSubmit}>
-                    <Form.Control type="hidden" name="userRole" value={user?.userRole }/>
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formRole">
+                                <Form.Label>Role</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    name="role"
+                                    value={formData.role || ''}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.role}
+                                >
+                                    <option value="">Select Role</option>
+                                    <option value={ROLE.ADMIN} selected={formData.role === ROLE.ADMIN}>Administrator
+                                    </option>
+                                    <option value={ROLE.TRAINEE} selected={formData.role === ROLE.TRAINEE}>Trainee
+                                    </option>
+                                </Form.Control>
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.role}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formIsActive">
+                                <Form.Label>Active User</Form.Label>
+                                <Form.Check
+                                    type="checkbox"
+                                    name="isActive"
+                                    label={
+                                        <Badge pill bg={formData.isActive ? "success" : "secondary"}
+                                               className="status-badge">
+                                            {formData.isActive ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    }
+                                    checked={formData.isActive}
+                                    onChange={(e) => setFormData(prevState => ({
+                                        ...prevState,
+                                        isActive: e.target.checked
+                                    }))}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group controlId="formCreatedDate">
+                                <Form.Label>Created Date</Form.Label>
+                                <Form.Control
+                                    type="datetime-local"
+                                    name="createdDate"
+                                    value={formData.createdDate || new Date().toISOString().slice(0, 16)}
+                                    onChange={handleChange}
+                                    disabled
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
                     <Row>
                         <Col>
                             <Form.Group controlId="formGender">
@@ -77,8 +138,10 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
                                     isInvalid={!!errors.gender}
                                 >
                                     <option value="">Select Gender</option>
-                                    <option value="F">Female</option>
-                                    <option value="M">Male</option>
+                                    <option value={GENDER.FEMALE}
+                                            selected={formData.gender === GENDER.FEMALE}>{GENDER.FEMALE}</option>
+                                    <option value={GENDER.MALE}
+                                            selected={formData.gender === GENDER.MALE}>{GENDER.MALE}</option>
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
                                     {errors.gender}
@@ -153,7 +216,7 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
                             <Form.Group controlId="formPhoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    type=""
                                     name="phoneNumber"
                                     value={formData.phoneNumber || ''}
                                     onChange={handleChange}
@@ -189,9 +252,7 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Button type="submit" className="QcmPlusBtn w-100 mt-3">
-                        {user ? 'Update ' +user?.userRole.toLowerCase() : 'Update User'}
-                    </Button>
+                    <Button type="submit" className="QcmPlusBtn w-100 mt-3">{USERFORM_TEXTS.updateSubmitBtn}</Button>
                 </Form>
             </Modal.Body>
         </Modal>
@@ -199,7 +260,6 @@ const UserForm = ({ show, handleClose, user, onSuccess, pageEndpoint }) => {
 };
 
 UserForm.propTypes = {
-    pageEndpoint: PropTypes.string.isRequired,
     show: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     user: PropTypes.object,

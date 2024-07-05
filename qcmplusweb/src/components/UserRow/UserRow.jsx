@@ -1,5 +1,5 @@
 import React from "react";
-import {Button} from "react-bootstrap";
+import {Badge, Button} from "react-bootstrap";
 import PropTypes from "prop-types";
 
 const UserRow = ({ user, onView, onUpdate, onDelete }) => (
@@ -9,9 +9,14 @@ const UserRow = ({ user, onView, onUpdate, onDelete }) => (
         <td>{user.lastName || 'N/A'}</td>
         <td>{user.gender || 'N/A'}</td>
         <td>{user.phoneNumber || 'N/A'}</td>
-        <td className="d-none d-md-table-cell">{user.email || 'N/A'}</td>
+        <td>{user.email || 'N/A'}</td>
         <td>{user.jobTitle || 'N/A'}</td>
-        <td>{user.company || 'N/A'}</td>
+        <td className="d-none d-md-table-cell">{user.company || 'N/A'}</td>
+        <td>
+            <Badge pill bg={user.isActive ? "success" : "secondary"} className="status-badge">
+                {user.isActive ? 'Active' : 'Inactive'}
+            </Badge>
+        </td>
         <td>
             <Button variant="success" size="sm" onClick={() => onView(user)}>View</Button>
             <Button variant="warning" size="sm" onClick={() => onUpdate(user)} className="ms-2">Update</Button>
