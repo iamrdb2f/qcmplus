@@ -17,21 +17,27 @@ const UserProfile = ({ show, handleClose, user }) => {
                             <div className="position-relative d-inline-block">
                                 <FaUser className="user-icon" size={150} />
                                 <span className="gender-icon position-absolute top-0 start-100 translate-middle">
-                                    <i className={`fas ${user.gender === 'M' ? FaMars : FaVenus} fa-2x`}></i>
+                                    {user.gender === 'MALE' ? <FaMars size={24} /> : <FaVenus size={24} />}
                                 </span>
                             </div>
                         </div>
                         <ListGroup variant="flush">
                             <ListGroup.Item className="center-text"><strong>First Name:</strong> {user.firstName}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Last Name:</strong> {user.lastName}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Gender:</strong> {user.gender}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Email:</strong> {user.email}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Phone Number:</strong> {user.phoneNumber}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Job Title:</strong> {user.jobTitle}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Company:</strong> {user.company}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Role:</strong>
-                                <Badge bg={user.userRole === 'Admin' ? 'primary' : 'secondary'} className="ms-2">{user.userRole}</Badge>
+                                <Badge bg={user.role === 'ADMIN' ? 'primary' : 'secondary'} className="ms-2">{user.role}</Badge>
                             </ListGroup.Item>
-                            <ListGroup.Item className="center-text"><strong>Gender:</strong> {user.gender}</ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Status:</strong>
+                                <Badge bg={user.isActive ? 'success' : 'secondary'} className="ms-2">
+                                    {user.isActive ? 'Active' : 'Inactive'}
+                                </Badge>
+                            </ListGroup.Item>
+                            <ListGroup.Item className="center-text"><strong>Created Date:</strong> {new Date(user.createdDate).toLocaleDateString()}</ListGroup.Item>
                         </ListGroup>
                     </div>
                 ) : (
@@ -39,7 +45,7 @@ const UserProfile = ({ show, handleClose, user }) => {
                 )}
             </Modal.Body>
             <Modal.Footer className="justify-content-center">
-                <Button className={"QcmPlusBtn"} onClick={handleClose}>
+                <Button className="QcmPlusBtn" onClick={handleClose}>
                     Close
                 </Button>
             </Modal.Footer>

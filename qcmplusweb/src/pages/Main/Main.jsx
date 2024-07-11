@@ -3,6 +3,7 @@ import {Button, Col, Container, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
+import {ROLE} from "../../services/UserService";
 import "./Main.css";
 import {AiFillWarning} from "react-icons/ai";
 
@@ -17,14 +18,14 @@ const Main = () => {
 
     const renderContent = () => {
         if (!showUserList) {
-            return  <AddUser pageEndpoint={selectedItem === 'Admin' ? 'admin' : 'trainee'}/>;
+            return  <AddUser/>;
         }
 
         switch (selectedItem) {
             case 'Trainee':
-                return <UserList title="Registered Trainee" pageEndpoint={selectedItem.toLowerCase()} />;
+                return <UserList title="Registered Trainee" userRole={ROLE.TRAINEE} />;
             case 'Admin':
-                return <UserList title="Registered Trainer" pageEndpoint={selectedItem.toLowerCase()} />;
+                return <UserList title="Registered Administrator" userRole={ROLE.ADMIN} />;
             case 'Exam':
                 return <h1><AiFillWarning />Exam</h1>;
             case 'Quizzes':
