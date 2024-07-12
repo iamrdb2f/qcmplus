@@ -1,5 +1,5 @@
-package com.pmn.qcmplus.WebConfig;
-
+package com.pmn.qcmplus.config;
+/*
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -23,3 +23,5 @@ public class WebConfig {
     }
 }
 
+
+ */

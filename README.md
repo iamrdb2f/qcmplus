@@ -30,7 +30,7 @@ Le projet est organisé en plusieurs répertoires et fichiers :
     ├── src
     │ ├── main
     │ │ └── java
-    │ │ └── com.qcmplus.qcmplus
+    │ │ └── com.pmn.qcmplus
     │ │ ├── controller
     │ │ ├── model
     │ │ ├── repository
@@ -51,7 +51,7 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 ### Répertoires et Fichiers Clés
 
 - **qcmplus/qcmplusweb** : Contient le projet frontend web développé avec React.
-- **src/main/java/com.qcmplus.qcmplus** : Contient les fichiers source Java principaux organisés en packages `controller`, `model`, `repository` et `service`.
+- **src/main/java/com.pmn.qcmplus** : Contient les fichiers source Java principaux organisés en packages `controller`, `model`, `repository` et `service`.
 - **src/test** : Contient les cas de test de l'application.
 - **docker-compose.yml** : Définit les services Docker pour l'application.
 - **Dockerfile** : Dockerfile pour construire l'image de l'application.
