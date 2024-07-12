@@ -4,9 +4,9 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/";
 
-const getApiUser = async (endpoint) => {
+const getApiUser = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}${endpoint}`);
+        const response = await axios.get(`${API_BASE_URL}api/users`);
         return response.data || {};
     } catch (error) {
         console.error('getApiUser: There was an issue with your request.', error);

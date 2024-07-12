@@ -27,7 +27,7 @@ const UserList = ({ title , pageEndpoint }) => {
 
     const fetchUsers = async () => {
         try {
-            const response = await getApiUser(pageEndpoint);
+            const response = await getApiUser();
             if (response.error) {
                 handleMessage(setErrorMessage,
                     'We encountered a problem while loading your data. Please try again later.');
