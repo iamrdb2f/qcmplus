@@ -1,5 +1,6 @@
 package com.pmn.qcmplus.config;
 
+/*
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,3 +46,4 @@ public class SpringSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
+*/

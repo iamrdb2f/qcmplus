@@ -1,5 +1,5 @@
 package com.pmn.qcmplus.security;
-
+/*
 import com.pmn.qcmplus.model.User;
 import com.pmn.qcmplus.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -35,3 +35,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 }
+
+ */

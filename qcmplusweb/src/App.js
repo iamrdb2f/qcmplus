@@ -4,8 +4,6 @@ import Home from './pages/Home/Home';
 import Signin from './pages/Signin/Signin';
 import Signup from './pages/Signup/Signup';
 import Forgetpassword from './pages/Forgetpassword/Forgetpassword';
-import Main from './pages/Main/Main';
-import PrivateRoute from './PrivateRoute';
 import {AuthProvider} from './AuthContext';
 
 const App = () => {
@@ -17,7 +15,7 @@ const App = () => {
                     <Route path="/signin" element={<Signin />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/forgetpassword" element={<Forgetpassword />} />
-                    <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>}/>
+                    <Route path="/main" element=<Main />/>
                 </Routes>
             </AuthProvider>
         </div>

@@ -1,5 +1,5 @@
 package com.pmn.qcmplus.util;
-
+/*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,3 +13,4 @@ public class PasswordEncoderImpl {
         System.out.println(passwordEncoder.encode("admin"));
     }
 }
+*/
