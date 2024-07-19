@@ -19,9 +19,12 @@
   --text-blue-color: #04a8ff;
 }
 
-
-
 .App{
   background-color: var(--bg-primary-color);
 }
+
+.small-font {
+  font-size: 12px;
+}
+
 

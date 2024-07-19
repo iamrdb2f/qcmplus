@@ -1,8 +1,8 @@
 import React from "react";
-import {Button} from "react-bootstrap";
+import {Badge, Button} from "react-bootstrap";
 import PropTypes from "prop-types";
 
-const UserRow = ({ user, onView, onUpdate, onDelete }) => (
+const UserRow = ({user, onView, onUpdate, onDelete}) => (
     <tr>
         <td>{user.index + 1}</td>
         <td>{user.firstName || 'N/A'}</td>

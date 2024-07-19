@@ -132,7 +132,7 @@ const UserList = ({ title, userRole }) => {
             </Row>
             {successMessage && <Alert variant="success">{successMessage}</Alert>}
             {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-            <Table striped bordered hover>
+            <Table striped bordered hover className="small-font">
                 <thead>
                 <tr>
                     <th>N°</th>
@@ -143,6 +143,7 @@ const UserList = ({ title, userRole }) => {
                     <th className="d-none d-md-table-cell">Email</th>
                     <th>Job Title</th>
                     <th>Company</th>
+                    <th>Active</th>
                     <th>Actions</th>
                 </tr>
                 </thead>

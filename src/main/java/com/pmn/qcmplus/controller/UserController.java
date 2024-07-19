@@ -1,6 +1,6 @@
 package com.pmn.qcmplus.controller;
 
-import com.pmn.qcmplus.dto.UserDTO;
+import com.pmn.qcmplus.dto.UserWithRolesDTO;
 import com.pmn.qcmplus.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,13 +24,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> users = userService.getAllUsers();
+    public ResponseEntity<List<UserWithRolesDTO>> getAllUsers() {
+        List<UserWithRolesDTO> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Integer id) {
+    public UserWithRolesDTO getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
@@ -40,8 +40,8 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDTO saveUser(@RequestBody UserDTO userDTO) {
-        return userService.saveUser(userDTO);
+    public UserWithRolesDTO saveUser(@RequestBody UserWithRolesDTO userWithRolesDTO) {
+        return userService.saveUser(userWithRolesDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
-        return userService.updateUser(id, userDTO);
+    public UserWithRolesDTO updateUser(@PathVariable Integer id, @RequestBody UserWithRolesDTO userWithRolesDTO) {
+        return userService.updateUser(id, userWithRolesDTO);
     }
 }

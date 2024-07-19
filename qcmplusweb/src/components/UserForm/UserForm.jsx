@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Alert, Badge, Button, Col, Form, Modal, Row} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import './UserForm.css';
-import {addOrUpdateUser, GENDER, ROLE} from "../../services/UserService";
+import {addOrUpdateUser} from "../../services/UserService";
 import {USERFORM_TEXTS} from "./UserFormText";
 import {validateForm} from '../../utils/FormValidation';
+import {GENDER, ROLE} from "../../utils/UtilLists";
 
 
 const UserForm = ({show, handleClose, user, onSuccess}) => {

@@ -1,6 +1,6 @@
 package com.pmn.qcmplus.service.impl;
 
-import com.pmn.qcmplus.dto.UserDTO;
+import com.pmn.qcmplus.dto.UserWithRolesDTO;
 import com.pmn.qcmplus.model.Role;
 import com.pmn.qcmplus.model.User;
 import com.pmn.qcmplus.repository.RoleRepository;
@@ -24,21 +24,18 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-   // @Autowired
-   // private PasswordEncoder passwordEncoder;
-
     @Override
-    public List<UserDTO> getAllUsers() {
+    public List<UserWithRolesDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(UserConverter::convertToDTO)
+                .map(UserConverter::convertToUserWithRolesDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO getUserById(Integer id) {
+    public UserWithRolesDTO getUserById(Integer id) {
         Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.map(UserConverter::convertToDTO).orElse(null);
+        return userOptional.map(UserConverter::convertToUserWithRolesDTO).orElse(null);
     }
 
     @Override
@@ -47,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO saveUser(UserDTO userDTO) {
+    public UserWithRolesDTO saveUser(UserWithRolesDTO userDTO) {
         User user = UserConverter.convertToEntity(userDTO);
 
         // Check if roles are present
@@ -69,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(user.getPassword());
         User savedUser = userRepository.save(user);
-        return UserConverter.convertToDTO(savedUser);
+        return UserConverter.convertToUserWithRolesDTO(savedUser);
     }
 
     @Override
@@ -80,15 +77,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(Integer id, UserDTO userDTO) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserWithRolesDTO updateUser(Integer id, UserWithRolesDTO userDTO) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (userDTO.getEmail() != null)
             existingUser.setEmail(userDTO.getEmail());
 
         if (userDTO.getPassword() != null) {
-            //TODO HASH PASSWORD
-            // user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            // TODO HASH PASSWORD
+            // existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             existingUser.setPassword(userDTO.getPassword());
         }
 
@@ -110,8 +108,13 @@ public class UserServiceImpl implements UserService {
         if (userDTO.getPhoneNumber() != null)
             existingUser.setPhoneNumber(userDTO.getPhoneNumber());
 
-        if (userDTO.getRoles() != null)
-            existingUser.setRoles(userDTO.getRoles().stream().map(UserConverter::convertRoleToEntity).collect(Collectors.toSet()));
+        if (userDTO.getRoles() != null) {
+            Set<Role> roles = userDTO.getRoles().stream()
+                    .map(roleDTO -> roleRepository.findById(roleDTO.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Role with id " + roleDTO.getId() + " not found")))
+                    .collect(Collectors.toSet());
+            existingUser.setRoles(roles);
+        }
 
         existingUser.setActive(userDTO.isActive());
 
@@ -120,6 +123,6 @@ public class UserServiceImpl implements UserService {
 
         User updatedUser = userRepository.save(existingUser);
 
-        return UserConverter.convertToDTO(updatedUser);
+        return UserConverter.convertToUserWithRolesDTO(updatedUser);
     }
 }

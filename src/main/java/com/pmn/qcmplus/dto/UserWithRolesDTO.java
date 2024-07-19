@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDTO {
+public class UserWithRolesDTO {
     @JsonProperty("id")
     private Integer id;
 
@@ -48,4 +48,15 @@ public class UserDTO {
 
     @JsonProperty("createdDate")
     private Date createdDate;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RoleDTO {
+        @JsonProperty("id")
+        private Long id;
+
+        @JsonProperty("role_name")
+        private String roleName;
+    }
 }

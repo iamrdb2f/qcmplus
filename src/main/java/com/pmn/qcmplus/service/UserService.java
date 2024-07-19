@@ -1,14 +1,17 @@
 package com.pmn.qcmplus.service;
 
-import com.pmn.qcmplus.dto.UserDTO;
+import com.pmn.qcmplus.dto.UserWithRolesDTO;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUsers();
-    UserDTO getUserById(Integer id);
+    List<UserWithRolesDTO> getAllUsers();
+
+    UserWithRolesDTO getUserById(Integer id);
     boolean existsById(Integer id);
-    UserDTO saveUser(UserDTO userDTO);
+
+    UserWithRolesDTO saveUser(UserWithRolesDTO userDTO);
     void deleteUser(Integer id);
-    UserDTO updateUser(Integer id, UserDTO userDTO);
+
+    UserWithRolesDTO updateUser(Integer id, UserWithRolesDTO userDTO);
 }

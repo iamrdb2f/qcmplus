@@ -1,19 +1,7 @@
-// src/utils/apiUtils.js
-
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080";
-const USER_END_POINT = `${API_BASE_URL}/user`;
-
-export const ROLE = Object.freeze({
-    ADMIN: 'ADMIN',
-    TRAINEE: 'TRAINEE'
-});
-
-export const GENDER = Object.freeze({
-    FEMALE: 'FEMALE',
-    MALE: 'MALE'
-});
+const USER_END_POINT = `${API_BASE_URL}/api/users`;
 
 const constructUserEndpoint = (id = null) =>
     id ? `${USER_END_POINT}/${id}` : USER_END_POINT;
