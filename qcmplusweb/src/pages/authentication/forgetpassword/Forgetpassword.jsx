@@ -1,7 +1,7 @@
 import React from 'react'
-import './style.css'
-import l from '../../assets/logo/qcmplus_logo.png'
-import p1 from '../../assets/pictures/picture1.png'
+import '../style.css'
+import l from '../../../assets/logo/qcmplus_logo.png'
+import p1 from '../../../assets/pictures/picture1.png'
 import {Link} from 'react-router-dom'
 
 

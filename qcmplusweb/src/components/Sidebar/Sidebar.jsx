@@ -18,7 +18,7 @@ const Sidebar = ({ onItemClick, selectedItem }) => {
     return (
         <Container fluid>
             <Row className={"mt-2 mb-5 text-center"}>
-                <ImgLogo />
+                <ImgLogo link="/"/>
             </Row>
             <ListGroup>
                 <ListGroup.Item

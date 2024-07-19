@@ -2,7 +2,7 @@ import React from 'react'
 import "./style.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavigationMenu from "../../components/NavigationMenu/NavigationMenu";
-import Apropos from '../../components/Apropos/Apropos';
+import Apropos from '../../components/apropos/Apropos';
 import Banner from '../../components/banner/Banner';
 import LeadMagnet from '../../components/leadMagnet/LeadMagnet';
 import Footer from '../../components/footer/Footer';

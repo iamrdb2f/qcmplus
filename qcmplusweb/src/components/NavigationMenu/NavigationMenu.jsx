@@ -11,7 +11,7 @@ const NavigationMenu = () => {
         <Navbar className="justify-content-between navBarMenu container-fluid fixed-top" style={{backgroundColor:"#f3f8fe"}}>
             <Container>
                 <Navbar.Brand href="/">
-                    <ImgLogo link={"/"}/>
+                    <ImgLogo/>
                 </Navbar.Brand>
                 <Nav className="align-items-start">
                     <Nav.Link href="#about" className="mx-2">À propos</Nav.Link>
