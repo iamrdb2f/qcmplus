@@ -14,7 +14,7 @@ export const  handleApiError = (error, axiosError=false) => {
             return { error: true, message: error.message };
         }
     } else{
-        return { error, error: true, message: 'We encountered a problem while loading your data. Please try again later.' };
+        return { error: error, message: 'We encountered a problem while loading your data. Please try again later.' };
     }
 };
 

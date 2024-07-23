@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Alert, Col, Container, Form, Pagination, Row, Table} from 'react-bootstrap';
 import PropTypes from "prop-types";
 import UserProfile from '../UserProfile/UserProfile';
@@ -25,7 +25,7 @@ const UserList = ({ title, userRole }) => {
         setTimeout(() => setMessage(''), timeout);
     };
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const response = await retrieveUser();
             if (response.error) {
@@ -36,9 +36,9 @@ const UserList = ({ title, userRole }) => {
             setUsers(response);
         } catch (error) {
             handleMessage(setErrorMessage,
-                'Something unexpected happened. Could you try again later? If the issue persists, please contact supports.');
+                'Something unexpected happened. Could you try again later? If the issue persists, please contact support.');
         }
-    };
+    }, []);
 
     const handleSuccess = (msg) => {
         setShowForm(false);
@@ -111,7 +111,7 @@ const UserList = ({ title, userRole }) => {
 
     useEffect(() => {
         fetchUsers();
-    }, [userRole]);
+    }, [userRole, fetchUsers]);
 
     return (
         <Container fluid className="mb-5">

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Alert, Badge, Button, Col, Form, Modal, Row} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import './UserForm.css';
@@ -9,11 +9,11 @@ import {GENDER, ROLE} from "../../utils/UtilLists";
 
 
 const UserForm = ({show, handleClose, user, onSuccess}) => {
-    const initialFormData = {
+    const initialFormData = useMemo(() => ({
         ...user,
         isActive: user?.isActive ?? true,
         createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
-    };
+    }), [user]);
 
     const [formData, setFormData] = useState(initialFormData);
     const [errors, setErrors] = useState({});
@@ -35,7 +35,7 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
                 createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
             });
         }
-    }, [show, user]);
+    }, [show, user, initialFormData]);
 
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
