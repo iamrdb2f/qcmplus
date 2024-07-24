@@ -6,12 +6,12 @@ const DeleteConfirmation = ({ show, handleClose, handleConfirm, user }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const confirmDelete = () => {
-        if (!user || !user["userId"]) {
+        if (!user || !user.id) {
             setErrorMessage('User ID is undefined. Cannot delete user.');
             setTimeout(() => setErrorMessage(''), 3000);
             return;
         }
-        handleConfirm(user["userId"]);
+        handleConfirm(user.id);
         handleClose();
     };
 

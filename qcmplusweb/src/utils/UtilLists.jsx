@@ -1,6 +1,6 @@
 export const ROLE = Object.freeze({
-    ADMIN: 'ADMIN',
-    TRAINEE: 'TRAINEE'
+    ADMIN: {value: 1, roleName: 'ADMIN'},
+    USER: {value: 2, roleName: 'USER'}
 });
 
 export const GENDER = Object.freeze({

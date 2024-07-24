@@ -1,19 +1,28 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './AddUser.css';
-import {Alert, Button, Col, Container, Form, Row} from 'react-bootstrap';
-import {addOrUpdateUser} from "../../services/UserService";
-import {initialUserState, labels, validateForm} from '../../utils/FormValidation'; // Correct the path as needed
+import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { addUser } from "../../services/UserService";
+import { initialUserState as baseInitialUserState, labels, validateForm } from '../../utils/FormValidation';
+import { ROLE } from "../../utils/UtilLists";
+import Select from 'react-select';
 
 const AddUser = () => {
-    const [users, setUsers] = useState([initialUserState]);
+    const initialUserState = {...baseInitialUserState, role: null};
+    const [users, setUsers] = useState([{ ...initialUserState }]);
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
+    const handleChange = (index, selectedOption, name) => {
+        let value;
+        if (Array.isArray(selectedOption)) {
+            value = selectedOption.map(option => option.value);
+        } else if (name === 'role') {
+            value = selectedOption;
+        } else {
+            value = selectedOption.target.value;
+        }
 
-
-    const handleChange = (index, e) => {
-        const { name, value } = e.target;
         setUsers(prevUsers => {
             const updatedUsers = [...prevUsers];
             updatedUsers[index] = { ...updatedUsers[index], [name]: value };
@@ -21,29 +30,31 @@ const AddUser = () => {
         });
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = users[0];
+        const formData = { ...users[0], role: users[0].role ? { id: users[0].role.value, roleName: users[0].role.label } : null };
         const newErrors = validateForm(formData);
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             setErrorMessage('Please fill out all fields correctly.');
             setSuccessMessage('');
-            return;
-        }
-
-        setErrors({});
-        const response = await addOrUpdateUser(null, formData);
-        if (response.error) {
-            setErrorMessage(`Error: ${response.message}`);
-            setSuccessMessage('');
         } else {
-            setUsers([initialUserState]);
-            setErrorMessage('');
-            setSuccessMessage('New User added successfully!');
+            setErrors({});
+            const response = await addUser(formData);
+
+            if (response.error) {
+                setErrorMessage(`Error: ${response.message}`);
+                setSuccessMessage('');
+            } else {
+                setUsers([{ ...initialUserState }]);
+                setSuccessMessage('New User added successfully!');
+                setErrorMessage('');
+            }
         }
     };
+
 
     const renderUserForm = (user, index) => (
         <div key={index} className="mb-4">
@@ -55,7 +66,7 @@ const AddUser = () => {
                             as="select"
                             name="gender"
                             value={user.gender}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'gender')}
                             isInvalid={!!errors.gender}
                         >
                             <option value="">Select Gender</option>
@@ -70,20 +81,14 @@ const AddUser = () => {
                 <Col>
                     <Form.Group controlId={`role-${index}`}>
                         <Form.Label>{labels.role}</Form.Label>
-                        <Form.Control
-                            as="select"
+                        <Select
                             name="role"
-                            value={user.role}
-                            onChange={(e) => handleChange(index, e)}
-                            isInvalid={!!errors.role}
-                        >
-                            <option value="">Select Role</option>
-                            <option value="1">Administrator</option>
-                            <option value="2">Trainee</option>
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {errors.role}
-                        </Form.Control.Feedback>
+                            value={user.role ? { value: user.role.value, label: user.role.label } : null}
+                            options={Object.values(ROLE).map(role => ({ value: role.value, label: role.roleName }))}
+                            onChange={(selectedOption) => handleChange(index, selectedOption, 'role')}
+                            classNamePrefix="select"
+                        />
+                        {errors.role && <div className="invalid-feedback d-block">{errors.role}</div>}
                     </Form.Group>
                 </Col>
                 <Col>
@@ -93,7 +98,7 @@ const AddUser = () => {
                             type="text"
                             name="phoneNumber"
                             value={user.phoneNumber}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'phoneNumber')}
                             placeholder="Enter Phone Number"
                             isInvalid={!!errors.phoneNumber}
                         />
@@ -111,7 +116,7 @@ const AddUser = () => {
                             type="text"
                             name="firstName"
                             value={user.firstName}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'firstName')}
                             placeholder="Enter First Name"
                             isInvalid={!!errors.firstName}
                         />
@@ -127,7 +132,7 @@ const AddUser = () => {
                             type="text"
                             name="lastName"
                             value={user.lastName}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'lastName')}
                             placeholder="Enter Last Name"
                             isInvalid={!!errors.lastName}
                         />
@@ -145,7 +150,7 @@ const AddUser = () => {
                             type="email"
                             name="email"
                             value={user.email}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'email')}
                             placeholder="Enter Email"
                             isInvalid={!!errors.email}
                         />
@@ -161,7 +166,7 @@ const AddUser = () => {
                             type="password"
                             name="password"
                             value={user.password}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'password')}
                             placeholder="Enter Password"
                             isInvalid={!!errors.password}
                         />
@@ -179,7 +184,7 @@ const AddUser = () => {
                             type="text"
                             name="jobTitle"
                             value={user.jobTitle}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'jobTitle')}
                             placeholder="Enter Job Title"
                             isInvalid={!!errors.jobTitle}
                         />
@@ -195,7 +200,7 @@ const AddUser = () => {
                             type="text"
                             name="company"
                             value={user.company}
-                            onChange={(e) => handleChange(index, e)}
+                            onChange={(e) => handleChange(index, e, 'company')}
                             placeholder="Enter Company"
                             isInvalid={!!errors.company}
                         />

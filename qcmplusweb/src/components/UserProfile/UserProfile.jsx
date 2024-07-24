@@ -30,7 +30,9 @@ const UserProfile = ({ show, handleClose, user }) => {
                             <ListGroup.Item className="center-text"><strong>Job Title:</strong> {user.jobTitle}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Company:</strong> {user.company}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Role:</strong>
-                                <Badge bg={user.role === 'ADMIN' ? 'primary' : 'secondary'} className="ms-2">{user.role}</Badge>
+                                <Badge bg={user.role && user.role.roleName === 'ADMIN' ? 'primary' : 'secondary'} className="ms-2">
+                                    {user.role ? user.role.roleName : 'N/A'}
+                                </Badge>
                             </ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Status:</strong>
                                 <Badge bg={user.isActive ? 'success' : 'secondary'} className="ms-2">

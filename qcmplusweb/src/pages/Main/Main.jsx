@@ -23,9 +23,9 @@ const Main = () => {
 
         switch (selectedItem) {
             case 'Trainee':
-                return <UserList title="Registered Trainee" userRole={ROLE.TRAINEE}/>;
+                return <UserList title="Registered Trainee" userRole={ROLE.USER.value}/>;
             case 'Admin':
-                return <UserList title="Registered Admin" userRole={ROLE.ADMIN}/>;
+                return <UserList title="Registered Admin" userRole={ROLE.ADMIN.value}/>;
             case 'Exam':
                 return <h1><AiFillWarning />Exam</h1>;
             case 'Quizzes':

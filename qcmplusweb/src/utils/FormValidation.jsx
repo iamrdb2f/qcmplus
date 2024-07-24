@@ -4,7 +4,7 @@ export const initialUserState = {
     lastName: '',
     email: '',
     password: '',
-    role: '',
+    roleIds: '',
     gender: '',
     company: '',
     jobTitle: '',

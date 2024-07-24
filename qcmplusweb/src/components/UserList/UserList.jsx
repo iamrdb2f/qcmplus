@@ -7,6 +7,7 @@ import UserRow from '../UserRow/UserRow';
 import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
 import {removeUser, retrieveUser} from '../../services/UserService';
+import {USERLISTMESSAGES} from "./UserListTexts";
 
 const UserList = ({ title, userRole }) => {
     const [users, setUsers] = useState([]);
@@ -28,17 +29,18 @@ const UserList = ({ title, userRole }) => {
     const fetchUsers = useCallback(async () => {
         try {
             const response = await retrieveUser();
+
             if (response.error) {
-                handleMessage(setErrorMessage,
-                    'We encountered a problem while loading your data. Please try again later.');
+                handleMessage(setErrorMessage, USERLISTMESSAGES.fetchUserError);
                 return;
             }
-            setUsers(response);
+            const usersWithRole = response.filter(user => user.role && user.role.id === userRole);
+            setUsers(usersWithRole);
         } catch (error) {
-            handleMessage(setErrorMessage,
-                'Something unexpected happened. Could you try again later? If the issue persists, please contact support.');
+            handleMessage(setErrorMessage, USERLISTMESSAGES.fetchUserTechnicalError);
         }
-    }, []);
+    }, [userRole]);
+
 
     const handleSuccess = (msg) => {
         setShowForm(false);
@@ -76,13 +78,14 @@ const UserList = ({ title, userRole }) => {
         if (response.error) {
             setErrorMessage(response.message);
         } else {
-            setUsers(users.filter((user) => user["userId"] !== userId));
+            setUsers(users.filter((user) => user.id !== userId));
             setShowDeleteConfirm(false);
             setSelectedUser(null);
             setSuccessMessage(response.message);
             fetchUsers();
         }
     };
+
 
     const handleCloseForm = () => {
         setShowForm(false);
@@ -150,18 +153,19 @@ const UserList = ({ title, userRole }) => {
                 <tbody>
                 {currentUsers.map((user, index) => (
                     <UserRow
-                        key={user["userId"] || index}
-                        user={{ ...user, index: indexOfFirstUser + index }}
+                        key={user.id || index}
+                        user={{...user, index: indexOfFirstUser + index}}
                         onView={handleView}
                         onUpdate={handleUpdate}
                         onDelete={handleDelete}
                     />
                 ))}
                 </tbody>
+
             </Table>
             {totalPages > 0 ? (
                 <Pagination className="custom-pagination">
-                    {Array.from({ length: totalPages }, (_, index) => (
+                    {Array.from({length: totalPages}, (_, index) => (
                         <Pagination.Item
                             key={index}
                             active={index + 1 === currentPage}
@@ -190,7 +194,7 @@ const UserList = ({ title, userRole }) => {
             <DeleteConfirmation
                 show={showDeleteConfirm}
                 handleClose={handleCloseDeleteConfirm}
-                handleConfirm={() => handleConfirmDelete(selectedUser["userId"])}
+                handleConfirm={() => handleConfirmDelete(selectedUser.id)}
                 user={selectedUser}
             />
         </Container>
@@ -199,7 +203,7 @@ const UserList = ({ title, userRole }) => {
 
 UserList.propTypes = {
     title: PropTypes.string,
-    userRole: PropTypes.string.isRequired,
+    userRole: PropTypes.number.isRequired,
 };
 
 export default UserList;

@@ -1,18 +1,19 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Alert, Badge, Button, Col, Form, Modal, Row} from 'react-bootstrap';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Badge, Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import Select from 'react-select';
 import './UserForm.css';
-import {addOrUpdateUser} from "../../services/UserService";
-import {USERFORM_TEXTS} from "./UserFormText";
-import {validateForm} from '../../utils/FormValidation';
-import {GENDER, ROLE} from "../../utils/UtilLists";
+import { updateUser } from "../../services/UserService";
+import { USERFORM_TEXTS } from "./UserFormText";
+import { validateForm } from '../../utils/FormValidation';
+import { GENDER, ROLE } from "../../utils/UtilLists";
 
-
-const UserForm = ({show, handleClose, user, onSuccess}) => {
+const UserForm = ({ show, handleClose, user, onSuccess }) => {
     const initialFormData = useMemo(() => ({
         ...user,
         isActive: user?.isActive ?? true,
-        createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+        createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+        role: user?.role ? { value: user.role.id, label: user.role.roleName } : null
     }), [user]);
 
     const [formData, setFormData] = useState(initialFormData);
@@ -32,14 +33,15 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
             setFormData({
                 ...user,
                 isActive: user?.isActive ?? true,
-                createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+                createdDate: user?.createdDate ? new Date(user.createdDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+                role: user?.role ? { value: user.role.id, label: user.role.roleName } : null
             });
         }
     }, [show, user, initialFormData]);
 
     const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
-        setFormData(prevState => ({...prevState, [name]: type === 'checkbox' ? checked : value}));
+        const { name, value, type, checked } = e.target;
+        setFormData(prevState => ({ ...prevState, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSubmit = async (e) => {
@@ -52,7 +54,7 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
             setErrors({});
 
             try {
-                const response = await addOrUpdateUser(user.id, formData);
+                const response = await updateUser(user.id, { ...formData, role: formData.role ? { id: formData.role.value, roleName: formData.role.label } : null });
                 if (response.error) {
                     handleMessage(setApiCallErrorMessage, response.message);
                 } else {
@@ -70,28 +72,19 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
                 <Modal.Title>{'Modify existing User information'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {apiCallErrorMessage && <Alert variant="danger" className="mx-5 ">{apiCallErrorMessage}</Alert>}
+                {apiCallErrorMessage && <Alert variant="danger" className="mx-5">{apiCallErrorMessage}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Row>
                         <Col>
                             <Form.Group controlId="formRole">
                                 <Form.Label>Role</Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Select
                                     name="role"
-                                    value={formData.role || ''}
-                                    onChange={handleChange}
-                                    isInvalid={!!errors.role}
-                                >
-                                    <option value="">Select Role</option>
-                                    <option value={ROLE.ADMIN} selected={formData.role === ROLE.ADMIN}>Administrator
-                                    </option>
-                                    <option value={ROLE.TRAINEE} selected={formData.role === ROLE.TRAINEE}>Trainee
-                                    </option>
-                                </Form.Control>
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.role}
-                                </Form.Control.Feedback>
+                                    value={formData.role}
+                                    options={Object.values(ROLE).map(role => ({ value: role.value, label: role.roleName }))}
+                                    isDisabled
+                                    classNamePrefix="select"
+                                />
                             </Form.Group>
                         </Col>
                         <Col>
@@ -101,8 +94,7 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
                                     type="checkbox"
                                     name="isActive"
                                     label={
-                                        <Badge pill bg={formData.isActive ? "success" : "secondary"}
-                                               className="status-badge">
+                                        <Badge pill bg={formData.isActive ? "success" : "secondary"} className="status-badge">
                                             {formData.isActive ? 'Active' : 'Inactive'}
                                         </Badge>
                                     }
@@ -139,10 +131,8 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
                                     isInvalid={!!errors.gender}
                                 >
                                     <option value="">Select Gender</option>
-                                    <option value={GENDER.FEMALE}
-                                            selected={formData.gender === GENDER.FEMALE}>{GENDER.FEMALE}</option>
-                                    <option value={GENDER.MALE}
-                                            selected={formData.gender === GENDER.MALE}>{GENDER.MALE}</option>
+                                    <option value={GENDER.FEMALE}>{GENDER.FEMALE}</option>
+                                    <option value={GENDER.MALE}>{GENDER.MALE}</option>
                                 </Form.Control>
                                 <Form.Control.Feedback type="invalid">
                                     {errors.gender}
@@ -217,7 +207,7 @@ const UserForm = ({show, handleClose, user, onSuccess}) => {
                             <Form.Group controlId="formPhoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
                                 <Form.Control
-                                    type=""
+                                    type="text"
                                     name="phoneNumber"
                                     value={formData.phoneNumber || ''}
                                     onChange={handleChange}
