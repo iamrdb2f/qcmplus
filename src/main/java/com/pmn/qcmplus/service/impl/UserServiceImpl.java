@@ -6,6 +6,7 @@ import com.pmn.qcmplus.repository.RoleRepository;
 import com.pmn.qcmplus.repository.UserRepository;
 import com.pmn.qcmplus.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,11 +19,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new RuntimeException("Role not found"));
             user.setRole(role);
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password before saving
         return userRepository.save(user);
     }
 
@@ -60,7 +64,9 @@ public class UserServiceImpl implements UserService {
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
             existingUser.setEmail(user.getEmail());
-            existingUser.setPassword(user.getPassword());
+            if (!user.getPassword().equals(existingUser.getPassword())) {
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password before saving
+            }
             existingUser.setLastName(user.getLastName());
             existingUser.setFirstName(user.getFirstName());
             existingUser.setGender(user.getGender());
