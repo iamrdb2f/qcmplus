@@ -1,5 +1,6 @@
 package com.pmn.qcmplus.service.impl;
 
+import com.pmn.qcmplus.exception.UserEmailAlreadyInUseException;
 import com.pmn.qcmplus.model.Role;
 import com.pmn.qcmplus.model.User;
 import com.pmn.qcmplus.repository.RoleRepository;
@@ -38,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new UserEmailAlreadyInUseException(user.getEmail());
+        }
         setDefaultValues(user);
         if (user.getRole() != null) {
             Role role = roleRepository.findById(user.getRole().getId())

@@ -1,7 +1,7 @@
 /* =========== Sign In ================== */
 
 .container_signin {
-    color: black;
+    background-color: var( --white-color);
 }
 
 /* =========== Sign In ================== */

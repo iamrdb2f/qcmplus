@@ -5,7 +5,7 @@ import p1 from '../../../assets/pictures/picture1.png'
 import {Link} from 'react-router-dom'
 
 
-const Forgetpassword = () => {
+const ForgetPassword = () => {
     return (
         <div className='content_signup'>
             <div className='content_left'>
@@ -34,4 +34,4 @@ const Forgetpassword = () => {
     )
 }
 
-export default Forgetpassword
+export default ForgetPassword
