@@ -16,18 +16,14 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "quizzes")
-public class Quizzes {
+public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer quiz_id;
+    private int quizId;
 
-    @Column(name = "title")
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "description")
     private String description;
-
-    @OneToMany(mappedBy = "quiz")
-    private List<Questions> questions;
 }

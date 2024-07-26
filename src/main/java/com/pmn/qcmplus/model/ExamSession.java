@@ -19,27 +19,24 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "exam_sessions")
-public class ExamSessions {
+public class ExamSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "session_id")
-    private Integer sessionId;
+    private int sessionId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quizzes quiz;
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
 
-    @Column(name = "score")
-    private Integer score;
+    private int score;
 
-    @Column(name = "time_spent")
+    @Column(name = "time_spent", nullable = false)
     private Time timeSpent;
 
-    @OneToMany(mappedBy="examSession")
-    private List<UserAnswers> userAnswers;
+    // Getters and Setters
 }

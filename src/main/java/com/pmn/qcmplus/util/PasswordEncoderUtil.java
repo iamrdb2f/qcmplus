@@ -8,7 +8,5 @@ public class PasswordEncoderUtil {
         String encodedPassword = encoder.encode("password");
         System.out.println(encodedPassword);
 
-        String encodedPassword2 = encoder.encode("admin");
-        System.out.println(encodedPassword2); // Store this in your database
     }
 }

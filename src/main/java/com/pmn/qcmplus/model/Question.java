@@ -7,27 +7,27 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
-@Table(name = "answers")
-public class Answers {
+@Table(name = "questions")
+public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "answer_text")
-    private String answerText;
-
-    @Column(name = "is_correct")
-    private Boolean isCorrect;
+    private int questionId;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
-    private Questions question;
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
+
+    @Column(name = "question_text", nullable = false)
+    private String questionText;
 }

@@ -7,30 +7,28 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Entity
-@Table(name = "questions")
-public class Questions {
+@Table(name = "answers")
+public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer question_id;
-
-    @Column(name = "question_text")
-    private String questionText;
+    private int answerId;
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quizzes quiz;
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
 
-    @OneToMany(mappedBy = "question")
-    private List<Answers> answers;
+    @Column(name = "answer_text", nullable = false)
+    private String answerText;
+
+    @Column(name = "is_correct", nullable = false)
+    private boolean isCorrect;
 }
+

@@ -1,9 +1,10 @@
-package com.pmn.qcmplus.service.security;
+package com.pmn.qcmplus.security;
 
 import com.pmn.qcmplus.model.Role;
 import com.pmn.qcmplus.model.User;
 import com.pmn.qcmplus.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,25 +12,29 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
-
-    @Autowired
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+
+        User user = userRepository.findByEmail( email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
+
+        // Log the retrieved user
+        System.out.println("User found: " + user.getEmail());
+
+        Set<GrantedAuthority> authorities = Collections.singleton(mapRoleToAuthority(user.getRole()));
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(mapRoleToAuthority(user.getRole()))
+                authorities
         );
     }
 

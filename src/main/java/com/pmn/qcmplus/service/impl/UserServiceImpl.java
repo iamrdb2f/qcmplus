@@ -1,5 +1,6 @@
 package com.pmn.qcmplus.service.impl;
 
+import com.pmn.qcmplus.exception.RoleNotFoundException;
 import com.pmn.qcmplus.exception.UserEmailAlreadyInUseException;
 import com.pmn.qcmplus.model.Role;
 import com.pmn.qcmplus.model.User;
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
         setDefaultValues(user);
         if (user.getRole() != null) {
             Role role = roleRepository.findById(user.getRole().getId())
-                    .orElseThrow(() -> new RuntimeException("Role not found"));
+                    .orElseThrow(() -> new RoleNotFoundException(user.getId()));
             user.setRole(role);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password before saving

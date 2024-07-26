@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-@NamedQuery(name = "User.byId", query = "select u from User u where u.id= :id")
 public class User {
 
     @Id

@@ -13,5 +13,6 @@ public interface UserService {
     User updateUser(Integer id, User user);
     void deleteUser(Integer id);
     User updateUserRole(Integer userId, Integer roleId);
+
     User getUserWithRole(Integer id);
 }

@@ -14,17 +14,20 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "user_answers")
-public class UserAnswers {
+public class UserAnswer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne
-    @JoinColumn(name = "session_id")
-    private ExamSessions examSession;
+    @JoinColumn(name = "session_id", nullable = false)
+    private ExamSession session;
 
     @ManyToOne
-    @JoinColumn(name = "answer_id")
-    private Answers answer;
+    @JoinColumn(name = "answer_id", nullable = false)
+    private Answer answer;
+
+    // Getters and Setters
 }
+
