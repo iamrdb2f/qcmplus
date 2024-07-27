@@ -2,9 +2,10 @@ package com.pmn.qcmplus.config;
 
 import com.pmn.qcmplus.security.JwtAuthenticationEntryPoint;
 import com.pmn.qcmplus.security.JwtAuthenticationFilter;
-import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -49,7 +50,9 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 

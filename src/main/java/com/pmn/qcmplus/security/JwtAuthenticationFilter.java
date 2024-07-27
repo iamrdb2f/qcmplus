@@ -1,6 +1,5 @@
 package com.pmn.qcmplus.security;
 
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,13 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// Execute Before Executing Spring Security Filters
-// Validate the JWT Token and Provides user details to Spring Security for Authentication
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final UserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
@@ -32,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull  HttpServletRequest request,
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
@@ -40,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = getTokenFromRequest(request);
 
         // Validate Token
-        if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)){
+        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             // get username from token
             String username = jwtTokenProvider.getUsername(token);
 
@@ -60,13 +56,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getTokenFromRequest(HttpServletRequest request){
+    private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-
         return null;
     }
 }

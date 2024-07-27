@@ -23,11 +23,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail( email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
 
-        // Log the retrieved user
-        System.out.println("User found: " + user.getEmail());
 
         Set<GrantedAuthority> authorities = Collections.singleton(mapRoleToAuthority(user.getRole()));
 
@@ -39,6 +37,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private SimpleGrantedAuthority mapRoleToAuthority(Role role) {
-        return new SimpleGrantedAuthority(role.getRoleName());
+        return new SimpleGrantedAuthority("ROLE_" + role.getRoleName()); // Ensure the role has the ROLE_ prefix
     }
 }
