@@ -13,8 +13,17 @@ import './Sidebar.css';
 import ImgLogo from "../ImgLogo/ImgLogo";
 import {Container, ListGroup, Row} from "react-bootstrap";
 import {IoMdLogOut} from "react-icons/io";
+import {isUserLoggedIn, logout} from "../../services/AuthService";
+import {useNavigate} from "react-router-dom";
+
 
 const Sidebar = ({ onItemClick, selectedItem }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
     return (
         <Container fluid>
             <Row className={"mt-2 mb-5 text-center"}>
@@ -80,7 +89,7 @@ const Sidebar = ({ onItemClick, selectedItem }) => {
                 </ListGroup.Item>
                 <ListGroup.Item
                     className={`sidebar-item logout-btn mt-5 ${selectedItem === 'Logout'}`}
-                    onClick={() => onItemClick('Logout')}
+                    onClick={handleLogout}
                 >
                     <IoMdLogOut className="sidebar-icon" />
                     <span>Log Out</span>

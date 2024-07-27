@@ -1,6 +1,5 @@
 package com.pmn.qcmplus.security;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,7 +21,8 @@ public class JwtTokenProvider {
     @Value("${app.jwt-expiration-milliseconds}")
     private long jwtExpirationDate;
 
-    public String generateToken(Authentication authentication) {
+    // Generate JWT token
+    public String generateToken(Authentication authentication){
         String username = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
@@ -35,11 +35,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    private Key key(){
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(jwtSecret)
+        );
     }
 
-    public String getUsername(String token) {
+    // Get username from JWT token
+    public String getUsername(String token){
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
@@ -48,7 +51,8 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    public boolean validateToken(String token) {
+    // Validate JWT Token
+    public boolean validateToken(String token){
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key())
@@ -56,7 +60,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            System.out.println("JWT validation failed: " + ex.getMessage());
+            System.out.println("Invalid token: " + ex.getMessage());
             return false;
         }
     }

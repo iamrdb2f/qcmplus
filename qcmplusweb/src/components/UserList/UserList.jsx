@@ -6,7 +6,7 @@ import UserForm from '../UserForm/UserForm';
 import UserRow from '../UserRow/UserRow';
 import './UserList.css';
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
-import {removeUser, retrieveUser} from '../../services/UserService';
+import {removeUser, retrieveUser, retrieveUsers} from '../../services/UserService';
 import {USERLISTMESSAGES} from "./UserListTexts";
 
 const UserList = ({ title, userRole }) => {
@@ -20,6 +20,8 @@ const UserList = ({ title, userRole }) => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const userRoleId = userRole.value
+    const userRoleName =userRole.roleName
 
     const handleMessage = (setMessage, message, timeout = 3000) => {
         setMessage(message);
@@ -28,13 +30,12 @@ const UserList = ({ title, userRole }) => {
 
     const fetchUsers = useCallback(async () => {
         try {
-            const response = await retrieveUser();
-
+            const response = await retrieveUsers();
             if (response.error) {
                 handleMessage(setErrorMessage, USERLISTMESSAGES.fetchUserError);
                 return;
             }
-            const usersWithRole = response.filter(user => user.role && user.role.id === userRole);
+            const usersWithRole = response.data.filter(user => user.role && user.role.id === userRoleId);
             setUsers(usersWithRole);
         } catch (error) {
             handleMessage(setErrorMessage, USERLISTMESSAGES.fetchUserTechnicalError);
@@ -199,11 +200,6 @@ const UserList = ({ title, userRole }) => {
             />
         </Container>
     );
-};
-
-UserList.propTypes = {
-    title: PropTypes.string,
-    userRole: PropTypes.number.isRequired,
 };
 
 export default UserList;
