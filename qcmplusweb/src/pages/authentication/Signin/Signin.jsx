@@ -59,17 +59,12 @@ const Signin = () => {
 
         try {
             const response = await loginAPICall(formData.email, formData.password);
-            const { accessToken, role } = response.data;
+            const { accessToken, role , userName} = response.data;
             const token = `Bearer ${accessToken}`;
-            console.log("response.data :"+ response.data.data)
-            console.log("accessToken: ", token);
-            console.log("role: ", role);
-            console.log("email: ", formData.email);
-
+            
             storeToken(token);
-            saveLoggedInUser(formData.email, role);
+            saveLoggedInUser(userName, role);
             navigate("/main");
-            // window.location.reload(false);
 
         } catch (error) {
             console.error("Error during sign in:", error.message); // Log only the error message
