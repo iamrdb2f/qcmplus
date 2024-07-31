@@ -53,17 +53,20 @@ const Main = () => {
                     <Sidebar onItemClick={handleSidebarItemClick} selectedItem={selectedItem}/>
                 </Col>
                 <Col xs={12} md={10} className="main-content">
-                    {isAdmin &&
-                        <div className="header d-flex justify-content-end m-3">
-                            <Button className="ExportUserBtn me-2">Export CSV</Button>
-                            <Button className="ToggleUserBtn" onClick={() => setShowUserList(!showUserList)}>
-                                {showUserList ? 'Add User' : 'List Users'}
-                            </Button>
-                        </div>}
-                    {isAdmin && renderContent()
-
+                    {isAdmin ? (
+                        <div>
+                            <div className="header d-flex justify-content-end m-3">
+                                <Button className="ExportUserBtn me-2">Export CSV</Button>
+                                <Button className="ToggleUserBtn" onClick={() => setShowUserList(!showUserList)}>
+                                    {showUserList ? 'Add User' : 'List Users'}
+                                </Button>
+                            </div>
+                            {renderContent()}
+                        </div>
+                    ) : (
+                        <p> roe is user</p>
+                    )
                     }
-                    <p> roe is user</p>
                 </Col>
             </Row>
         </Container>

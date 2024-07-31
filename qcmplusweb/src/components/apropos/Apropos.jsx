@@ -33,7 +33,9 @@ const Apropos = () => {
                   <span style={{ color: "#2DB7FF" }}>GUISSONY </span>
                   Roland Ulrich
                 </Card.Title>
-                <Card.Text className="lead">Description de la personne 1</Card.Text>
+                <Card.Text className="lead">
+                  Développeur Java pour la création en utilisant les meilleures pratiques de développement. Mon approche inclut une analyse approfondie des besoins, une conception agile et une assistance continue pour garantir des performances optimales.
+                </Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -45,7 +47,9 @@ const Apropos = () => {
                   <span style={{ color: "#2DB7FF" }}>TOWOLDE </span>
                   Teklit
                 </Card.Title>
-                <Card.Text className="lead">Description de la personne 2</Card.Text>
+                <Card.Text className="lead">
+               Développeur Java pour la création en utilisant les meilleures pratiques de développement. Mon approche inclut une analyse approfondie des besoins, une conception agile et une assistance continue pour garantir des performances optimales.
+                </Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -57,7 +61,9 @@ const Apropos = () => {
                   <span style={{ color: "#2DB7FF" }}>DAHMOUNE </span>
                   Outhmane
                 </Card.Title>
-                <Card.Text className="lead">Description de la personne 3</Card.Text>
+                <Card.Text className="lead">
+                  Développeur Java pour la création en utilisant les meilleures pratiques de développement. Mon approche inclut une analyse approfondie des besoins, une conception agile et une assistance continue pour garantir des performances optimales.
+                </Card.Text>
               </Card.Body>
             </Card>
           </Col>

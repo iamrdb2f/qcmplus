@@ -1,0 +1,22 @@
+.logoutBtn {
+    width: 100%;
+    display: flex;
+    color: white;
+    background-color: var(--bg-danger-default-color);
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.logoutBtn:hover {
+    background-color: var(--bg-danger-color);
+    color: white;
+}
+
+.logoutBtn:active {
+    background-color: var(--bg-danger-active-color);
+    color: white;
+}

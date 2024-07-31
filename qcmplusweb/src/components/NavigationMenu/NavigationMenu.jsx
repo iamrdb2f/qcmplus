@@ -20,10 +20,10 @@ const NavigationMenu = () => {
                 </Nav>
                 <Nav>
                     <NavLink to="/signin">
-                        <button variant="light" className="btn-sing-in mx-4 fw-bold">Se connecter</button>
+                        <button variant="light" className="btn-sing-in mx-3 px-3 py-2 bold">Se connecter</button>
                     </NavLink>
                     <NavLink to="/signup">
-                        <button variant="light" className="btn-sing-out mx-4">Inscription</button>
+                        <button variant="light" className="btn-sing-out mx-3 px-3 py-2 ">Inscription</button>
                     </NavLink>
                 </Nav>
             </Container>

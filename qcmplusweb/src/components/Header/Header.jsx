@@ -18,7 +18,7 @@ const Header = () => {
                         </p>
                         <div style={{ backgroundColor: "#EDF4FC", width: "50%", borderRadius: "23px" }}>
                             <Link to="/signin">
-                                <button className="" style={{ borderRadius: "23px" }}>Commencer maintenant</button>
+                                <button className={"py-2 px-4 "} style={{ borderRadius: "23px" }}>Commencer maintenant</button>
                             </Link>
                         </div>
                     </div>
