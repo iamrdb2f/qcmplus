@@ -28,7 +28,7 @@ export const labels = {
 };
 
 export const validateForm = (formData) => {
-    const phonePattern = /^(?:\+?[1-9]\d{1,14}|0[1-9]\d{8})$/;
+    const phonePattern = new RegExp(/^[+](\d{3})\)?(\d{3})(\d{5,6})$|^(\d{10})$/);
     const newErrors = {};
     if (!formData.role) newErrors.role = 'Role is required';
     if (!formData.firstName) newErrors.firstName = 'First name is required';

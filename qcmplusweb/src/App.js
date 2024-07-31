@@ -6,7 +6,7 @@ import Signin from "./pages/authentication/Signin/Signin";
 import Signup from "./pages/authentication/Signup/Signup";
 import ForgetPassword from "./pages/authentication/ForgetPassword/ForgetPassword";
 import Main from "./pages/Main/Main";
-import { isUserLoggedIn } from "./services/AuthService";
+import {isAdminUser, isUserLoggedIn} from "./services/AuthService";
 
 const AuthenticatedRoute = ({ children }) => {
     const isAuth = isUserLoggedIn();

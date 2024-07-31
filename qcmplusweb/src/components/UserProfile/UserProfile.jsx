@@ -3,6 +3,7 @@ import {Badge, Button, ListGroup, Modal} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import {FaMars, FaUser, FaVenus} from 'react-icons/fa';
 import './UserProfile.css';
+import {ROLE} from "../../utils/UtilLists";
 
 const UserProfile = ({ show, handleClose, user }) => {
     return (
@@ -30,7 +31,7 @@ const UserProfile = ({ show, handleClose, user }) => {
                             <ListGroup.Item className="center-text"><strong>Job Title:</strong> {user.jobTitle}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Company:</strong> {user.company}</ListGroup.Item>
                             <ListGroup.Item className="center-text"><strong>Role:</strong>
-                                <Badge bg={user.role && user.role.roleName === 'ADMIN' ? 'primary' : 'secondary'} className="ms-2">
+                                <Badge bg={user.role && user.role.roleName === ROLE.ADMIN.roleName ? 'primary' : 'secondary'} className="ms-2">
                                     {user.role ? user.role.roleName : 'N/A'}
                                 </Badge>
                             </ListGroup.Item>

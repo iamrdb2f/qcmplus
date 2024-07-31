@@ -61,7 +61,7 @@ const Signin = () => {
             const response = await loginAPICall(formData.email, formData.password);
             const { accessToken, role } = response.data;
             const token = `Bearer ${accessToken}`;
-
+            console.log("response.data :"+ response.data.data)
             console.log("accessToken: ", token);
             console.log("role: ", role);
             console.log("email: ", formData.email);
