@@ -38,22 +38,35 @@ public class AuthServiceImpl implements AuthService {
 
         Optional<User> userOptional = userRepository.findByEmail(loginDto.getEmail());
 
+
+        String userEmail = null;
+        String userLastName = null;
+        String userFirstName = null;
         String role = null;
-        String username = null;
-        if(userOptional.isPresent()){
+        String userJob = null;
+
+        if (userOptional.isPresent()) {
             User loggedInUser = userOptional.get();
             Optional<Role> optionalRole = Optional.ofNullable(loggedInUser.getRole());
-            username = loggedInUser.getLastName();
-            if(optionalRole.isPresent()){
+            userEmail = loggedInUser.getEmail();
+            userLastName = loggedInUser.getLastName();
+            userFirstName = loggedInUser.getFirstName();
+            if (optionalRole.isPresent()) {
                 Role userRole = optionalRole.get();
                 role = userRole.getRoleName();
             }
+            userJob = loggedInUser.getJobTitle();
+
         }
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-        jwtAuthResponse.setUserName(username);
-        jwtAuthResponse.setRole(role);
         jwtAuthResponse.setAccessToken(token);
+        jwtAuthResponse.setUserEmail(userEmail);
+        jwtAuthResponse.setUserLastName(userLastName);
+        jwtAuthResponse.setUserFirstName(userFirstName);
+        jwtAuthResponse.setRole(role);
+        jwtAuthResponse.setUserJob(userJob);
+
         return jwtAuthResponse;
     }
 }

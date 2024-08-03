@@ -13,7 +13,7 @@ import {
 const AdminMenu =({renderAdminItem}) =>{
     return (
         <>
-            {renderAdminItem('Dashboard', FaHome, 'Dashboard')}
+            {renderAdminItem('AdminDashboard', FaHome, 'Dashboard')}
             {renderAdminItem('Admin', FaChalkboardTeacher, 'Admin')}
             {renderAdminItem('Trainee', FaUserGraduate, 'Trainee')}
             {renderAdminItem('Exams', FaBook, 'Exams')}

@@ -5,7 +5,7 @@ import t from '../../assets/profil/teklit.jpeg'
 import o from '../../assets/profil/outhmane.jpeg'
 import b from '../../assets/profil/benjamin.jpeg'
 
-const Apropos = () => {
+const About = () => {
   return (
     <div className="pt-5 pb-5">
        <section id="about">
@@ -91,4 +91,4 @@ const Apropos = () => {
   )
 }
 
-export default Apropos
+export default About
