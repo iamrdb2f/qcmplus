@@ -33,11 +33,13 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install --prefix qcmplusweb # make sure to specify the correct path to your frontend
+      - name: Fix vulnerabilities
+        run: npm audit fix --force --prefix qcmplusweb
       - name: Build
         run: npm run build --prefix qcmplusweb # make sure to specify the correct path to your frontend
 
   qodana:
-    needs: [build-backend, build-frontend]
+    needs: [ build-backend, build-frontend ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -57,3 +59,4 @@ jobs:
         uses: JetBrains/qodana-action@v2024.1
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
