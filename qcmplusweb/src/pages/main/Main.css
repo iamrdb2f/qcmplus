@@ -6,42 +6,46 @@
     background-color: var(--white-color);
 }
 
-.ExportUserBtn{
+.ExportUserBtn {
     background-color: var(--bg-default-dark-color);
     color: var(--white-color);
 }
-.ToggleUserBtn{
+
+.ToggleUserBtn {
     background-color: var(--bg-default-dark-color);
     color: var(--white-color);
 }
-.loggedInUserBtn{
+
+.loggedInUserBtn {
     background-color: var(--bg-dark-primary-color);
     color: var(--white-color);
 }
+
 .dropdown-toggle.show {
     background-color: var(--bg-success-color);
     color: var(--white-color);
-    border-color:  var(--bg-success-color);
+    border-color: var(--bg-success-color);
 }
 
 .dropdown-menu.show {
-    background-color:var( --bg-default-color);
+    background-color: var(--bg-default-color);
 }
 
 .loggedInUserBtn:hover,
-.loggedInUserBtn:active{
+.loggedInUserBtn:active {
     background-color: var(--bg-success-color);
     color: var(--white-color);
     transition: background-color 0.3s ease;
 }
-.ExportUserBtn:hover,
- .ToggleUserBtn:hover{
-     background-color: var(--bg-dark-primary-color);
-     color: var(--white-color);
- }
 
 .ExportUserBtn:hover,
-.ToggleUserBtn:hover{
+.ToggleUserBtn:hover {
+    background-color: var(--bg-dark-primary-color);
+    color: var(--white-color);
+}
+
+.ExportUserBtn:hover,
+.ToggleUserBtn:hover {
     background-color: var(--bg-dark-primary-color);
     color: var(--white-color);
     transition: background-color 0.3s ease;
@@ -65,3 +69,22 @@
     overflow-y: hidden;
     height: 100vh;
 }
+
+.main-content-right-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+
+.main-content-right-content .header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    z-index: 1000;
+}
+
+

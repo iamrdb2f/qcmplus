@@ -1,6 +1,6 @@
 .img-container {
     width: 100%;
-    height: 100%;
+    height: 300px;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -8,13 +8,20 @@
 }
 
 .img-container img {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
-.quiz-card {
+.selectExamen-card {
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    width: 50rem;
+    text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .defaultBtn {
@@ -22,12 +29,19 @@
     width: 150px;
     padding: 10px;
     border-radius: 8px;
-    background-color: #007bff;
-    color: #fff;
+    background-color: var(--bg-default-dark-color);
+    color: var(--bg-primary-color);
     text-align: center;
     transition: background-color 0.3s ease;
 }
 
 .defaultBtn:hover {
-    background-color: #0056b3;
+    background-color: var(--bg-default-dark-hover-color);
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
 }

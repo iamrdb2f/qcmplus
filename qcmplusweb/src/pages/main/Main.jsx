@@ -1,14 +1,14 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Main.css";
 import {AiFillWarning} from "react-icons/ai";
-import {IoMdLogOut} from "react-icons/io"; // Import logout icon
-import {FaUser} from "react-icons/fa"; // Import user icon
+import {IoMdLogOut} from "react-icons/io";
+import {FaUser} from "react-icons/fa";
 import {ROLE} from "../../utils/UtilLists";
-import {getLoggedInUser, isAdminUser, isUserLoggedIn, logout} from "../../services/AuthService"; // Import logout function
+import {getLoggedInUser, isAdminUser, logout} from "../../services/AuthService";
 import QuizList from "../../components/Quiz/QuizList";
 import {useNavigate} from "react-router-dom";
 import ExamSelected from "../../components/ExamSelected/ExamSelected";
@@ -17,8 +17,7 @@ const Main = () => {
     const isAdmin = isAdminUser();
     const getUser = getLoggedInUser();
     const navigate = useNavigate();
-
-    const [quizId, setQuizId] = useState();
+    const [quizId, setQuizId] = useState(null);
     const [showUserList, setShowUserList] = useState(true);
     const [selectedItem, setSelectedItem] = useState(isAdmin ? 'AdminDashboard' : 'UserDashboard');
 
@@ -27,12 +26,7 @@ const Main = () => {
         navigate('/');
     }, [navigate]);
 
-    useEffect(() => {
-        if (!isUserLoggedIn()) {
-            handleLogout();
-        }
-        setSelectedItem(isAdmin ? 'AdminDashboard' : 'UserDashboard');
-    }, [isAdmin, handleLogout]);
+
 
     const handleSidebarItemClick = (item) => {
         setSelectedItem(item);
@@ -41,7 +35,7 @@ const Main = () => {
 
     const handleTakeQuiz = (quizId) => {
         console.log(quizId);
-        setQuizId(quizId);
+        setQuizId(quizId)
         setSelectedItem('TakeExams');
     };
 
@@ -66,7 +60,8 @@ const Main = () => {
             case 'Features':
                 return <h1><AiFillWarning />Features: en cours de construction</h1>;
             case 'TakeExams':
-                return <ExamSelected quizId={quizId}/>;
+                // return <h1><AiFillWarning />Take Exams: en cours de construction</h1>;
+                return <ExamSelected quizId={quizId} />;
             case 'HistoryExams':
                 return <h1><AiFillWarning />History Exams : en cours de construction</h1>;
             case 'UserDashboard':
@@ -89,8 +84,8 @@ const Main = () => {
                     <Sidebar onItemClick={handleSidebarItemClick} selectedItem={selectedItem} />
                 </Col>
                 <Col xs={12} md={10} className="main-content">
-                    <div>
-                        <div className="header d-flex justify-content-end m-3">
+                    <div className="main-content-right-content">
+                        <div className="header d-flex justify-content-end">
                             {isAdmin && (
                                 <>
                                     <Button className="ExportUserBtn me-2">Export CSV</Button>
@@ -99,11 +94,11 @@ const Main = () => {
                                     </Button>
                                 </>
                             )}
-                            <Dropdown className="mx-3 ">
+                            <Dropdown className="mx-3">
                                 <Dropdown.Toggle className="loggedInUserBtn px-5" id="dropdown-basic">
                                     <FaUser className="me-1" /> {getUser.userFirstName}
                                 </Dropdown.Toggle>
-                                <Dropdown.Menu className={"p-0"}>
+                                <Dropdown.Menu className="p-0">
                                     <Dropdown.Item>{`User : ${getUser.userFirstName} ${getUser.userLastName.toUpperCase()}`}</Dropdown.Item>
                                     <Dropdown.Item>{`Email : ${getUser.userEmail}`}</Dropdown.Item>
                                     <Dropdown.Item>{`Job Title : ${getUser.userJob}`}</Dropdown.Item>
@@ -118,6 +113,7 @@ const Main = () => {
                         {renderContent()}
                     </div>
                 </Col>
+
             </Row>
         </Container>
     );
