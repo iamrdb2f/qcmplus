@@ -8,7 +8,7 @@ import {NavLink} from 'react-router-dom';
 
 const NavigationMenu = () => {
     return (
-        <Navbar className="justify-content-between navBarMenu container-fluid fixed-top" style={{backgroundColor:"#f3f8fe"}}>
+        <Navbar className="justify-content-between navBarMenu container-fluid fixed-top m-0" style={{backgroundColor:"#f3f8fe"}}>
             <Container>
                 <Navbar.Brand href="/">
                     <ImgLogo/>
@@ -20,10 +20,7 @@ const NavigationMenu = () => {
                 </Nav>
                 <Nav>
                     <NavLink to="/signin">
-                        <button variant="light" className="btn-sing-in mx-3 px-3 py-2 bold">Se connecter</button>
-                    </NavLink>
-                    <NavLink to="/signup">
-                        <button variant="light" className="btn-sing-out mx-3 px-3 py-2 ">Inscription</button>
+                        <button variant="light" className="btn-sing-in mx-3 px-5 py-2 bold">Se connecter</button>
                     </NavLink>
                 </Nav>
             </Container>

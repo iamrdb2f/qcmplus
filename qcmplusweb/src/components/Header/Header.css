@@ -1,0 +1,33 @@
+.header-container {
+    padding: 0;
+    margin: 0;
+    background-color:var(--bg-secondary-color);
+}
+
+.header-title {
+    margin-top: 5rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.header-text {
+    background-color: var(--bg-secondary-color);
+    width: 50%;
+    border-radius: 23px;
+}
+
+.header-button {
+    border-radius: 23px;
+    background-color: var(--bg-default-dark-color);
+    color: var(--white-color);
+}
+.header-button:hover{
+    background-color: var( --bg-default-dark-hover-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
+}
+
+.header-image {
+    max-width: 100%;
+    height: auto;
+}
