@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { getQuizzes, getQuestions, getAnswers, submitExamSession } from '../../services/ExamService';
-import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { getQuestions, getAnswers, submitExamSession } from '../../services/ExamService';
+import { Button, Form, Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import {getAnswersByQuestionId} from "../../services/AnswerService";
 
-const Exam = () => {
-    const { quizId } = useParams();
+const Exam = ({ quizId }) => {
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({});
     const [examCompleted, setExamCompleted] = useState(false);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const startQuiz = async () => {
-            const response = await getQuestions(quizId);
-            setQuestions(response.data);
-            setCurrentQuestionIndex(0);
-            setUserAnswers({});
-            setExamCompleted(false);
+            setLoading(true);
+            try {
+                const response = await getQuestions(quizId);
+                setQuestions(response.data);
+                setCurrentQuestionIndex(0);
+                setUserAnswers({});
+                setExamCompleted(false);
+            } catch (error) {
+                console.error('Error fetching questions:', error.response ? error.response.data : error.message);
+                setError(error.response?.data?.message || 'An error occurred while fetching questions');
+            } finally {
+                setLoading(false);
+            }
         };
 
         startQuiz();
     }, [quizId]);
 
     const fetchAnswers = async (questionId) => {
-        const response = await getAnswers(questionId);
-        setAnswers((prev) => ({ ...prev, [questionId]: response.data }));
+        try {
+            const response = await getAnswersByQuestionId(questionId);
+            setAnswers((prev) => ({ ...prev, [questionId]: response.data }));
+        } catch (error) {
+            console.error('Error fetching answers:', error.response ? error.response.data : error.message);
+            setError(error.response?.data?.message || 'An error occurred while fetching answers');
+        }
     };
 
     useEffect(() => {
@@ -34,11 +48,23 @@ const Exam = () => {
         }
     }, [questions, currentQuestionIndex]);
 
-    const handleAnswerChange = (questionId, answerId, isChecked) => {
+    const handleAnswerChange = (questionId, answerId) => {
         setUserAnswers((prev) => ({
             ...prev,
-            [questionId]: isChecked ? answerId : null
+            [questionId]: answerId
         }));
+    };
+
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex((prev) => prev + 1);
+        }
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex((prev) => prev - 1);
+        }
     };
 
     const handleSubmit = async () => {
@@ -47,12 +73,43 @@ const Exam = () => {
             quiz_id: quizId,
             answers: userAnswers
         };
-        await submitExamSession(sessionData);
-        setExamCompleted(true);
+        try {
+            await submitExamSession(sessionData);
+            setExamCompleted(true);
+        } catch (error) {
+            console.error('Error submitting exam session:', error.response ? error.response.data : error.message);
+            setError(error.response?.data?.message || 'An error occurred while submitting the exam');
+        }
     };
 
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <Spinner animation="border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>
+            </div>
+        );
+    }
+
     if (examCompleted) {
-        return <h3>Exam completed. Thank you!</h3>;
+        return (
+            <Container>
+                <Alert variant="success">
+                    Exam completed successfully. Thank you!
+                </Alert>
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container>
+                <Alert variant="danger">
+                    {error}
+                </Alert>
+            </Container>
+        );
     }
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -72,27 +129,41 @@ const Exam = () => {
                                         name={`question-${currentQuestion.questionId}`}
                                         label={answer.answerText}
                                         checked={userAnswers[currentQuestion.questionId] === answer.answerId}
-                                        onChange={(e) =>
-                                            handleAnswerChange(currentQuestion.questionId, answer.answerId, e.target.checked)
+                                        onChange={() =>
+                                            handleAnswerChange(currentQuestion.questionId, answer.answerId)
                                         }
                                     />
                                 ))}
                             </Form>
-                            <Button
-                                className="mt-3"
-                                onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                                disabled={currentQuestionIndex >= questions.length - 1}
-                            >
-                                Next
-                            </Button>
-                            {currentQuestionIndex === questions.length - 1 && (
-                                <Button className="mt-3" onClick={handleSubmit}>
-                                    Submit
+                            <div className="d-flex justify-content-between mt-3">
+                                <Button
+                                    onClick={handlePreviousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                >
+                                    Previous
                                 </Button>
-                            )}
+                                <Button
+                                    onClick={handleNextQuestion}
+                                    disabled={
+                                        currentQuestionIndex >= questions.length - 1 ||
+                                        !userAnswers[currentQuestion.questionId]
+                                    }
+                                >
+                                    Next
+                                </Button>
+                                {currentQuestionIndex === questions.length - 1 && (
+                                    <Button
+                                        className="ms-2"
+                                        onClick={handleSubmit}
+                                        disabled={!userAnswers[currentQuestion.questionId]}
+                                    >
+                                        Submit
+                                    </Button>
+                                )}
+                            </div>
                         </>
                     ) : (
-                        <p>Loading...</p>
+                        <p>No questions available.</p>
                     )}
                 </Col>
             </Row>

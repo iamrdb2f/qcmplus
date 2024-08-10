@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Container} from 'react-bootstrap';
-import {useNavigate} from 'react-router-dom';
-import {retrieveQuizze} from '../../services/QuizService';
+import React, { useEffect, useState } from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { retrieveQuizze } from '../../services/QuizService';
 import './ExamSelected.css';
 
-const ExamSelected = ({quizId}) => {
+const ExamSelected = ({ quizId, onStartExam }) => {
     const [quizze, setQuizze] = useState({});
-    const navigate = useNavigate();
+    const [error, setError] = useState(null); // Add error state to manage errors
 
-    const Img = ({title = 'QCMPlus', link = `Images/${quizze.title}.jpg`}) => {
-        return (<div className="img-container">
-                <img src={link} alt={title} className="img-fluid"/>
-            </div>);
+    const Img = ({ title = 'QCMPlus', link = `Images/${quizze.title}.jpg` }) => {
+        return (
+            <div className="img-container">
+                <img src={link} alt={title} className="img-fluid" />
+            </div>
+        );
     };
 
     useEffect(() => {
@@ -21,28 +22,30 @@ const ExamSelected = ({quizId}) => {
                 setQuizze(response.data);
             } catch (error) {
                 console.error('Error fetching quiz:', error);
+                setError('Failed to load quiz. Please try again later.');
             }
         };
 
         fetchQuizze();
     }, [quizId]);
 
-    const handleStartExam = () => {
-        console.log(quizId)
-        //navigate(`/exam/${quizId}`); // Navigate to the Exam component
-    };
+    if (error) {
+        return <div className="alert alert-danger">{error}</div>;
+    }
 
-    return (<>
-            <Card className="selectExamen-card">
-                <Img title={quizze.title}/>
-                <Card.Body className="text-center">
-                    <Card.Title className="text-bold">{quizze.title}</Card.Title>
-                    <Card.Text>{quizze.description}</Card.Text>
-                    <Card.Text>Vous aurez 15 questions à répondre</Card.Text>
-                    <Button className="defaultBtn text-center" onClick={handleStartExam}>Start Exam</Button>
-                </Card.Body>
-            </Card>
-        </>);
+    return (
+        <Card className="selectExamen-card">
+            <Img title={quizze.title} />
+            <Card.Body className="text-center">
+                <Card.Title className="text-bold">{quizze.title}</Card.Title>
+                <Card.Text>{quizze.description}</Card.Text>
+                <Card.Text>Vous aurez 15 questions à répondre</Card.Text>
+                <Button className="defaultBtn text-center" onClick={onStartExam}>
+                    Start Exam
+                </Button>
+            </Card.Body>
+        </Card>
+    );
 };
 
 export default ExamSelected;

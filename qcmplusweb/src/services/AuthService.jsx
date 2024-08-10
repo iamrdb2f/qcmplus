@@ -10,7 +10,8 @@ export const storeToken = (token) => localStorage.setItem("token", token);
 export const getToken = () => localStorage.getItem("token");
 
 
-export const saveLoggedInUser = (userEmail, userLastName, userFirstName,  role, userJob) => {
+export const saveLoggedInUser = (userId,userEmail, userLastName, userFirstName,  role, userJob) => {
+    sessionStorage.setItem("userId", userId);
     sessionStorage.setItem("authenticatedUser", userEmail);
     sessionStorage.setItem("userLastName", userLastName);
     sessionStorage.setItem("userFirstName", userFirstName);
@@ -25,6 +26,7 @@ export const isUserLoggedIn = () => {
 
 export const getLoggedInUser = () => {
     return {
+        userId: sessionStorage.getItem("userId"),
         authenticatedUser: sessionStorage.getItem("authenticatedUser"),
         userEmail: sessionStorage.getItem("authenticatedUser"),
         userLastName: sessionStorage.getItem("userLastName"),

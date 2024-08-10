@@ -59,11 +59,11 @@ const Signin = () => {
 
         try {
             const response = await loginAPICall(formData.email, formData.password);
-            const {accessToken, userEmail,  userLastName, userFirstName, role, userJob} = response.data;
+            const {userId, accessToken, userEmail,  userLastName, userFirstName, role, userJob} = response.data;
             const token = `Bearer ${accessToken}`;
 
             storeToken(token);
-            saveLoggedInUser(userEmail,  userLastName, userFirstName, role, userJob);
+            saveLoggedInUser(userId, userEmail,  userLastName, userFirstName, role, userJob);
             navigate("/main");
 
         } catch (error) {

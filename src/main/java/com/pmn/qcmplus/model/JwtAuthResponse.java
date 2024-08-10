@@ -12,6 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtAuthResponse {
+    private int userId;
     private String accessToken;
     private String tokenType = "Bearer";
     private String userEmail;

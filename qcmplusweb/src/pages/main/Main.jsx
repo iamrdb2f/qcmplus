@@ -1,17 +1,18 @@
-import React, {useCallback, useState} from 'react';
-import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
+import React, { useCallback, useState } from 'react';
+import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Main.css";
-import {AiFillWarning} from "react-icons/ai";
-import {IoMdLogOut} from "react-icons/io";
-import {FaUser} from "react-icons/fa";
-import {ROLE} from "../../utils/UtilLists";
-import {getLoggedInUser, isAdminUser, logout} from "../../services/AuthService";
+import { AiFillWarning } from "react-icons/ai";
+import { IoMdLogOut } from "react-icons/io";
+import { FaUser } from "react-icons/fa";
+import { ROLE } from "../../utils/UtilLists";
+import { getLoggedInUser, isAdminUser, logout } from "../../services/AuthService";
 import QuizList from "../../components/Quiz/QuizList";
-import {useNavigate} from "react-router-dom";
 import ExamSelected from "../../components/ExamSelected/ExamSelected";
+import Exam from "../../components/Exam/Exam"; // Import the Exam component
+import { useNavigate } from "react-router-dom";
 
 const Main = () => {
     const isAdmin = isAdminUser();
@@ -20,26 +21,33 @@ const Main = () => {
     const [quizId, setQuizId] = useState(null);
     const [showUserList, setShowUserList] = useState(true);
     const [selectedItem, setSelectedItem] = useState(isAdmin ? 'AdminDashboard' : 'UserDashboard');
+    const [examStarted, setExamStarted] = useState(false); // New state to track exam start
 
     const handleLogout = useCallback(() => {
         logout();
         navigate('/');
     }, [navigate]);
 
-
-
     const handleSidebarItemClick = (item) => {
         setSelectedItem(item);
         setShowUserList(true);
+        setExamStarted(false); // Reset examStarted when navigating
     };
 
     const handleTakeQuiz = (quizId) => {
-        console.log(quizId);
-        setQuizId(quizId)
+        setQuizId(quizId);
         setSelectedItem('TakeExams');
     };
 
+    const handleStartExam = () => {
+        setExamStarted(true); // Trigger the exam view
+    };
+
     const renderContent = () => {
+        if (examStarted && quizId) {
+            return <Exam quizId={quizId} />; // Render Exam component when exam starts
+        }
+
         if (!showUserList) {
             return <AddUser />;
         }
@@ -60,8 +68,7 @@ const Main = () => {
             case 'Features':
                 return <h1><AiFillWarning />Features: en cours de construction</h1>;
             case 'TakeExams':
-                // return <h1><AiFillWarning />Take Exams: en cours de construction</h1>;
-                return <ExamSelected quizId={quizId} />;
+                return <ExamSelected quizId={quizId} onStartExam={handleStartExam} />; // Pass handleStartExam
             case 'HistoryExams':
                 return <h1><AiFillWarning />History Exams : en cours de construction</h1>;
             case 'UserDashboard':
@@ -113,7 +120,6 @@ const Main = () => {
                         {renderContent()}
                     </div>
                 </Col>
-
             </Row>
         </Container>
     );

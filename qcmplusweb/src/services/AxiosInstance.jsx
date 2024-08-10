@@ -29,6 +29,7 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if (error.response && error.response.status === 401) {
+            console.error('Unauthorized access - 401:', error.response.data);
             window.location.href = '/signin';
         }
         return Promise.reject(error);
