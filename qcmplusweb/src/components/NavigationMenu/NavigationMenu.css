@@ -1,4 +1,20 @@
-/* Custom styles for the navigation bar */
+.navBarMenu {
+    background-color: red;
+}
+
+.nav-link {
+    color: var(--text-default-color);
+}
+
+.nav-link:hover {
+    color: var(--bg-default-dark-color);
+    font-weight: bold ;
+}
+
+.nav-link.active {
+    font-weight: bold ;
+    color: var( --bg-default-dark-hover-color);
+}
 
 .nav-link-update{
     border-radius: 25px;
@@ -8,16 +24,12 @@
 
 .btn-sing-in{
     border-radius: 23px;
-    border-bottom: 5px solid var(--text-blue-color);
+    border-bottom: 5px solid var(--bg-default-dark-color);
 }
 .btn-sing-in:hover{
     font-weight: bold;
-    border-bottom:none;
-}
-.btn-sing-out{
-    border-radius: 23px;
-}
-
-.btn-sing-out:hover{
-    font-weight: bold;
+    border: none;
+    background-color: var( --bg-default-dark-hover-color);
+    color: var(--white-color);
+    transition: background-color 0.3s ease;
 }
