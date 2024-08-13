@@ -18,7 +18,7 @@ QCMPLUS est une plateforme complète conçue pour gérer efficacement les quiz e
 ## Structure du Projet
 
 - Java `version 17`
-- Spring Boot  `version 3.2.4`
+- Spring Boot  `version 3.3.1`
 - Maven `version 3.9.6`
 
 Le projet est organisé en plusieurs répertoires et fichiers :
@@ -30,7 +30,7 @@ Le projet est organisé en plusieurs répertoires et fichiers :
     ├── src
     │ ├── main
     │ │ └── java
-    │ │ └── com.qcmplus.qcmplus
+    │ │ └── com.pmn.qcmplus
     │ │ ├── controller
     │ │ ├── model
     │ │ ├── repository
