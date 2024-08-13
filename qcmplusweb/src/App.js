@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
 import {Navigate, Route, Routes} from 'react-router-dom';
-import Home from "./pages/Home/Home";
+import Home from "./pages/home/Home";
 import Signin from "./pages/authentication/Signin/Signin";
 import ForgetPassword from "./pages/authentication/ForgetPassword/ForgetPassword";
-import Main from "./pages/Main/Main";
+import Main from "./pages/main/Main";
 import {isUserLoggedIn} from "./services/AuthService";
 
 const AuthenticatedRoute = ({children}) => {

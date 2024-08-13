@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
@@ -22,17 +22,17 @@ const Main = () => {
     const [showUserList, setShowUserList] = useState(true);
     const [selectedItem, setSelectedItem] = useState(isAdmin ? 'AdminDashboard' : 'UserDashboard');
 
+    const handleLogout = useCallback(() => {
+        logout();
+        navigate('/');
+    }, [navigate]);
+
     useEffect(() => {
-        if (! isUserLoggedIn()) {
+        if (!isUserLoggedIn()) {
             handleLogout();
         }
         setSelectedItem(isAdmin ? 'AdminDashboard' : 'UserDashboard');
-    }, [isAdmin]);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+    }, [isAdmin, handleLogout]);
 
     const handleSidebarItemClick = (item) => {
         setSelectedItem(item);
@@ -41,7 +41,7 @@ const Main = () => {
 
     const handleTakeQuiz = (quizId) => {
         console.log(quizId);
-        setQuizId(quizId)
+        setQuizId(quizId);
         setSelectedItem('TakeExams');
     };
 
@@ -66,9 +66,7 @@ const Main = () => {
             case 'Features':
                 return <h1><AiFillWarning />Features: en cours de construction</h1>;
             case 'TakeExams':
-
-                // return <h1><AiFillWarning />Take Exams: en cours de construction</h1>;
-               return <ExamSelected quizId={quizId}/>;
+                return <ExamSelected quizId={quizId}/>;
             case 'HistoryExams':
                 return <h1><AiFillWarning />History Exams : en cours de construction</h1>;
             case 'UserDashboard':
@@ -78,10 +76,8 @@ const Main = () => {
             default:
                 if (isAdmin) {
                     handleSidebarItemClick('AdminDashboard');
-                    //return <h1><AiFillWarning />Admin Dashboard: en cours de construction</h1>;
                 } else {
                     handleSidebarItemClick('UserDashboard');
-                   // return <QuizList onTakeQuiz={handleTakeQuiz} />;
                 }
         }
     };
