@@ -1,9 +1,9 @@
-import axios from 'axios';
 import {ROLE} from "../utils/UtilLists";
+import axiosInstance, {API_BASE_URL} from "./AxiosInstance";
 
-const AUTH_REST_API_BASE_URL = 'http://localhost:8080/api/auth/login';
+const AUTH_REST_API_BASE_URL = `${API_BASE_URL}/api/auth/login`;
 
-export const loginAPICall = (email, password) => axios.post(AUTH_REST_API_BASE_URL, {email, password});
+export const loginAPICall = (email, password) => axiosInstance.post(AUTH_REST_API_BASE_URL, {email, password});
 
 export const storeToken = (token) => localStorage.setItem("token", token);
 
