@@ -27,7 +27,5 @@ public class UserAnswer {
     @ManyToOne
     @JoinColumn(name = "answer_id", nullable = false)
     private Answer answer;
-
-    // Getters and Setters
 }
 

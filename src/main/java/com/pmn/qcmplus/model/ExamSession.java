@@ -38,5 +38,4 @@ public class ExamSession {
     @Column(name = "time_spent", nullable = false)
     private Time timeSpent;
 
-    // Getters and Setters
 }
