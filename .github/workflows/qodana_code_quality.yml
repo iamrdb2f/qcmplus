@@ -5,10 +5,7 @@ on:
   pull_request:
   push:
     branches:
-      - develop
-      - develop-front
-      - master
-      - 'releases/*'
+      - '**'  # Triggers on any branch
 
 jobs:
   # Step 1: Checkout code
@@ -33,7 +30,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml  # Added the command to specify the path to pom.xml
+        run: mvn -B package --file pom.xml
 
   # Step 3: Build Frontend
   build-frontend:
@@ -49,7 +46,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install --prefix qcmplusweb  # Added the command to install npm dependencies
+        run: npm install --prefix qcmplusweb
 
       - name: Build
         run: npm run build --prefix qcmplusweb
@@ -109,7 +106,7 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
-  # Step 7: Build Docker Image and Push to Docker Hub (only on master branch)
+  # Step 7: Build Docker Image and Push to Docker Hub (excluded by default)
   deploy:
     if: github.ref == 'refs/heads/master'
     needs: qodana
