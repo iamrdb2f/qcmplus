@@ -1,7 +1,8 @@
-package com.pmn.qcmplus.service;
+package com.pmn.qcmplus.service.impl;
 
 import com.pmn.qcmplus.model.Answer;
 import com.pmn.qcmplus.repository.AnswerRepository;
+import com.pmn.qcmplus.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
