@@ -27,14 +27,20 @@ Le projet est organisé en plusieurs répertoires et fichiers :
     │
     ├── .idea
     ├── qcmplusweb
+    │  └── public
+    │  └── src
     ├── src
     │ ├── main
     │ │ └── java
     │ │ └── com.pmn.qcmplus
+    │ │ ├── config
     │ │ ├── controller
+    │ │ ├── exception
     │ │ ├── model
     │ │ ├── repository
+    │ │ ├── security
     │ │ └── service
+    │ │   └── iml
     │ └── test
     ├── target
     ├── .env
