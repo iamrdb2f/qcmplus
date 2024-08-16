@@ -27,7 +27,26 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz getQuizById(Integer quizId) {
-        Optional<Quiz> quiz = quizRepository.findById(quizId);
-        return quiz.orElseThrow(() -> new QuizNotFoundException(quizId));
+        return quizRepository.findById(quizId)
+                .orElseThrow(() -> new QuizNotFoundException(quizId));
+    }
+
+    @Override
+    public Quiz createQuiz(Quiz quiz) {
+        return quizRepository.save(quiz);
+    }
+
+    @Override
+    public Quiz updateQuiz(Integer quizId, Quiz quizDetails) {
+        Quiz quiz = getQuizById(quizId);
+        quiz.setTitle(quizDetails.getTitle());
+        quiz.setDescription(quizDetails.getDescription());
+        return quizRepository.save(quiz);
+    }
+
+    @Override
+    public void deleteQuiz(Integer quizId) {
+        Quiz quiz = getQuizById(quizId);
+        quizRepository.delete(quiz);
     }
 }

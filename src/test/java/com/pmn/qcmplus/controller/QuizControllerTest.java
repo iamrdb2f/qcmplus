@@ -7,15 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class QuizControllerTest {
 
@@ -32,39 +33,76 @@ class QuizControllerTest {
 
     @Test
     void testGetAllQuizzes() {
+        // Arrange
         List<Quiz> quizzes = Arrays.asList(
-                new Quiz(1, "Bases de données", "Testez vos connaissances sur les SQL et les bases de données."),
-                new Quiz(2, "Programmation", "Évaluation des compétences en programmation en divers langages.")
+                new Quiz(1, "Quiz 1", "Description 1"),
+                new Quiz(2, "Quiz 2", "Description 2")
         );
         when(quizService.getAllQuizzes()).thenReturn(quizzes);
 
-        List<Quiz> response = quizController.getAllQuizzes();
+        // Act
+        List<Quiz> result = quizController.getAllQuizzes();
 
-        assertEquals(2, response.size());
-        assertEquals(quizzes, response);
+        // Assert
+        assertEquals(2, result.size());
         verify(quizService, times(1)).getAllQuizzes();
     }
 
     @Test
     void testGetQuizById_Found() {
-
-        Quiz quiz = new Quiz(1, "Bases de données", "Testez vos connaissances sur les SQL et les bases de données.");
+        // Arrange
+        Quiz quiz = new Quiz(1, "Quiz 1", "Description 1");
         when(quizService.getQuizById(1)).thenReturn(quiz);
 
-        Quiz response = quizController.getQuizById(1);
+        // Act
+        Quiz result = quizController.getQuizById(1);
 
-        assertEquals(quiz, response);
+        // Assert
+        assertEquals("Quiz 1", result.getTitle());
         verify(quizService, times(1)).getQuizById(1);
     }
 
     @Test
-    void testGetQuizById_NotFound() {
+    void testCreateQuiz() {
+        // Arrange
+        Quiz quiz = new Quiz(null, "Quiz 1", "Description 1");
+        Quiz createdQuiz = new Quiz(1, "Quiz 1", "Description 1");
+        when(quizService.createQuiz(any(Quiz.class))).thenReturn(createdQuiz);
 
-        when(quizService.getQuizById(1)).thenReturn(null);
+        // Act
+        ResponseEntity<Quiz> response = quizController.createQuiz(quiz);
 
-        Quiz response = quizController.getQuizById(1);
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Quiz 1", response.getBody().getTitle());
+        verify(quizService, times(1)).createQuiz(any(Quiz.class));
+    }
 
-        assertNull(response);
-        verify(quizService, times(1)).getQuizById(1);
+    @Test
+    void testUpdateQuiz() {
+        // Arrange
+        Quiz quizDetails = new Quiz(1, "Updated Quiz", "Updated Description");
+        when(quizService.updateQuiz(eq(1), any(Quiz.class))).thenReturn(quizDetails);
+
+        // Act
+        ResponseEntity<Quiz> response = quizController.updateQuiz(1, quizDetails);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Updated Quiz", response.getBody().getTitle());
+        verify(quizService, times(1)).updateQuiz(eq(1), any(Quiz.class));
+    }
+
+    @Test
+    void testDeleteQuiz() {
+        // Arrange
+        doNothing().when(quizService).deleteQuiz(1);
+
+        // Act
+        ResponseEntity<Void> response = quizController.deleteQuiz(1);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(quizService, times(1)).deleteQuiz(1);
     }
 }
