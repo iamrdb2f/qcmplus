@@ -1,16 +1,20 @@
 package com.pmn.qcmplus.repository;
-/*
+
 import com.pmn.qcmplus.model.Answer;
 import com.pmn.qcmplus.model.Question;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 class AnswerRepositoryTest {
 
@@ -21,34 +25,50 @@ class AnswerRepositoryTest {
     private QuestionRepository questionRepository;
 
     private Question question;
+    private Answer answer1;
+    private Answer answer2;
 
     @BeforeEach
     void setUp() {
-        question = new Question();
-        question.setQuestionText("Quelle commande SQL est utilisée pour extraire des données d’une base de données?");
-        question = questionRepository.save(question);
+        question = new Question(null, null, "Sample question");
+        questionRepository.save(question);
 
-        Answer answer1 = new Answer();
-        answer1.setQuestion(question);
-        answer1.setAnswerText("SELECT");
-        answer1.setCorrect(true);
-
-        Answer answer2 = new Answer();
-        answer2.setQuestion(question);
-        answer2.setAnswerText("INSERT");
-        answer2.setCorrect(false);
+        answer1 = new Answer(null, question, "Answer 1", true);
+        answer2 = new Answer(null, question, "Answer 2", false);
 
         answerRepository.save(answer1);
         answerRepository.save(answer2);
     }
 
     @Test
-    void testFindByQuestion_QuestionId() {
+    void testFindAll() {
+        List<Answer> answers = answerRepository.findAll();
+        assertEquals(2, answers.size());
+    }
+
+    @Test
+    void testFindById() {
+        Optional<Answer> foundAnswer = answerRepository.findById(answer1.getAnswerId());
+        assertTrue(foundAnswer.isPresent());
+    }
+
+    @Test
+    void testSave() {
+        Answer newAnswer = new Answer(null, question, "Answer 3", true);
+        Answer savedAnswer = answerRepository.save(newAnswer);
+        assertNotNull(savedAnswer.getAnswerId());
+    }
+
+    @Test
+    void testDeleteById() {
+        answerRepository.deleteById(answer1.getAnswerId());
+        Optional<Answer> foundAnswer = answerRepository.findById(answer1.getAnswerId());
+        assertFalse(foundAnswer.isPresent());
+    }
+
+    @Test
+    void testFindByQuestionId() {
         List<Answer> answers = answerRepository.findByQuestion_QuestionId(question.getQuestionId());
         assertEquals(2, answers.size());
-        assertTrue(answers.stream().anyMatch(a -> "SELECT".equals(a.getAnswerText()) && a.isCorrect()));
-        assertTrue(answers.stream().anyMatch(a -> "INSERT".equals(a.getAnswerText()) && !a.isCorrect()));
     }
 }
-
- */

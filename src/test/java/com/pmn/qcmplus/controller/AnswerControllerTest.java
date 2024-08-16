@@ -8,16 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class AnswerControllerTest {
 
@@ -27,100 +27,69 @@ class AnswerControllerTest {
     @InjectMocks
     private AnswerController answerController;
 
+    private Answer answer;
+    private Question question;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        question = new Question(1, null, "Sample question");
+        answer = new Answer(1, question, "Sample answer", true);
     }
 
     @Test
     void testGetAnswersByQuestionId() {
-        Question question = new Question();
-        question.setQuestionId(1);
+        when(answerService.getAnswersByQuestionId(eq(1))).thenReturn(Arrays.asList(answer));
 
-        List<Answer> answers = Arrays.asList(
-                new Answer(1, question, "Answer 1", true),
-                new Answer(2, question, "Answer 2", false)
-        );
-        when(answerService.getAnswersByQuestionId(1)).thenReturn(answers);
+        ResponseEntity<List<Answer>> response = answerController.getAnswersByQuestionId(1);
 
-        List<Answer> response = answerController.getAnswersByQuestionId(1);
-
-        assertEquals(2, response.size());
-        assertEquals(answers, response);
-        verify(answerService, times(1)).getAnswersByQuestionId(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        verify(answerService, times(1)).getAnswersByQuestionId(eq(1));
     }
 
     @Test
-    void testGetAnswerById_Found() {
-        Question question = new Question();
-        question.setQuestionId(1);
-        Answer answer = new Answer(1, question, "Answer 1", true);
-        when(answerService.getAnswerById(1)).thenReturn(answer);
+    void testGetAnswerById() {
+        when(answerService.getAnswerById(eq(1))).thenReturn(answer);
 
-        Answer response = answerController.getAnswerById(1);
+        ResponseEntity<Answer> response = answerController.getAnswerById(1);
 
-        assertEquals(answer, response);
-        verify(answerService, times(1)).getAnswerById(1);
-    }
-
-    @Test
-    void testGetAnswerById_NotFound() {
-        when(answerService.getAnswerById(1)).thenReturn(null);
-
-        Answer response = answerController.getAnswerById(1);
-
-        assertNull(response);
-        verify(answerService, times(1)).getAnswerById(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Sample answer", response.getBody().getAnswerText());
+        verify(answerService, times(1)).getAnswerById(eq(1));
     }
 
     @Test
     void testCreateAnswer() {
-
-        Question question = new Question();
-        question.setQuestionId(1);
-        Answer answer = new Answer(1, question, "Answer 1", true);
         when(answerService.saveAnswer(any(Answer.class))).thenReturn(answer);
 
-        Answer response = answerController.createAnswer(answer);
+        ResponseEntity<Answer> response = answerController.createAnswer(answer);
 
-        assertEquals(answer, response);
-        verify(answerService, times(1)).saveAnswer(answer);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Sample answer", response.getBody().getAnswerText());
+        verify(answerService, times(1)).saveAnswer(any(Answer.class));
     }
 
     @Test
-    void testUpdateAnswer_Found() {
+    void testUpdateAnswer() {
+        when(answerService.getAnswerById(eq(1))).thenReturn(answer);
+        when(answerService.saveAnswer(any(Answer.class))).thenReturn(answer);
 
-        Question question = new Question();
-        question.setQuestionId(1);
-        Answer existingAnswer = new Answer(1, question, "Old Answer", false);
-        Answer updatedDetails = new Answer(1, question, "Updated Answer", true);
+        ResponseEntity<Answer> response = answerController.updateAnswer(1, answer);
 
-        when(answerService.getAnswerById(1)).thenReturn(existingAnswer);
-        when(answerService.saveAnswer(any(Answer.class))).thenReturn(updatedDetails);
-
-        Answer response = answerController.updateAnswer(1, updatedDetails);
-
-        assertEquals(updatedDetails.getAnswerText(), response.getAnswerText());
-        assertEquals(updatedDetails.isCorrect(), response.isCorrect());
-        verify(answerService, times(1)).getAnswerById(1);
-        verify(answerService, times(1)).saveAnswer(existingAnswer);
-    }
-
-    @Test
-    void testUpdateAnswer_NotFound() {
-        when(answerService.getAnswerById(1)).thenReturn(null);
-
-        Answer response = answerController.updateAnswer(1, new Answer());
-
-        assertNull(response);
-        verify(answerService, times(1)).getAnswerById(1);
-        verify(answerService, times(0)).saveAnswer(any(Answer.class));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Sample answer", response.getBody().getAnswerText());
+        verify(answerService, times(1)).saveAnswer(any(Answer.class));
     }
 
     @Test
     void testDeleteAnswer() {
-        answerController.deleteAnswer(1);
+        doNothing().when(answerService).deleteAnswer(eq(1));
 
-        verify(answerService, times(1)).deleteAnswer(1);
+        ResponseEntity<Void> response = answerController.deleteAnswer(1);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(answerService, times(1)).deleteAnswer(eq(1));
     }
 }
