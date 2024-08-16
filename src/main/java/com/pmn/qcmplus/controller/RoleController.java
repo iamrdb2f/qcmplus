@@ -1,9 +1,10 @@
-RoleController package com.pmn.qcmplus.controller;
+package com.pmn.qcmplus.controller;
 
 import com.pmn.qcmplus.model.Role;
 import com.pmn.qcmplus.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +14,7 @@ import java.util.List;
 @RequestMapping("/api/roles")
 public class RoleController {
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @Autowired
     public RoleController(RoleService roleService) {
