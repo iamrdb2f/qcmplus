@@ -9,14 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.sql.Time;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class ExamSessionControllerTest {
 
@@ -26,28 +29,71 @@ class ExamSessionControllerTest {
     @InjectMocks
     private ExamSessionController examSessionController;
 
+    private ExamSession examSession1;
+    private ExamSession examSession2;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        User user = new User(); // Assume User class exists
+        Quiz quiz = new Quiz(); // Assume Quiz class exists
+
+        examSession1 = new ExamSession(null, user, quiz, 85, new Time(3600000));
+        examSession2 = new ExamSession(null, user, quiz, 90, new Time(4000000));
     }
 
     @Test
     void testSubmitExamSession() {
-        // Arrange
-        User user = new User();
-        user.setId(1);
+        when(examSessionService.saveExamSession(any(ExamSession.class))).thenReturn(examSession1);
 
-        Quiz quiz = new Quiz();
-        quiz.setQuizId(1);
+        ResponseEntity<ExamSession> response = examSessionController.submitExamSession(examSession1);
 
-        ExamSession examSession = new ExamSession(1, user, quiz, 85, new Time(System.currentTimeMillis()));
-        when(examSessionService.saveExamSession(any(ExamSession.class))).thenReturn(examSession);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(85, response.getBody().getScore());
+        verify(examSessionService, times(1)).saveExamSession(any(ExamSession.class));
+    }
 
-        // Act
-        ExamSession response = examSessionController.submitExamSession(examSession);
+    @Test
+    void testGetExamSessionById_Found() {
+        when(examSessionService.getExamSessionById(eq(1))).thenReturn(examSession1);
 
-        // Assert
-        assertEquals(examSession, response);
-        verify(examSessionService, times(1)).saveExamSession(examSession);
+        ResponseEntity<ExamSession> response = examSessionController.getExamSessionById(1);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(85, response.getBody().getScore());
+        verify(examSessionService, times(1)).getExamSessionById(eq(1));
+    }
+
+    @Test
+    void testGetAllExamSessions() {
+        when(examSessionService.getAllExamSessions()).thenReturn(Arrays.asList(examSession1, examSession2));
+
+        ResponseEntity<List<ExamSession>> response = examSessionController.getAllExamSessions();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+        verify(examSessionService, times(1)).getAllExamSessions();
+    }
+
+    @Test
+    void testUpdateExamSession() {
+        when(examSessionService.updateExamSession(eq(1), any(ExamSession.class))).thenReturn(examSession1);
+
+        ResponseEntity<ExamSession> response = examSessionController.updateExamSession(1, examSession1);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(85, response.getBody().getScore());
+        verify(examSessionService, times(1)).updateExamSession(eq(1), any(ExamSession.class));
+    }
+
+    @Test
+    void testDeleteExamSession() {
+        doNothing().when(examSessionService).deleteExamSession(eq(1));
+
+        ResponseEntity<Void> response = examSessionController.deleteExamSession(1);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(examSessionService, times(1)).deleteExamSession(eq(1));
     }
 }

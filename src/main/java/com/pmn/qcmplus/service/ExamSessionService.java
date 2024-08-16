@@ -1,9 +1,12 @@
 package com.pmn.qcmplus.service;
 
 import com.pmn.qcmplus.model.ExamSession;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Service
 public interface ExamSessionService {
     ExamSession saveExamSession(ExamSession examSession);
+    ExamSession getExamSessionById(Integer sessionId);
+    List<ExamSession> getAllExamSessions();
+    ExamSession updateExamSession(Integer sessionId, ExamSession examSession);
+    void deleteExamSession(Integer sessionId);
 }
