@@ -1,5 +1,6 @@
 package com.pmn.qcmplus.service.impl;
 
+import com.pmn.qcmplus.exception.ExamSessionNotFoundException;
 import com.pmn.qcmplus.model.ExamSession;
 import com.pmn.qcmplus.model.Quiz;
 import com.pmn.qcmplus.model.User;
@@ -15,10 +16,14 @@ import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExamSessionServiceImplTest {
@@ -37,8 +42,8 @@ class ExamSessionServiceImplTest {
         User user = new User(); // Assume User class exists
         Quiz quiz = new Quiz(); // Assume Quiz class exists
 
-        examSession1 = new ExamSession(null, user, quiz, 85, new Time(3600000));
-        examSession2 = new ExamSession(null, user, quiz, 90, new Time(4000000));
+        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000));
+        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000));
     }
 
     @Test
@@ -67,9 +72,10 @@ class ExamSessionServiceImplTest {
     void testGetExamSessionById_NotFound() {
         when(examSessionRepository.findById(eq(1))).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> examSessionService.getExamSessionById(1));
+        assertThrows(ExamSessionNotFoundException.class, () -> examSessionService.getExamSessionById(1));
         verify(examSessionRepository, times(1)).findById(1);
     }
+
 
     @Test
     void testGetAllExamSessions() {

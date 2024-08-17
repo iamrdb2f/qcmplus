@@ -1,6 +1,7 @@
 package com.pmn.qcmplus.service;
 
 import com.pmn.qcmplus.model.Answer;
+
 import java.util.List;
 
 public interface AnswerService {
@@ -12,4 +13,6 @@ public interface AnswerService {
     Answer saveAnswer(Answer answer);
 
     void deleteAnswer(Integer id);
+
+    List<Answer> getAllAnswers();
 }

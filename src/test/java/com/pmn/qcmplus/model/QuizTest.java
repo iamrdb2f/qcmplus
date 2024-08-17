@@ -3,7 +3,8 @@ package com.pmn.qcmplus.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class QuizTest {
 
@@ -39,10 +40,11 @@ class QuizTest {
     @Test
     void testNoArgsConstructor() {
         Quiz quiz = new Quiz();
-        assertEquals(0, quiz.getQuizId());
+        assertNull(quiz.getQuizId()); // Expecting null because the quizId is an Integer object and defaults to null
         assertNull(quiz.getTitle());
         assertNull(quiz.getDescription());
     }
+
 
     @Test
     void testAllArgsConstructor() {

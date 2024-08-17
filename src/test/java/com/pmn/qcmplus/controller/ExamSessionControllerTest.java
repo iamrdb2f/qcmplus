@@ -19,7 +19,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ExamSessionControllerTest {
 
@@ -39,8 +42,8 @@ class ExamSessionControllerTest {
         User user = new User(); // Assume User class exists
         Quiz quiz = new Quiz(); // Assume Quiz class exists
 
-        examSession1 = new ExamSession(null, user, quiz, 85, new Time(3600000));
-        examSession2 = new ExamSession(null, user, quiz, 90, new Time(4000000));
+        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000));
+        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000));
     }
 
     @Test

@@ -12,9 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class QuizServiceImplTest {
@@ -57,7 +62,7 @@ class QuizServiceImplTest {
 
     @Test
     void testCreateQuiz() {
-        Quiz quiz = new Quiz(null, "Quiz 1", "Description 1");
+        Quiz quiz = new Quiz(1, "Quiz 1", "Description 1");
 
         when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(1, "Quiz 1", "Description 1"));
 

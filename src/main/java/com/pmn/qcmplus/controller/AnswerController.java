@@ -3,7 +3,15 @@ package com.pmn.qcmplus.controller;
 import com.pmn.qcmplus.model.Answer;
 import com.pmn.qcmplus.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -19,35 +27,40 @@ public class AnswerController {
     }
 
     @GetMapping("/question/{questionId}")
-    public List<Answer> getAnswersByQuestionId(@PathVariable Integer questionId) {
-        return answerService.getAnswersByQuestionId(questionId);
+    public ResponseEntity<List<Answer>> getAnswersByQuestionId(@PathVariable Integer questionId) {
+        List<Answer> answers = answerService.getAnswersByQuestionId(questionId);
+        return ResponseEntity.ok(answers);
     }
 
     @GetMapping("/{id}")
-    public Answer getAnswerById(@PathVariable Integer id) {
-        return answerService.getAnswerById(id);
+    public ResponseEntity<Answer> getAnswerById(@PathVariable Integer id) {
+        Answer answer = answerService.getAnswerById(id);
+        return ResponseEntity.ok(answer);
     }
 
     @PostMapping
-    public Answer createAnswer(@RequestBody Answer answer) {
-        return answerService.saveAnswer(answer);
+    public ResponseEntity<Answer> createAnswer(@RequestBody Answer answer) {
+        Answer savedAnswer = answerService.saveAnswer(answer);
+        return ResponseEntity.ok(savedAnswer);
     }
 
     @PutMapping("/{id}")
-    public Answer updateAnswer(@PathVariable Integer id, @RequestBody Answer answerDetails) {
+    public ResponseEntity<Answer> updateAnswer(@PathVariable Integer id, @RequestBody Answer answerDetails) {
         Answer answer = answerService.getAnswerById(id);
         if (answer != null) {
             answer.setAnswerText(answerDetails.getAnswerText());
-            answer.setCorrect(answerDetails.isCorrect()); // Use setCorrect instead of setIsCorrect
+            answer.setCorrect(answerDetails.isCorrect());
             answer.setQuestion(answerDetails.getQuestion());
-            return answerService.saveAnswer(answer);
+            Answer updatedAnswer = answerService.saveAnswer(answer);
+            return ResponseEntity.ok(updatedAnswer);
         } else {
-            return null;
+            return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAnswer(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteAnswer(@PathVariable Integer id) {
         answerService.deleteAnswer(id);
+        return ResponseEntity.noContent().build();
     }
 }

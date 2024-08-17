@@ -9,17 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-package com.pmn.qcmplus.service.impl;
-
-import com.pmn.qcmplus.model.Role;
-import com.pmn.qcmplus.repository.RoleRepository;
-import com.pmn.qcmplus.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class RoleServiceImpl implements RoleService {
 

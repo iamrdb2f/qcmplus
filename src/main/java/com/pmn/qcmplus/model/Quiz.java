@@ -21,7 +21,7 @@ public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int quizId;
+    private Integer  quizId;
 
     @Column(name = "title", nullable = false)
     private String title;

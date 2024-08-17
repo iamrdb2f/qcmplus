@@ -16,7 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class QuizControllerTest {
 
@@ -65,9 +68,10 @@ class QuizControllerTest {
     @Test
     void testCreateQuiz() {
         // Arrange
-        Quiz quiz = new Quiz(null, "Quiz 1", "Description 1");
-        Quiz createdQuiz = new Quiz(1, "Quiz 1", "Description 1");
-        when(quizService.createQuiz(any(Quiz.class))).thenReturn(createdQuiz);
+        Quiz quiz = new Quiz(1, "Quiz 1", "Description 1");
+
+        // Mock
+        when(quizService.createQuiz(any(Quiz.class))).thenReturn(quiz);
 
         // Act
         ResponseEntity<Quiz> response = quizController.createQuiz(quiz);
@@ -77,6 +81,7 @@ class QuizControllerTest {
         assertEquals("Quiz 1", response.getBody().getTitle());
         verify(quizService, times(1)).createQuiz(any(Quiz.class));
     }
+
 
     @Test
     void testUpdateQuiz() {

@@ -29,6 +29,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Question getQuestionById(Integer id) {
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + id));
+    }
+
+
+    @Override
     public Question saveQuestion(Question question) {
         // Validate that the quiz exists
         Optional<Quiz> quiz = quizRepository.findById(question.getQuiz().getQuizId());

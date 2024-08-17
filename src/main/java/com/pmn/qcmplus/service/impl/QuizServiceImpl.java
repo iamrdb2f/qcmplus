@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QuizServiceImpl implements QuizService {
@@ -49,4 +48,5 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = getQuizById(quizId);
         quizRepository.delete(quiz);
     }
+
 }
