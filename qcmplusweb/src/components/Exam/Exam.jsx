@@ -1,86 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import { getQuestions, getAnswers, submitExamSession } from '../../services/ExamService';
-import { Button, Form, Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import React, {useCallback, useEffect, useState} from 'react';
+import {getQuestions, submitExamSession} from '../../services/ExamService';
+import {Alert, Button, Col, Container, Form, ListGroup, Row, Spinner} from 'react-bootstrap';
 import {getAnswersByQuestionId} from "../../services/AnswerService";
+import './Exam.css';
+import {getLoggedInUser} from "../../services/AuthService";
+
+const MAX_QUESTIONS = 5;
+const QUESTION_TIME_LIMIT = 50;
 
 const Exam = ({ quizId }) => {
+    const getUser = getLoggedInUser();
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({});
     const [examCompleted, setExamCompleted] = useState(false);
+    const [showResults, setShowResults] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [timer, setTimer] = useState(QUESTION_TIME_LIMIT);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         const startQuiz = async () => {
             setLoading(true);
             try {
                 const response = await getQuestions(quizId);
-                setQuestions(response.data);
-                setCurrentQuestionIndex(0);
-                setUserAnswers({});
-                setExamCompleted(false);
+                if (response?.data?.length) {
+                    const selectedQuestions = response.data.slice(0, MAX_QUESTIONS);
+                    setQuestions(selectedQuestions);
+                    setCurrentQuestionIndex(0);
+                    setUserAnswers({});
+                    setExamCompleted(false);
+                    setTimer(QUESTION_TIME_LIMIT);
+                } else {
+                    setError('No questions found for this quiz.');
+                }
             } catch (error) {
-                console.error('Error fetching questions:', error.response ? error.response.data : error.message);
-                setError(error.response?.data?.message || 'An error occurred while fetching questions');
+                console.error('Error fetching questions:', error);
+                setError('An error occurred while fetching questions.');
             } finally {
                 setLoading(false);
             }
         };
 
-        startQuiz();
+        if (quizId) {
+            startQuiz();
+        }
     }, [quizId]);
 
-    const fetchAnswers = async (questionId) => {
-        try {
-            const response = await getAnswersByQuestionId(questionId);
-            setAnswers((prev) => ({ ...prev, [questionId]: response.data }));
-        } catch (error) {
-            console.error('Error fetching answers:', error.response ? error.response.data : error.message);
-            setError(error.response?.data?.message || 'An error occurred while fetching answers');
-        }
-    };
+    const calculateScore = useCallback(() => {
+        return questions.reduce((totalScore, question) => {
+            const correctAnswer = answers[question.questionId]?.find(answer => answer.isCorrect);
+            if (correctAnswer && userAnswers[question.questionId] === correctAnswer.answerId) {
+                return totalScore + 1;
+            }
+            return totalScore;
+        }, 0);
+    }, [questions, answers, userAnswers]);
 
-    useEffect(() => {
-        if (questions.length > 0) {
-            fetchAnswers(questions[currentQuestionIndex].questionId);
-        }
-    }, [questions, currentQuestionIndex]);
-
-    const handleAnswerChange = (questionId, answerId) => {
-        setUserAnswers((prev) => ({
-            ...prev,
-            [questionId]: answerId
-        }));
-    };
-
-    const handleNextQuestion = () => {
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex((prev) => prev + 1);
-        }
-    };
-
-    const handlePreviousQuestion = () => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex((prev) => prev - 1);
-        }
-    };
-
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         const sessionData = {
-            user_id: 1, // replace with actual user ID
-            quiz_id: quizId,
-            answers: userAnswers
+            userId: getUser.userId,
+            quizId: quizId,
+            answers: userAnswers,
         };
         try {
             await submitExamSession(sessionData);
+            setScore(calculateScore());
             setExamCompleted(true);
+            setShowResults(true);
         } catch (error) {
-            console.error('Error submitting exam session:', error.response ? error.response.data : error.message);
-            setError(error.response?.data?.message || 'An error occurred while submitting the exam');
+            console.error('Error submitting exam session:', error);
+            setError('An error occurred while submitting the exam.');
         }
-    };
+    }, [getUser.userId, quizId, userAnswers, calculateScore]);
+
+    const handleNextQuestion = useCallback(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+        } else {
+            handleSubmit();
+        }
+    }, [currentQuestionIndex, questions.length, handleSubmit]);
+
+    const handlePreviousQuestion = useCallback(() => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(prev => prev - 1);
+        }
+    }, [currentQuestionIndex]);
+
+    const handleAnswerChange = useCallback((questionId, answerId) => {
+        setUserAnswers(prev => ({
+            ...prev,
+            [questionId]: answerId,
+        }));
+    }, []);
+
+    useEffect(() => {
+        const fetchAnswers = async (questionId) => {
+            try {
+                const response = await getAnswersByQuestionId(questionId);
+                if (response?.data) {
+                    setAnswers(prev => ({ ...prev, [questionId]: response.data }));
+                } else {
+                    setError('No answers found for this question.');
+                }
+            } catch (error) {
+                console.error('Error fetching answers:', error);
+                setError('An error occurred while fetching answers.');
+            }
+        };
+
+        if (questions.length > 0) {
+            fetchAnswers(questions[currentQuestionIndex].questionId);
+            setTimer(QUESTION_TIME_LIMIT);
+        }
+    }, [questions, currentQuestionIndex]);
+
+    useEffect(() => {
+        if (questions.length > 0 && timer > 0) {
+            const intervalId = setInterval(() => {
+                setTimer(prevTimer => prevTimer - 1);
+            }, 1000);
+
+            return () => clearInterval(intervalId);
+        } else if (timer === 0) {
+            handleNextQuestion();
+        }
+    }, [questions, timer, handleNextQuestion]);
 
     if (loading) {
         return (
@@ -92,22 +140,50 @@ const Exam = ({ quizId }) => {
         );
     }
 
-    if (examCompleted) {
+    if (examCompleted && showResults) {
         return (
-            <Container>
-                <Alert variant="success">
-                    Exam completed successfully. Thank you!
-                </Alert>
+            <Container className="exam-results-container">
+                <h2 className="text-center">Exam Results</h2>
+                <h3 className="text-center">Your Score: {score} / {questions.length}</h3>
+                <div className="exam-results-list mb-3 p-5">
+                    {questions.map((question, index) => (
+                        <div key={question.questionId} className="mb-4">
+                            <h5>{index + 1}. {question.quiz.title}: {question.questionText}</h5>
+                            <ListGroup>
+                                {answers[question.questionId]?.map(answer => {
+                                    const answerClass = answer.isCorrect
+                                        ? 'bg-success text-white'
+                                        : (userAnswers[question.questionId] === answer.answerId
+                                            ? 'bg-danger text-white'
+                                            : ''); // No special background for non-selected incorrect answers
+
+                                    return (
+                                        <ListGroup.Item
+                                            key={answer.answerId}
+                                            className={`mb-2 p-2 ${answerClass} font-weight-bold`}
+                                        >
+                                            {answer.answerText}
+                                            {answer.isCorrect && <strong> (Correct Answer)</strong>}
+                                            {userAnswers[question.questionId] === answer.answerId && !answer.isCorrect && (
+                                                <strong> (Your Answer)</strong>
+                                            )}
+                                        </ListGroup.Item>
+                                    );
+                                })}
+                            </ListGroup>
+                        </div>
+                    ))}
+                </div>
+                <Alert variant="success" className="text-center">Exam completed successfully. Thank you!</Alert>
             </Container>
+
         );
     }
 
     if (error) {
         return (
-            <Container>
-                <Alert variant="danger">
-                    {error}
-                </Alert>
+            <Container className="exam-container">
+                <Alert variant="danger">{error}</Alert>
             </Container>
         );
     }
@@ -115,56 +191,61 @@ const Exam = ({ quizId }) => {
     const currentQuestion = questions[currentQuestionIndex];
 
     return (
-        <Container>
-            <Row>
-                <Col>
-                    {currentQuestion ? (
-                        <>
-                            <h4>{currentQuestion.questionText}</h4>
-                            <Form>
-                                {answers[currentQuestion.questionId]?.map((answer) => (
-                                    <Form.Check
-                                        key={answer.answerId}
-                                        type="radio"
-                                        name={`question-${currentQuestion.questionId}`}
-                                        label={answer.answerText}
-                                        checked={userAnswers[currentQuestion.questionId] === answer.answerId}
-                                        onChange={() =>
-                                            handleAnswerChange(currentQuestion.questionId, answer.answerId)
-                                        }
-                                    />
-                                ))}
-                            </Form>
-                            <div className="d-flex justify-content-between mt-3">
-                                <Button
-                                    onClick={handlePreviousQuestion}
-                                    disabled={currentQuestionIndex === 0}
-                                >
-                                    Previous
-                                </Button>
-                                <Button
-                                    onClick={handleNextQuestion}
-                                    disabled={
-                                        currentQuestionIndex >= questions.length - 1 ||
-                                        !userAnswers[currentQuestion.questionId]
-                                    }
-                                >
-                                    Next
-                                </Button>
-                                {currentQuestionIndex === questions.length - 1 && (
+        <Container className="exam-container">
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <div className="exam-card p-4">
+                        <h4 className="question-header text-center">Question {currentQuestionIndex + 1} of {questions.length}</h4>
+                        <h5 className="timer-header text-center">Time Left: {timer} seconds</h5>
+                        {currentQuestion ? (
+                            <>
+                                <h5 className="quiz-title text-center">{currentQuestion.quiz.title}</h5>
+                                <p className="question-text">{currentQuestion.questionText}</p>
+                                <Form>
+                                    {answers[currentQuestion.questionId]?.map(answer => (
+                                        <Form.Check
+                                            key={answer.answerId}
+                                            type="radio"
+                                            name={`question-${currentQuestion.questionId}`}
+                                            label={answer.answerText}
+                                            checked={userAnswers[currentQuestion.questionId] === answer.answerId}
+                                            onChange={() => handleAnswerChange(currentQuestion.questionId, answer.answerId)}
+                                        />
+                                    ))}
+                                </Form>
+                                <div className="d-flex justify-content-between mt-3">
                                     <Button
-                                        className="ms-2"
-                                        onClick={handleSubmit}
-                                        disabled={!userAnswers[currentQuestion.questionId]}
+                                        className="defaultBtn"
+                                        onClick={handlePreviousQuestion}
+                                        disabled={currentQuestionIndex === 0}
                                     >
-                                        Submit
+                                        Previous
                                     </Button>
-                                )}
-                            </div>
-                        </>
-                    ) : (
-                        <p>No questions available.</p>
-                    )}
+                                    <Button
+                                        className="defaultBtn"
+                                        onClick={handleNextQuestion}
+                                        disabled={
+                                            currentQuestionIndex >= questions.length - 1 ||
+                                            !userAnswers[currentQuestion.questionId]
+                                        }
+                                    >
+                                        Next
+                                    </Button>
+                                    {currentQuestionIndex === questions.length - 1 && (
+                                        <Button
+                                            className="ms-2 defaultBtn"
+                                            onClick={handleSubmit}
+                                            disabled={!userAnswers[currentQuestion.questionId]}
+                                        >
+                                            Submit
+                                        </Button>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                            <p>No questions available.</p>
+                        )}
+                    </div>
                 </Col>
             </Row>
         </Container>

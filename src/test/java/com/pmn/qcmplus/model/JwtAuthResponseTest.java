@@ -2,7 +2,9 @@ package com.pmn.qcmplus.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class JwtAuthResponseTest {
 
@@ -10,7 +12,6 @@ class JwtAuthResponseTest {
     void testNoArgsConstructor() {
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         assertNull(jwtAuthResponse.getAccessToken());
-        assertEquals("Bearer", jwtAuthResponse.getTokenType());
         assertNull(jwtAuthResponse.getUserEmail());
         assertNull(jwtAuthResponse.getUserLastName());
         assertNull(jwtAuthResponse.getUserFirstName());
@@ -21,8 +22,9 @@ class JwtAuthResponseTest {
     @Test
     void testAllArgsConstructor() {
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse(
+                1,
                 "token123",
-                "Bearer",
+
                 "user@example.com",
                 "Doe",
                 "John",
@@ -31,7 +33,6 @@ class JwtAuthResponseTest {
         );
 
         assertEquals("token123", jwtAuthResponse.getAccessToken());
-        assertEquals("Bearer", jwtAuthResponse.getTokenType());
         assertEquals("user@example.com", jwtAuthResponse.getUserEmail());
         assertEquals("Doe", jwtAuthResponse.getUserLastName());
         assertEquals("John", jwtAuthResponse.getUserFirstName());
@@ -43,7 +44,6 @@ class JwtAuthResponseTest {
     void testSettersAndGetters() {
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken("token123");
-        jwtAuthResponse.setTokenType("Bearer");
         jwtAuthResponse.setUserEmail("user@example.com");
         jwtAuthResponse.setUserLastName("Doe");
         jwtAuthResponse.setUserFirstName("John");
@@ -51,7 +51,6 @@ class JwtAuthResponseTest {
         jwtAuthResponse.setUserJob("Developer");
 
         assertEquals("token123", jwtAuthResponse.getAccessToken());
-        assertEquals("Bearer", jwtAuthResponse.getTokenType());
         assertEquals("user@example.com", jwtAuthResponse.getUserEmail());
         assertEquals("Doe", jwtAuthResponse.getUserLastName());
         assertEquals("John", jwtAuthResponse.getUserFirstName());
@@ -62,8 +61,9 @@ class JwtAuthResponseTest {
     @Test
     void testEqualsAndHashCode() {
         JwtAuthResponse jwtAuthResponse1 = new JwtAuthResponse(
+                1,
                 "token123",
-                "Bearer",
+
                 "user@example.com",
                 "Doe",
                 "John",
@@ -72,8 +72,9 @@ class JwtAuthResponseTest {
         );
 
         JwtAuthResponse jwtAuthResponse2 = new JwtAuthResponse(
+                1,
                 "token123",
-                "Bearer",
+
                 "user@example.com",
                 "Doe",
                 "John",
@@ -85,8 +86,9 @@ class JwtAuthResponseTest {
         assertEquals(jwtAuthResponse1.hashCode(), jwtAuthResponse2.hashCode());
 
         JwtAuthResponse jwtAuthResponse3 = new JwtAuthResponse(
+                1,
                 "token456",
-                "Bearer",
+
                 "user@example.com",
                 "Doe",
                 "John",
