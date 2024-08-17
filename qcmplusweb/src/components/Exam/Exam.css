@@ -1,0 +1,23 @@
+.exam-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.exam-card {
+    background-color: var(--bg-default-light-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--bg-default-dark-hover-color);
+}
+
+.exam-results-container {
+    margin-top: 20px;
+}
+
+.exam-results-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 0 4px 8px var(--bg-default-dark-hover-color);
+    border-radius: 8px;
+    background-color:  var(--bg-default-light-color);
+}

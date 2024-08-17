@@ -33,7 +33,7 @@ class AuthControllerTest {
     void testLogin() {
 
         LoginDto loginDto = new LoginDto("user@example.com", "password123");
-        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse("mockedJwtToken", "Bearer", "user@example.com", "Doe", "John", "ROLE_USER", "Developer");
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse(1,"mockedJwtToken", "user@example.com", "Doe", "John", "ROLE_USER", "Developer");
 
         when(authService.login(loginDto)).thenReturn(jwtAuthResponse);
 

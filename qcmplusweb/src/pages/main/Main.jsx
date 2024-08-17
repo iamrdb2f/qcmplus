@@ -1,18 +1,18 @@
-import React, { useCallback, useState } from 'react';
-import { Button, Col, Container, Dropdown, Row } from 'react-bootstrap';
+import React, {useCallback, useState} from 'react';
+import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Main.css";
-import { AiFillWarning } from "react-icons/ai";
-import { IoMdLogOut } from "react-icons/io";
-import { FaUser } from "react-icons/fa";
-import { ROLE } from "../../utils/UtilLists";
-import { getLoggedInUser, isAdminUser, logout } from "../../services/AuthService";
+import {AiFillWarning} from "react-icons/ai";
+import {IoMdLogOut} from "react-icons/io";
+import {FaUser} from "react-icons/fa";
+import {ROLE} from "../../utils/UtilLists";
+import {getLoggedInUser, isAdminUser, logout} from "../../services/AuthService";
 import QuizList from "../../components/Quiz/QuizList";
 import ExamSelected from "../../components/ExamSelected/ExamSelected";
-import Exam from "../../components/Exam/Exam"; // Import the Exam component
-import { useNavigate } from "react-router-dom";
+import Exam from "../../components/Exam/Exam";
+import {useNavigate} from "react-router-dom";
 
 const Main = () => {
     const isAdmin = isAdminUser();
@@ -21,7 +21,7 @@ const Main = () => {
     const [quizId, setQuizId] = useState(null);
     const [showUserList, setShowUserList] = useState(true);
     const [selectedItem, setSelectedItem] = useState(isAdmin ? 'AdminDashboard' : 'UserDashboard');
-    const [examStarted, setExamStarted] = useState(false); // New state to track exam start
+    const [examStarted, setExamStarted] = useState(false);
 
     const handleLogout = useCallback(() => {
         logout();
@@ -31,7 +31,7 @@ const Main = () => {
     const handleSidebarItemClick = (item) => {
         setSelectedItem(item);
         setShowUserList(true);
-        setExamStarted(false); // Reset examStarted when navigating
+        setExamStarted(false);
     };
 
     const handleTakeQuiz = (quizId) => {
@@ -40,12 +40,12 @@ const Main = () => {
     };
 
     const handleStartExam = () => {
-        setExamStarted(true); // Trigger the exam view
+       setExamStarted(true);
     };
 
     const renderContent = () => {
         if (examStarted && quizId) {
-            return <Exam quizId={quizId} />; // Render Exam component when exam starts
+            return <Exam quizId={quizId} />;
         }
 
         if (!showUserList) {

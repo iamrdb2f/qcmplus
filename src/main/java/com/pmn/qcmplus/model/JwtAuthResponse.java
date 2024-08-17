@@ -14,7 +14,6 @@ import java.util.Objects;
 public class JwtAuthResponse {
     private int userId;
     private String accessToken;
-    private String tokenType = "Bearer";
     private String userEmail;
     private String userLastName;
     private String userFirstName;
@@ -29,7 +28,6 @@ public class JwtAuthResponse {
         if (o == null || getClass() != o.getClass()) return false;
         JwtAuthResponse that = (JwtAuthResponse) o;
         return Objects.equals(accessToken, that.accessToken) &&
-                Objects.equals(tokenType, that.tokenType) &&
                 Objects.equals(userEmail, that.userEmail) &&
                 Objects.equals(userLastName, that.userLastName) &&
                 Objects.equals(userFirstName, that.userFirstName) &&
@@ -39,6 +37,6 @@ public class JwtAuthResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(accessToken, tokenType, userEmail, userLastName, userFirstName, role, userJob);
+        return Objects.hash(accessToken, userEmail, userLastName, userFirstName, role, userJob);
     }
 }
