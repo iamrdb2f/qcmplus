@@ -14,6 +14,14 @@ import ExamSelected from "../../components/ExamSelected/ExamSelected";
 import Exam from "../../components/Exam/Exam";
 import {useNavigate} from "react-router-dom";
 import ExamsTaken from "../../components/ExamHistory/ExamHistory";
+import Exam from "../../components/Exam/Exam";
+import Answer from "../../components/Answer/Answer";
+import ExamsList from "../../components/ExamsList/ExamsList";
+import AnswersList from "../../components/AnswersList/AnswersList";
+import QuestionsList from "../../components/QuestionsList/QuestionsList";
+import QuizsList from "../../components/QuizsList/QuizsList";
+import Dashboard from "../../components/Dashboard/Dashboard";
+
 
 const Main = () => {
     const isAdmin = isAdminUser();
@@ -59,11 +67,11 @@ const Main = () => {
             case 'Admin':
                 return <UserList title="Registered Admin" userRole={ROLE.ADMIN} />;
             case 'Exams':
-                return <h1><AiFillWarning />Exams: en cours de construction</h1>;
+                return <ExamsList title="Registered Exams List"/>;
             case 'Quizzes':
-                return <h1><AiFillWarning />Quizzes: en cours de construction</h1>;
+                return <QuizsList title="Registered Quizs List"/>;
             case 'Questions':
-                return <h1><AiFillWarning />Questions: en cours de construction</h1>;
+                return <QuestionsList title="Registered Questions List"/>;
             case 'Answers':
                 return <h1><AiFillWarning />Answers: en cours de construction</h1>;
             case 'TakeExams':
@@ -73,7 +81,7 @@ const Main = () => {
             case 'UserDashboard':
                 return <QuizList onTakeQuiz={handleTakeQuiz} />;
             case 'AdminDashboard':
-                return <h1><AiFillWarning />Admin Dashboard: en cours de construction</h1>;
+                return <Dashboard />;
             default:
                 if (isAdmin) {
                     handleSidebarItemClick('AdminDashboard');
