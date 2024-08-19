@@ -27,6 +27,7 @@ const ExamsList = ({title}) => {
         exam.quiz_id.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+
     return (
         <>
             <Row className="mb-3">
