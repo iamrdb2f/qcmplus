@@ -21,6 +21,44 @@ const Exam = ({ quizId }) => {
     const [timer, setTimer] = useState(QUESTION_TIME_LIMIT);
     const [score, setScore] = useState(0);
 
+    // Move the calculateScore function above the useCallback hooks
+    const calculateScore = useCallback(() => {
+        let score = 0;
+        questions.forEach((question) => {
+            const correctAnswer = answers[question.questionId]?.find(answer => answer.isCorrect);
+            if (correctAnswer && userAnswers[question.questionId] === correctAnswer.answerId) {
+                score += 1;
+            }
+        });
+        return score;
+    }, [questions, answers, userAnswers]);
+
+    const handleSubmit = useCallback(async () => {
+        const sessionData = {
+            userId: getUser.userId,
+            quizId: quizId,
+            answers: userAnswers,
+        };
+        try {
+            await submitExamSession(sessionData);
+            const calculatedScore = calculateScore(); // No warning now because calculateScore is defined before
+            setScore(calculatedScore);
+            setExamCompleted(true);
+            setShowResults(true);
+        } catch (error) {
+            console.error('Error submitting exam session:', error);
+            setError('An error occurred while submitting the exam.');
+        }
+    }, [getUser.userId, quizId, userAnswers, calculateScore]);
+
+    const handleNextQuestion = useCallback(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex((prev) => prev + 1);
+        } else if (currentQuestionIndex === questions.length - 1) {
+            handleSubmit();
+        }
+    }, [currentQuestionIndex, questions.length, handleSubmit]);
+
     useEffect(() => {
         const startQuiz = async () => {
             setLoading(true);
@@ -48,33 +86,6 @@ const Exam = ({ quizId }) => {
             startQuiz();
         }
     }, [quizId]);
-
-    const handleSubmit = useCallback(async () => {
-        const sessionData = {
-            userId: getUser.userId,
-            quizId: quizId,
-            answers: userAnswers,
-        };
-        try {
-            await submitExamSession(sessionData);
-            const calculatedScore = calculateScore();
-            setScore(calculatedScore);
-            setExamCompleted(true);
-            setShowResults(true);
-        } catch (error) {
-            console.error('Error submitting exam session:', error);
-            setError('An error occurred while submitting the exam.');
-        }
-    }, [getUser.userId, quizId, userAnswers, calculateScore]);
-
-    const handleNextQuestion = useCallback(() => {
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex((prev) => prev + 1);
-        } else if (currentQuestionIndex === questions.length - 1) {
-            handleSubmit();
-        }
-    }, [currentQuestionIndex, questions.length, handleSubmit]);
-
 
     useEffect(() => {
         if (questions.length > 0 && timer > 0) {
@@ -120,17 +131,6 @@ const Exam = ({ quizId }) => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex((prev) => prev - 1);
         }
-    };
-
-    const calculateScore = () => {
-        let score = 0;
-        questions.forEach((question) => {
-            const correctAnswer = answers[question.questionId]?.find(answer => answer.isCorrect);
-            if (correctAnswer && userAnswers[question.questionId] === correctAnswer.answerId) {
-                score += 1;
-            }
-        });
-        return score;
     };
 
     if (loading) {
