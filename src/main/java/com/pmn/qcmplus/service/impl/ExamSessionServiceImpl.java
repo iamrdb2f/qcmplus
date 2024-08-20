@@ -4,10 +4,9 @@ import com.pmn.qcmplus.exception.ExamSessionNotFoundException;
 import com.pmn.qcmplus.model.ExamSession;
 import com.pmn.qcmplus.repository.ExamSessionRepository;
 import com.pmn.qcmplus.service.ExamSessionService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ExamSessionServiceImpl implements ExamSessionService {
@@ -17,6 +16,10 @@ public class ExamSessionServiceImpl implements ExamSessionService {
     @Autowired
     public ExamSessionServiceImpl(ExamSessionRepository examSessionRepository) {
         this.examSessionRepository = examSessionRepository;
+    }
+
+    public List<ExamSession> getExamSessionsByUserId(Integer userId) {
+        return examSessionRepository.findByUserId(userId);
     }
 
     @Override

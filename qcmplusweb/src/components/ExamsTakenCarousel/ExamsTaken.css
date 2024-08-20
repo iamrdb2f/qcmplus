@@ -1,0 +1,10 @@
+
+.exam-taken-list .carousel-control-next-icon {
+    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27%23ffffff%27 viewBox=%270 0 16 16%27%3E%3Cpath fill=%27%23ffffff%27 d=%27M11.354 8l-4.646 4.646-.708-.708L10.293 8 6 3.707l.708-.708L11.354 8z%27/%3E%3C/svg%3E') !important;
+    background-color: var(--bg-default-dark-hover-color);
+}
+
+.exam-taken-list .carousel-control-prev-icon {
+    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27%23ffffff%27 viewBox=%270 0 16 16%27%3E%3Cpath fill=%27%23ffffff%27 d=%27M4.646 8l4.646-4.646.708.708L5.707 8l4.293 4.293-.708.708L4.646 8z%27/%3E%3C/svg%3E') !important;
+    background-color: var(--bg-default-dark-hover-color);
+}

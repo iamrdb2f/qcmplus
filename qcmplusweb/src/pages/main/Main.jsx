@@ -13,6 +13,7 @@ import QuizList from "../../components/Quiz/QuizList";
 import ExamSelected from "../../components/ExamSelected/ExamSelected";
 import Exam from "../../components/Exam/Exam";
 import {useNavigate} from "react-router-dom";
+import ExamsTaken from "../../components/ExamsTakenCarousel/ExamsTaken";
 
 const Main = () => {
     const isAdmin = isAdminUser();
@@ -70,7 +71,7 @@ const Main = () => {
             case 'TakeExams':
                 return <ExamSelected quizId={quizId} onStartExam={handleStartExam} />; // Pass handleStartExam
             case 'HistoryExams':
-                return <h1><AiFillWarning />History Exams : en cours de construction</h1>;
+                return <ExamsTaken userId={getUser.userId}></ExamsTaken>;
             case 'UserDashboard':
                 return <QuizList onTakeQuiz={handleTakeQuiz} />;
             case 'AdminDashboard':
