@@ -49,7 +49,7 @@ const Exam = ({ quizId }) => {
         }
     }, [quizId]);
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         const sessionData = {
             userId: getUser.userId,
             quizId: quizId,
@@ -65,7 +65,7 @@ const Exam = ({ quizId }) => {
             console.error('Error submitting exam session:', error);
             setError('An error occurred while submitting the exam.');
         }
-    };
+    }, [getUser.userId, quizId, userAnswers, calculateScore]);
 
     const handleNextQuestion = useCallback(() => {
         if (currentQuestionIndex < questions.length - 1) {
@@ -74,6 +74,7 @@ const Exam = ({ quizId }) => {
             handleSubmit();
         }
     }, [currentQuestionIndex, questions.length, handleSubmit]);
+
 
     useEffect(() => {
         if (questions.length > 0 && timer > 0) {
