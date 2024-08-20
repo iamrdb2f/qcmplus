@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +43,10 @@ class ExamSessionServiceImplTest {
         User user = new User(); // Assume User class exists
         Quiz quiz = new Quiz(); // Assume Quiz class exists
 
-        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000));
-        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000));
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000), currentTimestamp);
+        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000), currentTimestamp);
     }
 
     @Test
@@ -75,7 +78,6 @@ class ExamSessionServiceImplTest {
         assertThrows(ExamSessionNotFoundException.class, () -> examSessionService.getExamSessionById(1));
         verify(examSessionRepository, times(1)).findById(1);
     }
-
 
     @Test
     void testGetAllExamSessions() {

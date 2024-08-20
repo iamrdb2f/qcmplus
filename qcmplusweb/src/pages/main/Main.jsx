@@ -13,6 +13,7 @@ import QuizList from "../../components/Quiz/QuizList";
 import ExamSelected from "../../components/ExamSelected/ExamSelected";
 import Exam from "../../components/Exam/Exam";
 import {useNavigate} from "react-router-dom";
+import ExamsTaken from "../../components/ExamHistory/ExamHistory";
 
 const Main = () => {
     const isAdmin = isAdminUser();
@@ -45,7 +46,7 @@ const Main = () => {
 
     const renderContent = () => {
         if (examStarted && quizId) {
-            return <Exam quizId={quizId} />;
+            return <Exam quizId={quizId}/>;
         }
 
         if (!showUserList) {
@@ -68,9 +69,9 @@ const Main = () => {
             case 'Features':
                 return <h1><AiFillWarning />Features: en cours de construction</h1>;
             case 'TakeExams':
-                return <ExamSelected quizId={quizId} onStartExam={handleStartExam} />; // Pass handleStartExam
+                return <ExamSelected quizId={quizId || 1} onStartExam={handleStartExam} />; // Pass handleStartExam
             case 'HistoryExams':
-                return <h1><AiFillWarning />History Exams : en cours de construction</h1>;
+                return <ExamsTaken userId={getUser.userId}></ExamsTaken>;
             case 'UserDashboard':
                 return <QuizList onTakeQuiz={handleTakeQuiz} />;
             case 'AdminDashboard':

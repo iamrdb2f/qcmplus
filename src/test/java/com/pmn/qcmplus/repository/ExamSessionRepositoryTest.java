@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,8 +60,10 @@ class ExamSessionRepositoryTest {
         quiz.setTitle("Sample Quiz");
         quiz.setDescription("This is a sample quiz");
 
-        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000));
-        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000));
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        examSession1 = new ExamSession(1, user, quiz, 85, new Time(3600000), currentTimestamp);
+        examSession2 = new ExamSession(2, user, quiz, 90, new Time(4000000), currentTimestamp);
     }
 
     @Test
@@ -80,7 +82,7 @@ class ExamSessionRepositoryTest {
 
         ExamSession foundExamSession = examSessionService.getExamSessionById(examSession1.getSessionId());
 
-        assertTrue(foundExamSession != null);
+        assertNotNull(foundExamSession);
         assertEquals(85, foundExamSession.getScore());
         verify(examSessionRepository, times(1)).findById(examSession1.getSessionId());
     }
@@ -102,10 +104,8 @@ class ExamSessionRepositoryTest {
 
         examSessionService.deleteExamSession(examSession1.getSessionId());
 
-        // Change this to verify the delete method
         verify(examSessionRepository, times(1)).delete(examSession1);
     }
-
 
     @Test
     void testDeleteById_NotFound() {

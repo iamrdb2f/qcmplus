@@ -29,6 +29,6 @@ public class Question {
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
-    @Column(name = "question_text", nullable = false)
+    @Column(name = "question_text", nullable = false, unique = true)
     private String questionText;
 }

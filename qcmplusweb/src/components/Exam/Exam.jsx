@@ -6,7 +6,7 @@ import './Exam.css';
 import {getLoggedInUser} from "../../services/AuthService";
 
 const MAX_QUESTIONS = 5;
-const QUESTION_TIME_LIMIT = 50;
+const QUESTION_TIME_LIMIT = 1;
 
 const Exam = ({ quizId }) => {
     const getUser = getLoggedInUser();
@@ -21,12 +21,49 @@ const Exam = ({ quizId }) => {
     const [timer, setTimer] = useState(QUESTION_TIME_LIMIT);
     const [score, setScore] = useState(0);
 
+
+    const calculateScore = useCallback(() => {
+        let score = 0;
+        questions.forEach((question) => {
+            const correctAnswer = answers[question.questionId]?.find(answer => answer.isCorrect);
+            if (correctAnswer && userAnswers[question.questionId] === correctAnswer.answerId) {
+                score += 1;
+            }
+        });
+        return score;
+    }, [questions, answers, userAnswers]);
+
+    const handleSubmit = useCallback(async () => {
+        const sessionData = {
+            userId: getUser.userId,
+            quizId: quizId,
+            answers: userAnswers,
+        };
+        try {
+            await submitExamSession(sessionData);
+            const calculatedScore = calculateScore();
+            setScore(calculatedScore);
+            setExamCompleted(true);
+            setShowResults(true);
+        } catch (error) {
+            setError('An error occurred while submitting the exam.');
+        }
+    }, [getUser.userId, quizId, userAnswers, calculateScore]);
+
+    const handleNextQuestion = useCallback(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex((prev) => prev + 1);
+        } else if (currentQuestionIndex === questions.length - 1) {
+            handleSubmit();
+        }
+    }, [currentQuestionIndex, questions.length, handleSubmit]);
+
     useEffect(() => {
         const startQuiz = async () => {
             setLoading(true);
             try {
                 const response = await getQuestions(quizId);
-                if (response?.data?.length) {
+                if (response && response.data) {
                     const selectedQuestions = response.data.slice(0, MAX_QUESTIONS);
                     setQuestions(selectedQuestions);
                     setCurrentQuestionIndex(0);
@@ -37,7 +74,6 @@ const Exam = ({ quizId }) => {
                     setError('No questions found for this quiz.');
                 }
             } catch (error) {
-                console.error('Error fetching questions:', error);
                 setError('An error occurred while fetching questions.');
             } finally {
                 setLoading(false);
@@ -49,79 +85,10 @@ const Exam = ({ quizId }) => {
         }
     }, [quizId]);
 
-    const calculateScore = useCallback(() => {
-        return questions.reduce((totalScore, question) => {
-            const correctAnswer = answers[question.questionId]?.find(answer => answer.isCorrect);
-            if (correctAnswer && userAnswers[question.questionId] === correctAnswer.answerId) {
-                return totalScore + 1;
-            }
-            return totalScore;
-        }, 0);
-    }, [questions, answers, userAnswers]);
-
-    const handleSubmit = useCallback(async () => {
-        const sessionData = {
-            userId: getUser.userId,
-            quizId: quizId,
-            answers: userAnswers,
-        };
-        try {
-            await submitExamSession(sessionData);
-            setScore(calculateScore());
-            setExamCompleted(true);
-            setShowResults(true);
-        } catch (error) {
-            console.error('Error submitting exam session:', error);
-            setError('An error occurred while submitting the exam.');
-        }
-    }, [getUser.userId, quizId, userAnswers, calculateScore]);
-
-    const handleNextQuestion = useCallback(() => {
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
-        } else {
-            handleSubmit();
-        }
-    }, [currentQuestionIndex, questions.length, handleSubmit]);
-
-    const handlePreviousQuestion = useCallback(() => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1);
-        }
-    }, [currentQuestionIndex]);
-
-    const handleAnswerChange = useCallback((questionId, answerId) => {
-        setUserAnswers(prev => ({
-            ...prev,
-            [questionId]: answerId,
-        }));
-    }, []);
-
-    useEffect(() => {
-        const fetchAnswers = async (questionId) => {
-            try {
-                const response = await getAnswersByQuestionId(questionId);
-                if (response?.data) {
-                    setAnswers(prev => ({ ...prev, [questionId]: response.data }));
-                } else {
-                    setError('No answers found for this question.');
-                }
-            } catch (error) {
-                console.error('Error fetching answers:', error);
-                setError('An error occurred while fetching answers.');
-            }
-        };
-
-        if (questions.length > 0) {
-            fetchAnswers(questions[currentQuestionIndex].questionId);
-            setTimer(QUESTION_TIME_LIMIT);
-        }
-    }, [questions, currentQuestionIndex]);
-
     useEffect(() => {
         if (questions.length > 0 && timer > 0) {
             const intervalId = setInterval(() => {
-                setTimer(prevTimer => prevTimer - 1);
+                setTimer((prevTimer) => prevTimer - 1);
             }, 1000);
 
             return () => clearInterval(intervalId);
@@ -129,6 +96,40 @@ const Exam = ({ quizId }) => {
             handleNextQuestion();
         }
     }, [questions, timer, handleNextQuestion]);
+
+    const fetchAnswers = async (questionId) => {
+        try {
+            const response = await getAnswersByQuestionId(questionId);
+            if (response && response.data) {
+                setAnswers((prev) => ({ ...prev, [questionId]: response.data }));
+            } else {
+                setError('No answers found for this question.');
+            }
+        } catch (error) {
+            console.error('Error fetching answers:', error);
+            setError('An error occurred while fetching answers.');
+        }
+    };
+
+    useEffect(() => {
+        if (questions.length > 0) {
+            fetchAnswers(questions[currentQuestionIndex].questionId);
+            setTimer(QUESTION_TIME_LIMIT);
+        }
+    }, [questions, currentQuestionIndex]);
+
+    const handleAnswerChange = (questionId, answerId) => {
+        setUserAnswers((prev) => ({
+            ...prev,
+            [questionId]: answerId,
+        }));
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex((prev) => prev - 1);
+        }
+    };
 
     if (loading) {
         return (
@@ -145,38 +146,29 @@ const Exam = ({ quizId }) => {
             <Container className="exam-results-container">
                 <h2 className="text-center">Exam Results</h2>
                 <h3 className="text-center">Your Score: {score} / {questions.length}</h3>
-                <div className="exam-results-list mb-3 p-5">
+                <div className="exam-results-list mb-3 p-3">
                     {questions.map((question, index) => (
                         <div key={question.questionId} className="mb-4">
-                            <h5>{index + 1}. {question.quiz.title}: {question.questionText}</h5>
+                            <h5>{index + 1}. {question.questionText}</h5>
                             <ListGroup>
-                                {answers[question.questionId]?.map(answer => {
-                                    const answerClass = answer.isCorrect
-                                        ? 'bg-success text-white'
-                                        : (userAnswers[question.questionId] === answer.answerId
-                                            ? 'bg-danger text-white'
-                                            : ''); // No special background for non-selected incorrect answers
-
-                                    return (
-                                        <ListGroup.Item
-                                            key={answer.answerId}
-                                            className={`mb-2 p-2 ${answerClass} font-weight-bold`}
-                                        >
-                                            {answer.answerText}
-                                            {answer.isCorrect && <strong> (Correct Answer)</strong>}
-                                            {userAnswers[question.questionId] === answer.answerId && !answer.isCorrect && (
-                                                <strong> (Your Answer)</strong>
-                                            )}
-                                        </ListGroup.Item>
-                                    );
-                                })}
+                                {answers[question.questionId]?.map((answer) => (
+                                    <ListGroup.Item
+                                        key={answer.answerId}
+                                        className={`mb-2 p-2 ${answer.isCorrect ? 'bg-success text-white font-weight-bold' : userAnswers[question.questionId] === answer.answerId ? 'bg-danger text-white' : ''}`}
+                                    >
+                                        {answer.answerText}
+                                        {answer.isCorrect && <strong> (Correct Answer)</strong>}
+                                        {userAnswers[question.questionId] === answer.answerId && !answer.isCorrect && (
+                                            <strong> (Your Answer)</strong>
+                                        )}
+                                    </ListGroup.Item>
+                                ))}
                             </ListGroup>
                         </div>
                     ))}
                 </div>
                 <Alert variant="success" className="text-center">Exam completed successfully. Thank you!</Alert>
             </Container>
-
         );
     }
 
@@ -199,10 +191,9 @@ const Exam = ({ quizId }) => {
                         <h5 className="timer-header text-center">Time Left: {timer} seconds</h5>
                         {currentQuestion ? (
                             <>
-                                <h5 className="quiz-title text-center">{currentQuestion.quiz.title}</h5>
                                 <p className="question-text">{currentQuestion.questionText}</p>
                                 <Form>
-                                    {answers[currentQuestion.questionId]?.map(answer => (
+                                    {answers[currentQuestion.questionId]?.map((answer) => (
                                         <Form.Check
                                             key={answer.answerId}
                                             type="radio"

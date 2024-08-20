@@ -19,6 +19,10 @@ public class ExamSessionServiceImpl implements ExamSessionService {
         this.examSessionRepository = examSessionRepository;
     }
 
+    public List<ExamSession> getExamSessionsByUserId(Integer userId) {
+        return examSessionRepository.findByUserId(userId);
+    }
+
     @Override
     public ExamSession saveExamSession(ExamSession examSession) {
         return examSessionRepository.save(examSession);

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -39,5 +40,9 @@ public class ExamSession {
 
     @Column(name = "time_spent", nullable = false)
     private Time timeSpent;
+
+    @Column(name = "date_exam", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp dateExam;
+
 
 }

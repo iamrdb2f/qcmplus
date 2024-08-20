@@ -29,7 +29,7 @@ public class Answer {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Column(name = "answer_text", nullable = false)
+    @Column(name = "answer_text", nullable = false,  unique = true)
     private String answerText;
 
     @Column(name = "is_correct", nullable = false)
