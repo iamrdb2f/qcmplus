@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
@@ -32,6 +32,9 @@ const Main = () => {
     const [selectedItem, setSelectedItem] = useState(isAdmin ? 'AdminDashboard' : 'UserDashboard');
     const [examStarted, setExamStarted] = useState(false);
 
+    const showTopBtn = selectedItem === 'Trainee' || selectedItem === 'Admin';
+
+
     const handleLogout = useCallback(() => {
         logout();
         navigate('/');
@@ -58,7 +61,7 @@ const Main = () => {
         }
 
         if (!showUserList) {
-            return <AddUser />;
+            return <AddUser/>;
         }
 
         switch (selectedItem) {
@@ -98,9 +101,9 @@ const Main = () => {
                     <Sidebar onItemClick={handleSidebarItemClick} selectedItem={selectedItem} />
                 </Col>
                 <Col xs={12} md={10} className="main-content">
-                    <div className="main-content-right-content">
-                        <div className="header d-flex justify-content-end">
-                            {isAdmin && (
+                    <div>
+                        <div className="header d-flex justify-content-end m-3">
+                            {isAdmin && showTopBtn && (
                                 <>
                                     <Button className="ToggleUserBtn" onClick={() => setShowUserList(!showUserList)}>
                                         {showUserList ? 'Add User' : 'List Users'}

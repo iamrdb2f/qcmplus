@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { getAnswersByQuestionId, createAnswer, updateAnswer, deleteAnswer } from '../../services/AnswerService';
-import { Button, Form, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {createAnswer, deleteAnswer, getAnswersByQuestionId, updateAnswer} from '../../services/AnswerService';
+import {Button, Card, Col, Container, Form, ListGroup, Row} from 'react-bootstrap';
 
 const Answer = ({ questionId }) => {
     const [answers, setAnswers] = useState([]);

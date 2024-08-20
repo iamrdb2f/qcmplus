@@ -2,8 +2,10 @@ package com.pmn.qcmplus.controller;
 
 import com.pmn.qcmplus.model.Answer;
 import com.pmn.qcmplus.service.AnswerService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 @RequestMapping("/api/answers")
 public class AnswerController {
 
@@ -24,6 +25,12 @@ public class AnswerController {
     @Autowired
     public AnswerController(AnswerService answerService) {
         this.answerService = answerService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Answer>> getAllAnswers() {
+        List<Answer> answers = answerService.getAllAnswers();
+        return ResponseEntity.ok(answers);
     }
 
     @GetMapping("/question/{questionId}")

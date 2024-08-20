@@ -1,104 +1,176 @@
-import React, { useEffect, useState } from "react";
-import { Col, Form, Row, Table, Button } from "react-bootstrap";
-import { getAnswersByQuestionId, deleteAnswer } from '../../services/AnswerService'; // Assurez-vous que l'import de l'API est correct
+import React, {useCallback, useEffect, useState} from "react";
+import {Alert, Button, Col, Form, Row, Spinner, Table} from "react-bootstrap";
+import {createAnswer, deleteAnswer, getAllAnswers, updateAnswer} from '../../services/AnswerService';
 
-const AnswersList = ({ title, questionId }) => {
-    const [answers, setAnswers] = useState([]); // État pour stocker les réponses
-    const [searchTerm, setSearchTerm] = useState(''); // État pour la barre de recherche
+const AnswersList = ({title}) => {
+    const [answers, setAnswers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [newAnswerText, setNewAnswerText] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Fonction pour récupérer les réponses depuis l'API
-    const fetchAnswers = async () => {
+    const fetchAnswers = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         try {
-            const response = await getAnswersByQuestionId(questionId); // Utilisation de l'API
-            console.log("Data fetched from API:", response.data); // Vérification des données reçues
-            setAnswers(response.data); // Mise à jour du state avec les réponses
+            const response = await getAllAnswers();
+            setAnswers(response.data);
         } catch (error) {
+            setError("Error fetching answers.");
             console.error("Error fetching answers:", error);
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchAnswers();
-    }, [questionId]); // Appel à l'API lorsque le component se monte ou quand questionId change
+    }, [fetchAnswers]);
 
-    // Fonction pour supprimer une réponse
     const handleDelete = async (id) => {
+        setLoading(true);
+        setError(null);
         try {
             await deleteAnswer(id);
-            fetchAnswers(); // Récupérer à nouveau les réponses après suppression
+            fetchAnswers();
         } catch (error) {
+            setError("Error deleting answer.");
             console.error("Error deleting answer:", error);
+            setLoading(false);
         }
     };
 
-    // Filtrage des réponses en fonction du terme de recherche
-    const filteredAnswers = answers.filter((answer) =>
-        answer.answers_text.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleCreate = async () => {
+        if (newAnswerText.trim() === '') return;
+        setLoading(true);
+        setError(null);
+        try {
+            //TODO HANDLE FROM THE FORM
+            const dataAnswer = {answer_text: newAnswerText, questionId: 1, isCorrect: false}
+
+            await createAnswer(dataAnswer);
+            setNewAnswerText('');
+            fetchAnswers();
+        } catch (error) {
+            setError("Error creating answer.");
+            console.error("Error creating answer:", error);
+            setLoading(false);
+        }
+    };
+
+    const handleUpdate = async (id, updatedText) => {
+        if (updatedText.trim() === '') return;
+        setLoading(true);
+        setError(null);
+        try {
+            const answerToUpdate = answers.find(answer => answer.id === id);
+            if (answerToUpdate) {
+                await updateAnswer(id, {...answerToUpdate, answer_text: updatedText});
+                fetchAnswers();
+            }
+        } catch (error) {
+            setError("Error updating answer.");
+            console.error("Error updating answer:", error);
+            setLoading(false);
+        }
+    };
+
+    const handleView = (answer) => {
+        alert("show Answer : Travail en cours");
+    };
+
+    const filteredAnswers = searchTerm
+        ? answers.filter((answer) =>
+            answer.answer_text && answer.answer_text.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        : answers;
 
     return (
         <>
             <Row className="mb-3">
                 <Col>
-                    <h4 className="text-start mb-3">{title}</h4>
+                    <h4 className="text-start mb-3 text-dark">{title}</h4>
                 </Col>
                 <Col>
-                    <div className="search-bar">
-                        <Form.Control
-                            type="text"
-                            placeholder="Search for answer text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)} // Gestion de la recherche
-                        />
-                    </div>
+                    <Form.Control
+                        type="text"
+                        placeholder="Search for answer text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="text-dark"
+                    />
                 </Col>
             </Row>
-            <Table striped bordered hover className="small-font">
-                <thead>
-                <tr>
-                    <th>Answer ID</th>
-                    <th>Question ID</th>
-                    <th>Answer Text</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {answers.length === 0 ? (
+            <Row className="mb-3">
+                <Col>
+                    <Form.Control
+                        type="text"
+                        placeholder="Enter new answer"
+                        value={newAnswerText}
+                        onChange={(e) => setNewAnswerText(e.target.value)}
+                        className="text-dark"
+                    />
+                </Col>
+                <Col>
+                    <Button variant="primary" onClick={handleCreate} disabled={loading}>
+                        {loading ? <Spinner animation="border" size="sm"/> : "Add Answer"}
+                    </Button>
+                </Col>
+            </Row>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <div style={{maxHeight: '500px', overflowY: 'scroll'}}>
+                <Table striped bordered hover className="small-font text-dark">
+                    <thead>
                     <tr>
-                        <td colSpan="4" className="text-center">
-                            No answers available for this question
-                        </td>
+                        <th className="text-dark">N°</th>
+                        <th className="text-dark">Question ID</th>
+                        <th className="text-dark">Answer ID</th>
+                        <th className="text-dark">Answer Text</th>
+                        <th className="text-dark">Actions</th>
                     </tr>
-                ) : (
-                    filteredAnswers.length > 0 ? (
-                        filteredAnswers.map((answer) => (
-                            <tr key={answer.id}>
-                                <td>{answer.id}</td>
-                                <td>{answer.questionId}</td>
-                                <td>{answer.answers_text}</td>
-                                <td>
+                    </thead>
+                    <tbody>
+                    {loading ? (
+                        <tr>
+                            <td colSpan="4" className="text-center text-dark">
+                                <Spinner animation="border"/>
+                            </td>
+                        </tr>
+                    ) : filteredAnswers.length === 0 ? (
+                        <tr>
+                            <td colSpan="4" className="text-center text-dark">
+                                No answers available
+                            </td>
+                        </tr>
+                    ) : (
+                        filteredAnswers.map((answer, index) => (
+                            <tr key={answer.answerId} className="text-dark">
+                                <td className="text-dark">{index + 1}</td>
+                                <td className="text-dark">{answer.question.questionId}</td>
+                                <td className="text-dark">{answer.answerId}</td>
+                                <td className="text-dark">{answer.answerText}</td>
+                                <td className="text-dark">
+                                    <Button variant="success" size="sm" onClick={() => handleView(answer)}>View</Button>
+                                    <Button variant="warning" size="sm"
+                                            onClick={() => handleUpdate(answer.id, answer.answer_text)}
+                                            className="ms-2">Update</Button>
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDelete(answer.id)}
+                                        disabled={loading}
+                                        className="ms-2"
                                     >
-                                        Delete
+                                        {loading ? <Spinner animation="border" size="sm"/> : "Delete"}
                                     </Button>
                                 </td>
                             </tr>
                         ))
-                    ) : (
-                        <tr>
-                            <td colSpan="4" className="text-center">
-                                No answers match your search
-                            </td>
-                        </tr>
-                    )
-                )}
-                </tbody>
-            </Table>
+                    )}
+                    </tbody>
+                </Table>
+            </div>
         </>
     );
 };
 
 export default AnswersList;
-
