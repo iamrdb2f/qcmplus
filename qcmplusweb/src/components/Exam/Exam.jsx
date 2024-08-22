@@ -9,7 +9,7 @@ import './Exam.css';
 import {submitExamSession} from '../../services/ExamService';
 
 //TODO: Replace with MAX_QUESTIONS to 20 AND QUESTION_TIME_LIMIT to 60
-const MAX_QUESTIONS = 5;
+const MAX_QUESTIONS = 20;
 const QUESTION_TIME_LIMIT = 60;
 
 const Exam = ({quizId}) => {
@@ -21,6 +21,7 @@ const Exam = ({quizId}) => {
     const [showResults, setShowResults] = useState(false);
     const [score, setScore] = useState(0);
     const [startTime, setStartTime] = useState(null);
+    const [authError, setAuthError] = useState(null); // New state for authentication error
 
     const calculateScore = useCallback(() => {
         let calculatedScore = 0;
@@ -42,20 +43,19 @@ const Exam = ({quizId}) => {
 
         const examSession = {
             user: {
-                id: session.userId // Changed from userId to id
+                id: session.userId,
             },
             quiz: {
                 quizId: session.quizId
             },
             score: session.score,
             timeSpent: timeSpentFormatted,
-            dateExam: session.dateExam.toISOString(), // Use full ISO format for dateExam
+            dateExam: session.dateExam.toISOString(),
         };
 
         console.log("examSession:", examSession);
         return examSession;
     };
-
 
     useEffect(() => {
         if (questions.length > 0 && !startTime) {
@@ -64,11 +64,10 @@ const Exam = ({quizId}) => {
     }, [questions, startTime]);
 
     const handleSubmit = useCallback(async () => {
+        if (!getUser || !getUser.userId) {
+            throw new Error('User is not authenticated');
+        }
         try {
-            if (!getUser || !getUser.userId) {
-                throw new Error('User is not authenticated');
-            }
-
             const endTime = new Date();
             const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
 
@@ -83,21 +82,20 @@ const Exam = ({quizId}) => {
             const examSessionObject = convertToExamSessionObject(sessionData);
             console.log("examSessionObject:", examSessionObject);
 
-             await submitExamSession(examSessionObject);
+            await submitExamSession(examSessionObject);
             setScore(calculateScore());
             setExamCompleted(true);
             setShowResults(true);
         } catch (err) {
             if (err.response?.status === 401) {
                 console.error('Unauthorized access - 401');
-                // Optionally handle token refresh or re-authentication here
+                setAuthError('Unauthorized access. Please log in again.');
             } else {
-                console.error('Error submitting exam session:', err);
+                console.error('Error submitting exam session:', err.message || err);
+                setAuthError('Error submitting exam session. Please try again later.');
             }
         }
-    }, [getUser, quizId, userAnswers, calculateScore, startTime]);
-
-
+    }, [getUser, quizId, calculateScore, startTime]);
 
     const handleNextQuestion = useCallback(() => {
         if (currentQuestionIndex < questions.length - 1) {
@@ -146,10 +144,10 @@ const Exam = ({quizId}) => {
         );
     }
 
-    if (error) {
+    if (error || authError) {
         return (
             <Container className="exam-container">
-                <Alert variant="danger">{error}</Alert>
+                <Alert variant="danger">{error || authError}</Alert>
             </Container>
         );
     }

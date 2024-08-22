@@ -12,7 +12,7 @@ const ExamQuestion = ({
                           handleSubmit,
                           currentQuestionIndex,
                           questionsLength,
-                          timer  // Receive the timer as a prop
+                          timer
                       }) => (
     <div className="exam-card p-4">
         <h2 className={"text-center"}>QUiz {quiz.title}</h2>

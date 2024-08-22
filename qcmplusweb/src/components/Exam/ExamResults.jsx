@@ -3,9 +3,8 @@ import {Alert, Container, ListGroup} from 'react-bootstrap';
 
 const ExamResults = ({quiz, questions, answers, userAnswers, score}) => (
     <Container className="exam-results-container m-0 p-0">
-        <h2>Quiz {quiz.title}</h2>
-        <h3 className="text-center p-2">Exam Results: {score} / {questions.length}</h3>
-            <hr></hr>
+        <h3 className="text-center p-2">{quiz.title} Quiz Results: {score} / {questions.length} Correct Answers</h3>
+        <hr></hr>
         <div className="exam-results-list mb-3 p-3">
             {questions.map((question, index) => (
                 <div key={question.questionId} className="mb-4">
@@ -32,7 +31,12 @@ const ExamResults = ({quiz, questions, answers, userAnswers, score}) => (
                 </div>
             ))}
         </div>
-        <Alert variant="success" className="text-center">Exam completed successfully. Thank you!</Alert>
+
+        <Alert variant="success" className="text-center">
+            Exam completed successfully. Thank you!
+            <button className={"mx-2 defaultBtn"} onClick={() => window.location.href = '/main'}>Retour</button>
+        </Alert>
+
     </Container>
 );
 
