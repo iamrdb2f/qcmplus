@@ -4,7 +4,6 @@ import ExamResults from './ExamResults';
 import ExamQuestion from './ExamQuestion';
 import useExamFetchQuestions from './useExamFetchQuestions';
 import useExamTimer from './useExamTimer';
-import {submitExamSession} from '../../services/ExamService';
 import {getLoggedInUser} from '../../services/AuthService';
 import './Exam.css';
 
@@ -45,6 +44,20 @@ const Exam = ({ quizId }) => {
     }, [questions, startTime]);
 
     const handleSubmit = useCallback(async () => {
+
+        const endTime = new Date();
+        const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
+        const sessionData = {
+            userId: getUser.userId,
+            quizId,
+            answers: userAnswers,
+            score: calculateScore(),
+            dateExam: new Date(),
+            timeSpent: timeSpent,
+        };
+
+        console.log(sessionData);
+        /*
         try {
             if (!getUser || !getUser.userId) {
                 throw new Error('User is not authenticated');
@@ -72,6 +85,7 @@ const Exam = ({ quizId }) => {
                 console.error('Error submitting exam session:', err);
             }
         }
+        */
     }, [getUser, quizId, userAnswers, calculateScore, startTime]);
 
     const handleNextQuestion = useCallback(() => {

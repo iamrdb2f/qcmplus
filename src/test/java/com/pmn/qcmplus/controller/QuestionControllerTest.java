@@ -18,7 +18,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class QuestionControllerTest {
 
@@ -57,7 +60,8 @@ class QuestionControllerTest {
     void testGetQuestionById() {
         when(questionService.getQuestionById(eq(1))).thenReturn(question);
 
-        ResponseEntity<Question> response = questionController.getQuestionById(1);
+        // Update: Include quizId as a parameter in the method call
+        ResponseEntity<Question> response = questionController.getQuestionById(1, 1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Sample question?", response.getBody().getQuestionText());
@@ -80,7 +84,8 @@ class QuestionControllerTest {
     void testDeleteQuestion() {
         doNothing().when(questionService).deleteQuestion(eq(1));
 
-        ResponseEntity<Void> response = questionController.deleteQuestion(1);
+        // Update: Include quizId as a parameter in the method call
+        ResponseEntity<Void> response = questionController.deleteQuestion(1, 1);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(questionService, times(1)).deleteQuestion(eq(1));
