@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from './AuthService';
+import {getToken} from './AuthService';
 
 export const API_BASE_URL = "http://localhost:8080";
 
@@ -30,7 +30,9 @@ axiosInstance.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             console.error('Unauthorized access - 401:', error.response.data);
-            window.location.href = '/signin';
+
+
+           // window.location.href = '/signin';
         }
         return Promise.reject(error);
     }

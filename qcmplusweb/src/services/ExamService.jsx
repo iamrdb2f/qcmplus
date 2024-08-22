@@ -7,4 +7,11 @@ export const getAllExamSession = () => axiosInstance.get(`${EXAM_REST_API_URL}/e
 export const getAllUserExamHistory = (userId) => axiosInstance.get(`${EXAM_REST_API_URL}/exam_sessions/user/${userId}`);
 export const getQuestions = (quizId) => axiosInstance.get(`${EXAM_REST_API_URL}/quizzes/${quizId}/questions`);
 export const getAnswers = (questionId) => axiosInstance.get(`${EXAM_REST_API_URL}/questions/${questionId}/answers`);
-export const submitExamSession = (sessionData) => axiosInstance.post(`${EXAM_REST_API_URL}/exam_sessions`, sessionData);
+export const submitExamSession = (sessionData) => {
+    console.log( "submitExamSession sessionData");
+    console.log(sessionData);
+   return axiosInstance.post(`${EXAM_REST_API_URL}/exam_sessions`, sessionData);
+}
+
+
+    //axiosInstance.post(`${EXAM_REST_API_URL}/exam_sessions`, sessionData);

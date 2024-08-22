@@ -6,11 +6,12 @@ import useExamFetchQuestions from './useExamFetchQuestions';
 import useExamTimer from './useExamTimer';
 import {getLoggedInUser} from '../../services/AuthService';
 import './Exam.css';
+import {submitExamSession} from '../../services/ExamService';
 
 const MAX_QUESTIONS = 5;
 const QUESTION_TIME_LIMIT = 60;
 
-const Exam = ({ quizId }) => {
+const Exam = ({quizId}) => {
     const getUser = getLoggedInUser();
     const {questions, answers, loading, error} = useExamFetchQuestions(quizId, MAX_QUESTIONS);
     const [userAnswers, setUserAnswers] = useState({});
@@ -31,11 +32,29 @@ const Exam = ({ quizId }) => {
         return calculatedScore;
     }, [questions, answers, userAnswers]);
 
-    useEffect(() => {
-        if (examCompleted) {
-            setScore(calculateScore());
-        }
-    }, [examCompleted, calculateScore]);
+    const convertToExamSessionObject = (session) => {
+        const timeSpentInSeconds = session.timeSpent;
+        const hours = Math.floor(timeSpentInSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((timeSpentInSeconds % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (timeSpentInSeconds % 60).toString().padStart(2, '0');
+        const timeSpentFormatted = `${hours}:${minutes}:${seconds}`;
+
+        const examSession = {
+            user: {
+                id: session.userId // Changed from userId to id
+            },
+            quiz: {
+                quizId: session.quizId
+            },
+            score: session.score,
+            timeSpent: timeSpentFormatted,
+            dateExam: session.dateExam.toISOString(), // Use full ISO format for dateExam
+        };
+
+        console.log("examSession:", examSession);
+        return examSession;
+    };
+
 
     useEffect(() => {
         if (questions.length > 0 && !startTime) {
@@ -44,20 +63,6 @@ const Exam = ({ quizId }) => {
     }, [questions, startTime]);
 
     const handleSubmit = useCallback(async () => {
-
-        const endTime = new Date();
-        const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
-        const sessionData = {
-            userId: getUser.userId,
-            quizId,
-            answers: userAnswers,
-            score: calculateScore(),
-            dateExam: new Date(),
-            timeSpent: timeSpent,
-        };
-
-        console.log(sessionData);
-        /*
         try {
             if (!getUser || !getUser.userId) {
                 throw new Error('User is not authenticated');
@@ -68,25 +73,30 @@ const Exam = ({ quizId }) => {
 
             const sessionData = {
                 userId: getUser.userId,
-                quizId,
-                answers: userAnswers,
+                quizId: quizId,
                 score: calculateScore(),
                 dateExam: new Date(),
                 timeSpent: timeSpent,
             };
 
-            await submitExamSession(sessionData);
+            const examSessionObject = convertToExamSessionObject(sessionData);
+            console.log("examSessionObject:", examSessionObject);
+
+             await submitExamSession(examSessionObject);
+            setScore(calculateScore());
             setExamCompleted(true);
             setShowResults(true);
         } catch (err) {
-            if (err.message === 'User is not authenticated') {
-                console.error('User is logged out:', err);
+            if (err.response?.status === 401) {
+                console.error('Unauthorized access - 401');
+                // Optionally handle token refresh or re-authentication here
             } else {
                 console.error('Error submitting exam session:', err);
             }
         }
-        */
     }, [getUser, quizId, userAnswers, calculateScore, startTime]);
+
+
 
     const handleNextQuestion = useCallback(() => {
         if (currentQuestionIndex < questions.length - 1) {
