@@ -1,9 +1,11 @@
 import React from 'react';
 import {Alert, Container, ListGroup} from 'react-bootstrap';
 
-const ExamResults = ({questions, answers, userAnswers, score}) => (
+const ExamResults = ({quiz, questions, answers, userAnswers, score}) => (
     <Container className="exam-results-container m-0 p-0">
+        <h2>Quiz {quiz.title}</h2>
         <h3 className="text-center p-2">Exam Results: {score} / {questions.length}</h3>
+            <hr></hr>
         <div className="exam-results-list mb-3 p-3">
             {questions.map((question, index) => (
                 <div key={question.questionId} className="mb-4">

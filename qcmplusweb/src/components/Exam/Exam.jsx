@@ -45,25 +45,34 @@ const Exam = ({ quizId }) => {
     }, [questions, startTime]);
 
     const handleSubmit = useCallback(async () => {
-        const endTime = new Date();
-        const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
-
-        const sessionData = {
-            userId: getUser.userId,
-            quizId,
-            answers: userAnswers,
-            score: calculateScore(),
-            dateExam: new Date(),
-            timeSpent,
-        };
         try {
+            if (!getUser || !getUser.userId) {
+                throw new Error('User is not authenticated');
+            }
+
+            const endTime = new Date();
+            const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
+
+            const sessionData = {
+                userId: getUser.userId,
+                quizId,
+                answers: userAnswers,
+                score: calculateScore(),
+                dateExam: new Date(),
+                timeSpent: timeSpent,
+            };
+
             await submitExamSession(sessionData);
             setExamCompleted(true);
             setShowResults(true);
         } catch (err) {
-            console.error('Error submitting exam session:', err);
+            if (err.message === 'User is not authenticated') {
+                console.error('User is logged out:', err);
+            } else {
+                console.error('Error submitting exam session:', err);
+            }
         }
-    }, [getUser.userId, quizId, userAnswers, calculateScore, startTime]);
+    }, [getUser, quizId, userAnswers, calculateScore, startTime]);
 
     const handleNextQuestion = useCallback(() => {
         if (currentQuestionIndex < questions.length - 1) {
@@ -73,7 +82,11 @@ const Exam = ({ quizId }) => {
         }
     }, [currentQuestionIndex, questions.length, handleSubmit]);
 
-    const [timer, setTimer] = useExamTimer(QUESTION_TIME_LIMIT, handleNextQuestion);
+    const [timer, resetTimer] = useExamTimer(QUESTION_TIME_LIMIT, handleNextQuestion);
+
+    useEffect(() => {
+        resetTimer();
+    }, [currentQuestionIndex, resetTimer]);
 
     const handleAnswerChange = (questionId, answerId) => {
         setUserAnswers((prev) => ({
@@ -99,6 +112,7 @@ const Exam = ({ quizId }) => {
     if (examCompleted && showResults) {
         return (
             <ExamResults
+                quiz={questions[0].quiz}
                 questions={questions}
                 answers={answers}
                 userAnswers={userAnswers}
@@ -122,6 +136,7 @@ const Exam = ({ quizId }) => {
         <Container className="exam-container">
             {currentAnswers ? (
                 <ExamQuestion
+                    quiz={currentQuestion.quiz}
                     question={currentQuestion}
                     answers={currentAnswers}
                     userAnswers={userAnswers}
@@ -131,6 +146,7 @@ const Exam = ({ quizId }) => {
                     handleSubmit={handleSubmit}
                     currentQuestionIndex={currentQuestionIndex}
                     questionsLength={questions.length}
+                    timer={timer}
                 />
             ) : (
                 <Spinner animation="border"/>

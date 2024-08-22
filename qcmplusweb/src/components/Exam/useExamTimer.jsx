@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 
-// Custom hook to handle the exam timer
 const useExamTimer = (initialTime, onTimeUp) => {
     const [timer, setTimer] = useState(initialTime);
 
@@ -13,7 +12,11 @@ const useExamTimer = (initialTime, onTimeUp) => {
         }
     }, [timer, onTimeUp]);
 
-    return [timer, setTimer];
+    const resetTimer = () => {
+        setTimer(initialTime);
+    };
+
+    return [timer, resetTimer];
 };
 
 export default useExamTimer;
