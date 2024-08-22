@@ -8,6 +8,7 @@ import {getLoggedInUser} from '../../services/AuthService';
 import './Exam.css';
 import {submitExamSession} from '../../services/ExamService';
 
+//TODO: Replace with MAX_QUESTIONS to 20 AND QUESTION_TIME_LIMIT to 60
 const MAX_QUESTIONS = 5;
 const QUESTION_TIME_LIMIT = 60;
 
