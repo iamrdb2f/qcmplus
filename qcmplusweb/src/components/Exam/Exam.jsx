@@ -1,29 +1,41 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Container, Spinner} from 'react-bootstrap';
 import ExamResults from './ExamResults';
 import ExamQuestion from './ExamQuestion';
 import useExamFetchQuestions from './useExamFetchQuestions';
-import useExamTimer from './useExamTimer';
 import {getLoggedInUser} from '../../services/AuthService';
 import './Exam.css';
 import {submitExamSession} from '../../services/ExamService';
 
-//TODO: Replace with MAX_QUESTIONS to 20 AND QUESTION_TIME_LIMIT to 60
-const MAX_QUESTIONS = 20;
+const MAX_QUESTIONS = 15;
 const QUESTION_TIME_LIMIT = 60;
 
-const Exam = ({quizId}) => {
+const Exam = ({ quizId }) => {
     const getUser = getLoggedInUser();
-    const {questions, answers, loading, error} = useExamFetchQuestions(quizId, MAX_QUESTIONS);
+    const { questions, answers, loading, error } = useExamFetchQuestions(quizId, MAX_QUESTIONS);
     const [userAnswers, setUserAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [examCompleted, setExamCompleted] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const [score, setScore] = useState(0);
     const [startTime, setStartTime] = useState(null);
-    const [authError, setAuthError] = useState(null); // New state for authentication error
+    const [authError, setAuthError] = useState(null);
+    const [timer, setTimer] = useState(QUESTION_TIME_LIMIT); // Timer in seconds
 
-    const calculateScore = useCallback(() => {
+
+    useEffect(() => {
+        if (timer > 0) {
+            const timerId = setInterval(() => {
+                setTimer((prevTimer) => prevTimer - 1);
+            }, 1000);
+
+            return () => clearInterval(timerId);
+        } else {
+            handleNextQuestion();
+        }
+    }, [timer]);
+
+    const calculateScore = () => {
         let calculatedScore = 0;
         questions.forEach((question) => {
             const correctAnswer = answers[question.questionId]?.find(answer => answer.correct === true);
@@ -32,7 +44,7 @@ const Exam = ({quizId}) => {
             }
         });
         return calculatedScore;
-    }, [questions, answers, userAnswers]);
+    };
 
     const convertToExamSessionObject = (session) => {
         const timeSpentInSeconds = session.timeSpent;
@@ -42,18 +54,13 @@ const Exam = ({quizId}) => {
         const timeSpentFormatted = `${hours}:${minutes}:${seconds}`;
 
         const examSession = {
-            user: {
-                id: session.userId,
-            },
-            quiz: {
-                quizId: session.quizId
-            },
+            user: { id: session.userId },
+            quiz: { quizId: session.quizId },
             score: session.score,
             timeSpent: timeSpentFormatted,
             dateExam: session.dateExam.toISOString(),
         };
 
-        console.log("examSession:", examSession);
         return examSession;
     };
 
@@ -63,7 +70,7 @@ const Exam = ({quizId}) => {
         }
     }, [questions, startTime]);
 
-    const handleSubmit = useCallback(async () => {
+    const handleSubmit = async () => {
         if (!getUser || !getUser.userId) {
             throw new Error('User is not authenticated');
         }
@@ -80,7 +87,6 @@ const Exam = ({quizId}) => {
             };
 
             const examSessionObject = convertToExamSessionObject(sessionData);
-            console.log("examSessionObject:", examSessionObject);
 
             await submitExamSession(examSessionObject);
             setScore(calculateScore());
@@ -88,31 +94,24 @@ const Exam = ({quizId}) => {
             setShowResults(true);
         } catch (err) {
             if (err.response?.status === 401) {
-                console.error('Unauthorized access - 401');
                 setAuthError('Unauthorized access. Please log in again.');
             } else {
-                console.error('Error submitting exam session:', err.message || err);
                 setAuthError('Error submitting exam session. Please try again later.');
             }
         }
-    }, [getUser, quizId, calculateScore, startTime]);
+    };
 
-    const handleNextQuestion = useCallback(() => {
+    const handleNextQuestion = () => {
         if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            setTimer(QUESTION_TIME_LIMIT); // Reset the timer for the next question
         } else {
             handleSubmit();
         }
-    }, [currentQuestionIndex, questions.length, handleSubmit]);
-
-    const [timer, resetTimer] = useExamTimer(QUESTION_TIME_LIMIT, handleNextQuestion);
-
-    useEffect(() => {
-        resetTimer();
-    }, [currentQuestionIndex, resetTimer]);
+    };
 
     const handleAnswerChange = (questionId, answerId) => {
-        setUserAnswers((prev) => ({
+        setUserAnswers(prev => ({
             ...prev,
             [questionId]: answerId,
         }));
@@ -120,14 +119,15 @@ const Exam = ({quizId}) => {
 
     const handlePreviousQuestion = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+            setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+            setTimer(QUESTION_TIME_LIMIT); // Reset the timer when going back to a previous question
         }
     };
 
     if (loading) {
         return (
             <Container className="exam-container">
-                <Spinner animation="border"/>
+                <Spinner animation="border" />
             </Container>
         );
     }
@@ -172,7 +172,7 @@ const Exam = ({quizId}) => {
                     timer={timer}
                 />
             ) : (
-                <Spinner animation="border"/>
+                <Spinner animation="border" />
             )}
         </Container>
     );
