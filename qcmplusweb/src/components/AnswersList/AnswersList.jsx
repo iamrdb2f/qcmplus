@@ -3,7 +3,7 @@ import {Alert, Button, Col, Form, Modal, Row, Spinner, Table} from "react-bootst
 import {deleteAnswer, getAllAnswers} from '../../services/AnswerService';
 import AnswerModal from "./AnswerModal";
 import ViewAnswerModal from "./ViewAnswerModal";
-import DeleteConfirmModal from "./DeleteConfirmModal";
+import DeleteAnswerModal from "./DeleteAnswerModal";
 import UpdateAnswerForm from "./UpdateAnswerForm";
 import CreateAnswerForm from "./CreateAnswerForm";
 
@@ -143,8 +143,8 @@ const AnswersList = ({title}) => {
             <AnswerModal showModal={showModal} setShowModal={setShowModal} fetchAnswers={fetchAnswers}
                          currentAnswer={currentAnswer} modalType={modalType}/>
             <ViewAnswerModal showModal={showViewModal} setShowModal={setShowViewModal} currentAnswer={currentAnswer}/>
-            <DeleteConfirmModal showModal={showDeleteConfirm} setShowModal={setShowDeleteConfirm}
-                                handleDelete={handleDelete}/>
+            <DeleteAnswerModal showModal={showDeleteConfirm} setShowModal={setShowDeleteConfirm}
+                               handleDelete={handleDelete}/>
             <UpdateAnswerForm showModal={showUpdateModal} setShowModal={setShowUpdateModal}
                               currentAnswer={currentAnswer}
                               fetchAnswers={fetchAnswers}/>

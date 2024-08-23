@@ -11,7 +11,7 @@ const QuestionRow = ({question, handleEdit, handleDeleteClick, handleView}) => (
         <td>{question.quiz.title}</td>
         <td>{question.questionText}</td>
         <td>
-            <Button variant="info" className="me-3"
+            <Button variant="success" className="me-3"
                     onClick={() => handleView(question.questionId, question.quiz.quizId)}>View</Button>
             <Button variant="warning" className="me-3"
                     onClick={() => handleEdit(question.questionId, question.quiz.quizId)}>Update</Button>

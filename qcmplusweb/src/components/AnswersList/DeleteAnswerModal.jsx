@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Modal} from "react-bootstrap";
 
-const DeleteConfirmModal = ({showModal, setShowModal, handleDelete}) => {
+const DeleteAnswerModal = ({showModal, setShowModal, handleDelete}) => {
     return (
         <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
@@ -18,4 +18,4 @@ const DeleteConfirmModal = ({showModal, setShowModal, handleDelete}) => {
     );
 };
 
-export default DeleteConfirmModal;
+export default DeleteAnswerModal;
