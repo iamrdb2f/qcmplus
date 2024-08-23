@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
-import {createQuestion, getAllQuestions} from "../../services/QuestionService";
+import {createQuestion, getAllQuestions, getQuestionsByText} from "../../services/QuestionService";
 import {retrieveQuizzes} from "../../services/QuizService";
+import {createAnswer} from "../../services/AnswerService";
 
 const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErrorMessage, setQuestions}) => {
     const [questionText, setQuestionText] = useState('');
@@ -39,27 +40,40 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
         if (questionText.trim() === '' || selectedQuiz === '' || answers.some(answer => answer.answerText.trim() === '')) {
             setError("Please fill in all fields.");
             return;
         }
+
         setLoading(true);
         setError(null);
+
         try {
             const dataQuestion = {
                 questionText,
                 quiz: {quizId: selectedQuiz}
             };
-            console.log(dataQuestion);
-            const createdQuestion = await createQuestion(dataQuestion.quiz.quizId, dataQuestion);
-            const questionId = createdQuestion.data.questionId;
+
+            console.log("Creating question:", dataQuestion);
+            await createQuestion(dataQuestion.quiz.quizId, dataQuestion);
+
+            const response = await getQuestionsByText(dataQuestion.questionText);
+            if (response.data.length === 0) {
+                throw new Error("Question not found after creation.");
+            }
+
+            const questionId = response.data[0].questionId;
+            console.log("Question ID:", questionId);
 
             for (const answer of answers) {
                 const dataAnswer = {
                     answerText: answer.answerText,
                     correct: answer.isCorrect,
-                    question: {questionId}
+                    question: {questionId: questionId}
                 };
+                console.log("Creating answer:", dataAnswer);
+                await createAnswer(dataAnswer);
             }
 
             setQuestionText('');
@@ -68,9 +82,12 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
             setLoading(false);
             setShowModal(false);
             setSuccessMessage("Question and answers created successfully.");
-            const response = await getAllQuestions();
-            setQuestions(response.data);
+
+            const questionsResponse = await getAllQuestions();
+            setQuestions(questionsResponse.data);
+
         } catch (error) {
+            console.error("Error during question and answer creation:", error);
             setErrorMessage("Failed to create question and answers.");
             setLoading(false);
         }

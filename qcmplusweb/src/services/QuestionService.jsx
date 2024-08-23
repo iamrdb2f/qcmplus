@@ -7,6 +7,4 @@ export const getQuestionById = (questionId, quizId) => axiosInstance.get(`${QUES
 export const createQuestion = (quizId, questionData) => axiosInstance.post(`${QUESTION_REST_API_URL}/quizzes/${quizId}`, questionData);
 export const updateQuestion = (questionId, quizId, questionData) => axiosInstance.put(`${QUESTION_REST_API_URL}/${questionId}/quizzes/${quizId}`, questionData);
 export const deleteQuestion = (questionId, quizId) => axiosInstance.delete(`${QUESTION_REST_API_URL}/${questionId}/quizzes/${quizId}`);
-
-
-
+export const getQuestionsByText = (questionText) => axiosInstance.get(`${QUESTION_REST_API_URL}/search?questionText=${questionText}`);
