@@ -13,6 +13,13 @@
     object-fit: cover;
 }
 
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
 .selectExamen-card {
     border: 1px solid var(--bg-default-light-color);
     border-radius: 18px;

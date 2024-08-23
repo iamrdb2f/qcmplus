@@ -10,9 +10,9 @@ import {submitExamSession} from '../../services/ExamService';
 const MAX_QUESTIONS = 15;
 const QUESTION_TIME_LIMIT = 60;
 
-const Exam = ({ quizId }) => {
+const Exam = ({quizId}) => {
     const getUser = getLoggedInUser();
-    const { questions, answers, loading, error } = useExamFetchQuestions(quizId, MAX_QUESTIONS);
+    const {questions, answers, loading, error} = useExamFetchQuestions(quizId, MAX_QUESTIONS);
     const [userAnswers, setUserAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [examCompleted, setExamCompleted] = useState(false);
@@ -41,8 +41,8 @@ const Exam = ({ quizId }) => {
         const timeSpentFormatted = `${hours}:${minutes}:${seconds}`;
 
         const examSession = {
-            user: { id: session.userId },
-            quiz: { quizId: session.quizId },
+            user: {id: session.userId},
+            quiz: {quizId: session.quizId},
             score: session.score,
             timeSpent: timeSpentFormatted,
             dateExam: session.dateExam.toISOString(),
@@ -126,7 +126,7 @@ const Exam = ({ quizId }) => {
     if (loading) {
         return (
             <Container className="exam-container">
-                <Spinner animation="border" />
+                <Spinner animation="border"/>
             </Container>
         );
     }
@@ -171,7 +171,7 @@ const Exam = ({ quizId }) => {
                     timer={timer}
                 />
             ) : (
-                <Spinner animation="border" />
+                <Spinner animation="border"/>
             )}
         </Container>
     );

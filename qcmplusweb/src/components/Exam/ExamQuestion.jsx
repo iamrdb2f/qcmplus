@@ -15,7 +15,7 @@ const ExamQuestion = ({
                           timer
                       }) => (
     <div className="exam-card p-4">
-        <h2 className={"text-center"}>QUiz {quiz.title}</h2>
+        <h2 className={"text-center"}>Quiz {quiz.title}</h2>
         <hr></hr>
         <p className={`timer ${timer <= 10 ? 'text-danger' : 'text-primary'}`}>
             Time remaining: {timer} seconds
