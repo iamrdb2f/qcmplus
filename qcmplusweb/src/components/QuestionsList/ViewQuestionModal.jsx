@@ -10,10 +10,9 @@ const ViewQuestionModal = ({showModal, setShowModal, question}) => {
             if (question) {
                 try {
                     const response = await getAnswersByQuestionId(question.questionId);
-                    console.log(response.data);
                     setAnswers(response.data);
                 } catch (error) {
-                    console.error("Failed to fetch answers", error);
+                    console.error("Failed to fetch answers");
                 }
             }
         };

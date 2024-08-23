@@ -55,16 +55,12 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
                 quiz: {quizId: selectedQuiz}
             };
 
-            console.log("Creating question:", dataQuestion);
             await createQuestion(dataQuestion.quiz.quizId, dataQuestion);
-
-            const response = await getQuestionsByText(dataQuestion.questionText);
+            const response = await getQuestionsByText(encodeURIComponent(dataQuestion.questionText));
             if (response.data.length === 0) {
                 throw new Error("Question not found after creation.");
             }
-
-            const questionId = response.data[0].questionId;
-            console.log("Question ID:", questionId);
+            const questionId = response.data.questionId;
 
             for (const answer of answers) {
                 const dataAnswer = {
@@ -72,7 +68,6 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
                     correct: answer.isCorrect,
                     question: {questionId: questionId}
                 };
-                console.log("Creating answer:", dataAnswer);
                 await createAnswer(dataAnswer);
             }
 
