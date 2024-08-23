@@ -33,5 +33,5 @@ public class Answer {
     private String answerText;
 
     @Column(name = "is_correct", nullable = false)
-    private boolean isCorrect;
+    private boolean correct;
 }

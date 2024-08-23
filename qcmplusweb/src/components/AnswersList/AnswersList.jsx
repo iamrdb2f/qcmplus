@@ -1,9 +1,11 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {Alert, Button, Col, Form, Row, Spinner, Table} from "react-bootstrap";
-import {getAllAnswers} from '../../services/AnswerService';
-import CreateAnswerForm from "./CreateAnswerForm";
+import {Alert, Button, Col, Form, Modal, Row, Spinner, Table} from "react-bootstrap";
+import {deleteAnswer, getAllAnswers} from '../../services/AnswerService';
+import AnswerModal from "./AnswerModal";
+import ViewAnswerModal from "./ViewAnswerModal";
+import DeleteConfirmModal from "./DeleteConfirmModal";
 import UpdateAnswerForm from "./UpdateAnswerForm";
-import DeleteAnswerButton from "./DeleteAnswerButton";
+import CreateAnswerForm from "./CreateAnswerForm";
 
 const AnswersList = ({title}) => {
     const [answers, setAnswers] = useState([]);
@@ -11,8 +13,14 @@ const AnswersList = ({title}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [currentAnswer, setCurrentAnswer] = useState(null);
     const [modalType, setModalType] = useState("create");
+    const [answerToDelete, setAnswerToDelete] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const fetchAnswers = useCallback(async () => {
         setLoading(true);
@@ -22,7 +30,6 @@ const AnswersList = ({title}) => {
             setAnswers(response.data);
         } catch (error) {
             setError("Error fetching answers.");
-            console.error("Error fetching answers:", error);
         } finally {
             setLoading(false);
         }
@@ -32,21 +39,39 @@ const AnswersList = ({title}) => {
         fetchAnswers();
     }, [fetchAnswers]);
 
-    const handleView = (answer) => {
-        setCurrentAnswer(answer);
-        setModalType("view");
-        setShowModal(true);
+    const handleCreate = () => {
+        setShowCreateModal(true);
     };
 
     const handleEdit = (answer) => {
         setCurrentAnswer(answer);
-        setModalType("edit");
-        setShowModal(true);
+        setShowUpdateModal(true);
     };
 
-    const filteredAnswers = searchTerm
+    const handleView = (answer) => {
+        setCurrentAnswer(answer);
+        setShowViewModal(true);
+    };
+
+    const handleDeleteClick = (answerId) => {
+        setAnswerToDelete(answerId);
+        setShowDeleteConfirm(true);
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteAnswer(answerToDelete);
+            fetchAnswers();
+            setShowDeleteConfirm(false);
+        } catch (error) {
+            setError("Error deleting answer.");
+        }
+    };
+
+    const filteredAnswers = searchTerm.trim()
         ? answers.filter((answer) =>
-            answer.answerText && answer.answerText.toLowerCase().includes(searchTerm.toLowerCase())
+            (answer.answerText && answer.answerText.toLowerCase().includes(searchTerm.trim().toLowerCase())) ||
+            (answer.question.questionText && answer.question.questionText.toLowerCase().includes(searchTerm.trim().toLowerCase()))
         )
         : answers;
 
@@ -59,19 +84,18 @@ const AnswersList = ({title}) => {
                 <Col>
                     <Form.Control
                         type="text"
-                        placeholder="Search for answer text"
+                        placeholder="Search for answer text or question text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="text-dark"
                     />
                 </Col>
-            </Row>
-            <Row className="mb-3">
-                <Col>
-                    <CreateAnswerForm fetchAnswers={fetchAnswers}/>
+                <Col className="text-end">
+                    <Button className="defaultBtn me-5" onClick={handleCreate}>Add Answer</Button>
                 </Col>
             </Row>
             {error && <Alert variant="danger">{error}</Alert>}
+            {successMessage && <Alert variant="success">{successMessage}</Alert>}
             <div style={{maxHeight: '500px', overflowY: 'scroll'}}>
                 <Table striped bordered hover className="small-font text-dark">
                     <thead>
@@ -107,7 +131,8 @@ const AnswersList = ({title}) => {
                                     <Button variant="success" size="sm" onClick={() => handleView(answer)}>View</Button>
                                     <Button variant="warning" size="sm" onClick={() => handleEdit(answer)}
                                             className="mx-2">Update</Button>
-                                    <DeleteAnswerButton answerId={answer.answerId} fetchAnswers={fetchAnswers}/>
+                                    <Button variant="danger" size="sm"
+                                            onClick={() => handleDeleteClick(answer.answerId)}>Delete</Button>
                                 </td>
                             </tr>
                         ))
@@ -115,8 +140,23 @@ const AnswersList = ({title}) => {
                     </tbody>
                 </Table>
             </div>
-            <UpdateAnswerForm showModal={showModal} setShowModal={setShowModal} currentAnswer={currentAnswer}
+            <AnswerModal showModal={showModal} setShowModal={setShowModal} fetchAnswers={fetchAnswers}
+                         currentAnswer={currentAnswer} modalType={modalType}/>
+            <ViewAnswerModal showModal={showViewModal} setShowModal={setShowViewModal} currentAnswer={currentAnswer}/>
+            <DeleteConfirmModal showModal={showDeleteConfirm} setShowModal={setShowDeleteConfirm}
+                                handleDelete={handleDelete}/>
+            <UpdateAnswerForm showModal={showUpdateModal} setShowModal={setShowUpdateModal}
+                              currentAnswer={currentAnswer}
                               fetchAnswers={fetchAnswers}/>
+            <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Answer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <CreateAnswerForm fetchAnswers={fetchAnswers} setShowModal={setShowCreateModal}
+                                      setSuccessMessage={setSuccessMessage}/>
+                </Modal.Body>
+            </Modal>
         </>
     );
 };
