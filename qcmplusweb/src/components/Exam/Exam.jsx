@@ -6,10 +6,6 @@ import useExamFetchQuestions from './useExamFetchQuestions';
 import {getLoggedInUser} from '../../services/AuthService';
 import './Exam.css';
 import {submitExamSession} from '../../services/ExamService';
-import React, {useEffect, useState} from 'react';
-import {getAnswers, getQuestions, submitExamSession} from '../../services/ExamService';
-import {Button, Col, Container, Form, Row} from 'react-bootstrap';
-import {useParams} from 'react-router-dom';
 
 const MAX_QUESTIONS = 15;
 const QUESTION_TIME_LIMIT = 60;

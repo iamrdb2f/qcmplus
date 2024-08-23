@@ -9,3 +9,4 @@ export const getQuestions = (quizId) => axiosInstance.get(`${EXAM_REST_API_URL}/
 export const getAnswers = (questionId) => axiosInstance.get(`${EXAM_REST_API_URL}/questions/${questionId}/answers`);
 export const submitExamSession = (sessionData) => axiosInstance.post(`${EXAM_REST_API_URL}/exam_sessions`, sessionData);
 export const getExamSession = (sessionId) => axiosInstance.get(`${EXAM_REST_API_URL}/exam_sessions/${sessionId}`);
+export const deleteExamSession = (sessionId) => axiosInstance.delete(`${EXAM_REST_API_URL}/exam_sessions/${sessionId}`);

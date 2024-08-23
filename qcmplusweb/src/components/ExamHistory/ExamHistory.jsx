@@ -70,7 +70,7 @@ const ExamTaken = ({userId}) => {
                                         <Card.Title className="text-bold text-decoration-underline">
                                             {exam.quiz ? exam.quiz.title : 'No Title Available'}
                                         </Card.Title>
-                                        <Card.Text>Result: {exam.score}</Card.Text>
+                                        <Card.Text>Result: {exam.score}/15</Card.Text>
                                         <Card.Text>Time Spent: {exam.timeSpent}h</Card.Text>
                                         <Card.Text>Date: {formatDate(exam.dateExam)}</Card.Text>
                                     </Card.Body>

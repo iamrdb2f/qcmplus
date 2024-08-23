@@ -1,10 +1,9 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Button, Col, Container, Dropdown, Row} from 'react-bootstrap';
 import Sidebar from "../../components/Sidebar/Sidebar";
 import AddUser from "../../components/AddUser/AddUser";
 import UserList from "../../components/UserList/UserList";
 import "./Main.css";
-import {AiFillWarning} from "react-icons/ai";
 import {IoMdLogOut} from "react-icons/io";
 import {FaUser} from "react-icons/fa";
 import {ROLE} from "../../utils/UtilLists";
@@ -14,13 +13,11 @@ import ExamSelected from "../../components/ExamSelected/ExamSelected";
 import Exam from "../../components/Exam/Exam";
 import {useNavigate} from "react-router-dom";
 import ExamsTaken from "../../components/ExamHistory/ExamHistory";
-import Exam from "../../components/Exam/Exam";
-import Answer from "../../components/Answer/Answer";
 import ExamsList from "../../components/ExamsList/ExamsList";
-import AnswersList from "../../components/AnswersList/AnswersList";
 import QuestionsList from "../../components/QuestionsList/QuestionsList";
 import QuizsList from "../../components/QuizsList/QuizsList";
 import Dashboard from "../../components/Dashboard/Dashboard";
+import AnswersList from "../../components/AnswersList/AnswersList";
 
 
 const Main = () => {
@@ -76,7 +73,7 @@ const Main = () => {
             case 'Questions':
                 return <QuestionsList title="Registered Questions List"/>;
             case 'Answers':
-                return <h1><AiFillWarning />Answers: en cours de construction</h1>;
+                return < AnswersList title="Registered Answers List"/>;
             case 'TakeExams':
                 return <ExamSelected quizId={quizId || 1} onStartExam={handleStartExam} />; // Pass handleStartExam
             case 'HistoryExams':
