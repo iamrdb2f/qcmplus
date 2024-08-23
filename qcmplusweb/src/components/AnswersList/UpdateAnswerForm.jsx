@@ -5,7 +5,6 @@ import {updateAnswer} from "../../services/AnswerService";
 const UpdateAnswerForm = ({showModal, setShowModal, currentAnswer, fetchAnswers}) => {
     const [updatedText, setUpdatedText] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -17,7 +16,6 @@ const UpdateAnswerForm = ({showModal, setShowModal, currentAnswer, fetchAnswers}
 
     const handleUpdate = async (id) => {
         if (updatedText.trim() === '') return;
-        setLoading(true);
         setError(null);
         try {
             await updateAnswer(id, {...currentAnswer, answerText: updatedText, correct: isCorrect});
@@ -25,7 +23,6 @@ const UpdateAnswerForm = ({showModal, setShowModal, currentAnswer, fetchAnswers}
             setShowModal(false);
         } catch (error) {
             setError("Error updating answer.");
-            setLoading(false);
         }
     };
 

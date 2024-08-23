@@ -18,7 +18,7 @@ const AnswersList = ({title}) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [currentAnswer, setCurrentAnswer] = useState(null);
-    const [modalType, setModalType] = useState("create");
+    const [modalType, setModalType] = useState(null);
     const [answerToDelete, setAnswerToDelete] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -36,6 +36,7 @@ const AnswersList = ({title}) => {
     }, []);
 
     useEffect(() => {
+        setModalType("create");
         fetchAnswers();
     }, [fetchAnswers]);
 
