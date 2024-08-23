@@ -11,5 +11,9 @@ public interface QuestionService {
 
     Question saveQuestion(Question question);
 
+    Question updateQuestion(Question question);
+
     void deleteQuestion(Integer id);
+
+    List<Question> getAllQuestions(); // New method
 }

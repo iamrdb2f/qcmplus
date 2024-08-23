@@ -1,25 +1,24 @@
 package com.pmn.qcmplus.repository;
 
+import com.pmn.qcmplus.exception.QuestionNotFoundException;
 import com.pmn.qcmplus.model.Question;
 import com.pmn.qcmplus.model.Quiz;
 import com.pmn.qcmplus.service.impl.QuestionServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -116,11 +115,11 @@ public class QuestionRepositoryTest {
     void testDeleteQuestion_NotFound() {
         when(questionRepository.findById(1)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        QuestionNotFoundException exception = assertThrows(QuestionNotFoundException.class, () -> {
             questionService.deleteQuestion(1);
         });
 
-        assertEquals("Question does not exist.", exception.getMessage());
+        assertEquals("Question with id 1 not found.", exception.getMessage());
 
         verify(questionRepository, times(1)).findById(1);
         verify(questionRepository, times(0)).deleteById(1);
