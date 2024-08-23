@@ -166,4 +166,21 @@ class QuestionServiceImplTest {
         assertEquals(mockQuestions, questions);
         verify(questionRepository, times(1)).findAll();
     }
+
+    @Test
+    void testGetQuestionsByText() {
+        // Arrange
+        String searchText = "sample";
+        Question expectedQuestion = new Question();
+        expectedQuestion.setQuestionId(1);
+        expectedQuestion.setQuestionText("Sample question 1");
+
+        when(questionRepository.findByQuestionTextContainingIgnoreCase(searchText)).thenReturn(expectedQuestion);
+
+        // Act
+        Question actualQuestion = questionService.getQuestionsByText(searchText);
+
+        // Assert
+        assertEquals(expectedQuestion, actualQuestion);
+    }
 }

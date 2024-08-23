@@ -16,4 +16,6 @@ public interface QuestionService {
     void deleteQuestion(Integer id);
 
     List<Question> getAllQuestions(); // New method
+
+    Question getQuestionsByText(String questionText);
 }

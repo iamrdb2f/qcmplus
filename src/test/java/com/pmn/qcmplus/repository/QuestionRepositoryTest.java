@@ -124,4 +124,22 @@ public class QuestionRepositoryTest {
         verify(questionRepository, times(1)).findById(1);
         verify(questionRepository, times(0)).deleteById(1);
     }
+
+    @Test
+    void testGetQuestionsByText() {
+        // Arrange
+        String searchText = "sample";
+        Question expectedQuestion = new Question();
+        expectedQuestion.setQuestionId(1);
+        expectedQuestion.setQuestionText("Sample question 1");
+
+        when(questionRepository.findByQuestionTextContainingIgnoreCase(searchText)).thenReturn(expectedQuestion);
+
+        // Act
+        Question actualQuestion = questionService.getQuestionsByText(searchText);
+
+        // Assert
+        assertEquals(expectedQuestion, actualQuestion);
+        verify(questionRepository, times(1)).findByQuestionTextContainingIgnoreCase(searchText);
+    }
 }

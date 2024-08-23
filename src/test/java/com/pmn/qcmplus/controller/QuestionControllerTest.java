@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 class QuestionControllerTest {
 
@@ -115,6 +117,12 @@ class QuestionControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         verify(questionService, times(1)).getAllQuestions();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Question> getQuestionsByText(@RequestParam String questionText) {
+        Question question = questionService.getQuestionsByText(questionText);
+        return ResponseEntity.ok(question);
     }
 
 

@@ -87,4 +87,9 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Question> getAllQuestions() {
         return questionRepository.findAll();
     }
+
+
+    public Question getQuestionsByText(String questionText) {
+        return questionRepository.findByQuestionTextContainingIgnoreCase(questionText);
+    }
 }

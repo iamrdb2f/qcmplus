@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Col, Form, Modal, Row, Table} from "react-bootstrap";
 import {deleteQuestion, getAllQuestions, getQuestionById} from "../../services/QuestionService";
+import {deleteAnswer, getAnswersByQuestionId} from "../../services/AnswerService";
 import CreateQuestionForm from "./CreateQuestionForm";
 import UpdateQuestionForm from "./UpdateQuestionForm";
 import ViewQuestionModal from "./ViewQuestionModal";
@@ -70,12 +71,19 @@ const QuestionsList = ({title}) => {
     const handleDelete = async () => {
         try {
             const question = questions.find(q => q.questionId === questionToDelete);
+            const answersResponse = await getAnswersByQuestionId(questionToDelete);
+            const answers = answersResponse.data;
+
+            for (const answer of answers) {
+                await deleteAnswer(answer.answerId);
+            }
+
             await deleteQuestion(questionToDelete, question.quiz.quizId);
             setQuestions(questions.filter((question) => question.questionId !== questionToDelete));
-            setSuccessMessage("Question deleted successfully.");
+            setSuccessMessage("Question and associated answers deleted successfully.");
             setShowDeleteConfirm(false);
         } catch (error) {
-            setErrorMessage("Failed to delete question.");
+            setErrorMessage("Failed to delete question and associated answers.");
         }
     };
 
@@ -95,7 +103,8 @@ const QuestionsList = ({title}) => {
     };
 
     const filteredQuestions = questions.filter((question) =>
-        question.questionText.toLowerCase().includes(searchTerm.toLowerCase())
+        question.questionText.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        question.quiz.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
 import {createQuestion, getAllQuestions} from "../../services/QuestionService";
-import {createAnswer} from "../../services/AnswerService";
 import {retrieveQuizzes} from "../../services/QuizService";
 
 const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErrorMessage, setQuestions}) => {
@@ -51,8 +50,8 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
                 questionText,
                 quiz: {quizId: selectedQuiz}
             };
-
-            const createdQuestion = await createQuestion(dataQuestion);
+            console.log(dataQuestion);
+            const createdQuestion = await createQuestion(dataQuestion.quiz.quizId, dataQuestion);
             const questionId = createdQuestion.data.questionId;
 
             for (const answer of answers) {
@@ -61,7 +60,6 @@ const CreateQuestionForm = ({showModal, setShowModal, setSuccessMessage, setErro
                     correct: answer.isCorrect,
                     question: {questionId}
                 };
-                await createAnswer(dataAnswer);
             }
 
             setQuestionText('');

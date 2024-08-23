@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -70,5 +71,12 @@ public class QuestionController {
     public ResponseEntity<List<Question>> getAllQuestions() {
         List<Question> questions = questionService.getAllQuestions();
         return ResponseEntity.ok(questions);
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<Question> getQuestionsByText(@RequestParam String questionText) {
+        Question question = questionService.getQuestionsByText(questionText);
+        return ResponseEntity.ok(question);
     }
 }
