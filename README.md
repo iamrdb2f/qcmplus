@@ -234,4 +234,3 @@ Les branches distantes sont  comme `origin/develop`, `origin/master`, etc.).
 ### Convention de Nommage
 
 Le projet utilise une convention de nommage claire pour les branches, indiquant leur but. Par exemple, `features/QCMPLUS-103` indique une branche dédiée à une fonctionnalité spécifique liée à un ticket ou une tâche numérotée `QCMPLUS-103`.
-
